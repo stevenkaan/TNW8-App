@@ -4,11 +4,16 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,15 +55,30 @@ public class MainActivity extends AppCompatActivity {
             //Here you are done with the task
             //Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
 
-            JSONObject obj = null;
+            JSONArray arr = null;
             try {
-                obj = new JSONObject(result);
+                LinearLayout linearLayout = new LinearLayout(MainActivity.this);
+                setContentView(linearLayout);
+                linearLayout.setOrientation(LinearLayout.VERTICAL);
 
-                Log.d(TAG, obj.toString());
-                TextView tv = (TextView)findViewById(R.id.main_textview);
-                tv.setText(obj.toString());
+                arr = new JSONObject(result).getJSONArray("cities");
 
-                
+                for(int i = 0; i < arr.length(); i++){
+                    JSONObject obj = arr.getJSONObject(i);
+                    String key = obj.keys().next();
+
+                    JSONArray objArray = obj.getJSONArray(key);
+                    for(int x=0; x < objArray.length(); x++) {
+                        TextView tv = new TextView(MainActivity.this);
+                        tv.setText(key + ": " + objArray.getString(x));
+
+                        linearLayout.addView(tv);
+                    }
+                }
+
+
+
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }

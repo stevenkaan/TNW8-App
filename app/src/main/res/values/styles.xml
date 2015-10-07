@@ -7,4 +7,8 @@
         <item name="colorPrimaryDark">@color/ColorPrimaryDark</item>
     </style>
 
+    <style name="NoHeader" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize NoHeader style -->
+    </style>
+
 </resources>

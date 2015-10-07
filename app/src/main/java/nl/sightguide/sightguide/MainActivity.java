@@ -1,122 +1,57 @@
 package nl.sightguide.sightguide;
 
-import android.os.AsyncTask;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    public final static String EXTRA_MESSAGE = "com.stevenkaan.sightguide.MESSAGE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //mainTextView = (TextView) findViewById(R.id.main_textview);
-        //mainTextView.setText("Set in Java2!");
-
-        new DownloadTask().execute("http://www.stevenkaan.com/api/get_city.php");
     }
 
-    private class DownloadTask extends AsyncTask<String, Void, String> {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-        @Override
-        protected String doInBackground(String... params) {
-            //do your request in here so that you don't interrupt the UI thread
-            try {
-                return downloadContent(params[0]);
-            } catch (IOException e) {
-                return "Unable to retrieve data. URL may be invalid.";
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            //Here you are done with the task
-            //Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
-
-            JSONArray arr = null;
-            try {
-                LinearLayout linearLayout = new LinearLayout(MainActivity.this);
-                setContentView(linearLayout);
-                linearLayout.setOrientation(LinearLayout.VERTICAL);
-
-                arr = new JSONObject(result).getJSONArray("cities");
-
-                for(int i = 0; i < arr.length(); i++){
-                    JSONObject obj = arr.getJSONObject(i);
-                    String key = obj.keys().next();
-
-                    JSONArray objArray = obj.getJSONArray(key);
-                    for(int x=0; x < objArray.length(); x++) {
-                        TextView tv = new TextView(MainActivity.this);
-                        tv.setText(key + ": " + objArray.getString(x));
-
-                        linearLayout.addView(tv);
-                    }
-                }
-
-
-
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                Log.d(TAG, "Pressed search");
+                return true;
+            case R.id.action_settings:
+                Log.d(TAG, "Pressed settings");
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
-    private String downloadContent(String myurl) throws IOException {
-        InputStream is = null;
-        int length = 500;
-
-        try {
-            URL url = new URL(myurl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000 /* milliseconds */);
-            conn.setConnectTimeout(15000 /* milliseconds */);
-            conn.setRequestMethod("GET");
-            conn.setDoInput(true);
-            conn.connect();
-            int response = conn.getResponseCode();
-            Log.d(TAG, "The response is: " + response);
-            is = conn.getInputStream();
-
-            // Convert the InputStream into a string
-            String contentAsString = convertInputStreamToString(is, length);
-            return contentAsString;
-        } finally {
-            if (is != null) {
-                is.close();
-            }
-        }
+    public void sendMessage(View view) {
+        // Do something in response to button
+        Intent intent = new Intent(this, DisplayMessageActivity.class);
+        EditText editText = (EditText) findViewById(R.id.edit_message);
+        String message = editText.getText().toString();
+        intent.putExtra(EXTRA_MESSAGE, message);
+        startActivity(intent);
     }
 
-    public String convertInputStreamToString(InputStream stream, int length) throws IOException, UnsupportedEncodingException {
-        Reader reader = null;
-        reader = new InputStreamReader(stream, "UTF-8");
-        char[] buffer = new char[length];
-        reader.read(buffer);
-        return new String(buffer);
-    }
+
 }

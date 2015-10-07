@@ -2,19 +2,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".MainActivity">
-
-    <TextView android:text="@string/app_name" android:layout_width="wrap_content"
+    android:orientation="horizontal" >
+    <EditText android:id="@+id/edit_message"
+        android:layout_weight="1"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:id="@+id/textView" />
-
-    <TextView
-        android:id="@+id/main_textview"
+        android:hint="@string/edit_message" />
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:text="@string/hello_world"/>
-
+        android:text="@string/button_send"
+        android:onClick="sendMessage"/>
 </LinearLayout>

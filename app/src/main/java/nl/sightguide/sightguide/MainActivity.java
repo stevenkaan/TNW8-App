@@ -9,17 +9,27 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.ArrayAdapter;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     public final static String EXTRA_MESSAGE = "com.stevenkaan.sightguide.MESSAGE";
+    private String[] monthsArray = { "Amsterdam", "Groningen", "Leeuwarden", "Steenwijk", "Hoogeveen", "Emmen", "Zwolle", "Utrecht", "Maastricht", "Alkmaar", "Arnhem" };
+
+    private ListView monthsListView;
+    private ArrayAdapter arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        monthsListView = (ListView) findViewById(R.id.listView);
+        arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, monthsArray);
+        monthsListView.setAdapter(arrayAdapter);
     }
 
     @Override
@@ -43,15 +53,4 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
-    public void sendMessage(View view) {
-        // Do something in response to button
-        Intent intent = new Intent(this, DisplayMessageActivity.class);
-        EditText editText = (EditText) findViewById(R.id.edit_message);
-        String message = editText.getText().toString();
-        intent.putExtra(EXTRA_MESSAGE, message);
-        startActivity(intent);
-    }
-
-
 }

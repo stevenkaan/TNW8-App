@@ -28,7 +28,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -70,6 +69,11 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, name, Toast.LENGTH_LONG);
                 try {
                     Log.d(name, MainActivity.this.json.getJSONArray(name).toString());
+                    Intent intent = new Intent(MainActivity.this, SelectLanguage.class);
+                    intent.putExtra("Name", name);
+                    intent.putExtra("LanguageData", MainActivity.this.json.getJSONArray(name).toString());
+                    startActivity(intent);
+
 
                 } catch (JSONException e){
 
@@ -77,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
 

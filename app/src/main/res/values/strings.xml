@@ -11,4 +11,6 @@
     <string name="search_input">Zoek een stad</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_select_language">Kies een taal</string>
+    <string name="test">Test</string>
 </resources>

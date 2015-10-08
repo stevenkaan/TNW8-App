@@ -1,11 +1,15 @@
 package nl.sightguide.sightguide;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -23,25 +27,23 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
 
-    //private API api = new API();
-    private String[] monthsArray = { "Amsterdam", "Groningen", "Leeuwarden", "Steenwijk", "Hoogeveen", "Emmen", "Zwolle", "Utrecht", "Maastricht", "Alkmaar", "Arnhem" };
     ArrayAdapter<String> adapter;
+    JSONObject json;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        new DownloadTask().execute("http://www.stevenkaan.com/api/get_city.php");
+        new DownloadCityTask().execute("http://www.stevenkaan.com/api/get_city.php");
 
-        /*
 
-        */
         EditText inputSearch = (EditText) findViewById(R.id.itemSearch);
         inputSearch.addTextChangedListener(new TextWatcher() {
 
@@ -51,18 +53,38 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {}
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+            }
+
             @Override
-            public void afterTextChanged(Editable arg0) {}
+            public void afterTextChanged(Editable arg0) {
+            }
         });
+
+        final ListView listView = (ListView) findViewById(R.id.view_cities);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Object o = listView.getItemAtPosition(position);
+                String name = o.toString();
+                Toast.makeText(MainActivity.this, name, Toast.LENGTH_LONG);
+                try {
+                    Log.d(name, MainActivity.this.json.getJSONArray(name).toString());
+
+                } catch (JSONException e){
+
+                    //Log.d("JSONException", e.toString());
+                }
+            }
+        });
+
     }
 
 
-    private class DownloadTask extends AsyncTask<String, Void, String> {
+    private class DownloadCityTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
-            //do your request in here so that you don't interrupt the UI thread
             try {
                 return downloadContent(params[0]);
             } catch (IOException e) {
@@ -73,18 +95,17 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             //Here you are done with the task
-            Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
-
-            JSONArray jsonArray = null;
-            JSONObject json_data = null;
+            JSONObject jsonObject;
             try {
-                jsonArray = new JSONObject(result).getJSONArray("cities");
+                JSONObject parent = new JSONObject(result);
+
+                jsonObject = parent.getJSONObject("cities");
+                MainActivity.this.json = jsonObject;
 
                 ArrayList<String> items = new ArrayList<String>();
-                for(int i=0; i < jsonArray.length() ; i++) {
-                    JSONObject obj = jsonArray.getJSONObject(i);
-                    String key = obj.keys().next();
-                    items.add(key);
+                for(Iterator<String> keys = jsonObject.keys(); keys.hasNext(); ){
+                    String name = keys.next();
+                    items.add(name);
                 }
 
                 ListView monthsListView = (ListView) findViewById(R.id.view_cities);
@@ -109,8 +130,6 @@ public class MainActivity extends AppCompatActivity {
             conn.setRequestMethod("GET");
             conn.setDoInput(true);
             conn.connect();
-            int response = conn.getResponseCode();
-            Log.d(TAG, "The response is: " + response);
             is = conn.getInputStream();
 
             // Convert the InputStream into a string

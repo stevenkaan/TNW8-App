@@ -27,6 +27,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="nl.sightguide.sightguide.MainActivity" />
         </activity>
+        <activity
+            android:name=".SelectMarkers"
+            android:label="@string/title_activity_select_markers"
+            android:parentActivityName=".SelectLanguage" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="nl.sightguide.sightguide.SelectLanguage" />
+        </activity>
     </application>
 
 </manifest>

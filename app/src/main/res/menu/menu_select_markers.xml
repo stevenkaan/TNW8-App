@@ -2,6 +2,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="nl.sightguide.sightguide.SelectMarkers">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
+    <item android:id="@+id/action_select_city" android:title="@string/action_select_city"
         android:orderInCategory="100" app:showAsAction="never" />
 </menu>

@@ -14,4 +14,9 @@
     <string name="title_activity_select_language">Kies een taal</string>
     <string name="test">Test</string>
     <string name="title_activity_select_markers">SelectMarkers</string>
+
+
+
+    <string name="action_select_city">Select new city</string>
+    <string name="title_activity_splash">Splash</string>
 </resources>

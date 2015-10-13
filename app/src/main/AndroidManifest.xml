@@ -20,20 +20,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SelectLanguage"
-            android:label="@string/title_activity_select_language"
-            android:parentActivityName=".MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="nl.sightguide.sightguide.MainActivity" />
+            android:name=".SelectMarkers"
+            android:label="@string/title_activity_select_markers" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
-            android:name=".SelectMarkers"
-            android:label="@string/title_activity_select_markers"
-            android:parentActivityName=".SelectLanguage" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="nl.sightguide.sightguide.SelectLanguage" />
+            android:name=".Splash"
+            android:label="@string/title_activity_splash" >
         </activity>
     </application>
 

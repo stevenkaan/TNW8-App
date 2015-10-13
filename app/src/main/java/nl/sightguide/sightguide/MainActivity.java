@@ -1,6 +1,5 @@
 package nl.sightguide.sightguide;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -8,19 +7,16 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.View.OnClickListener;
-import android.view.Gravity;
-import android.view.LayoutInflater;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.PopupWindow;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,25 +29,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
     ArrayAdapter<String> adapter;
     JSONObject json;
-
-    private PopupWindow pwindo;
-    Button btnClosePopup;
-    Button btnCreatePopup;
-
-    private OnClickListener cancel_button_click_listener = new OnClickListener() {
-        public void onClick(View v) {
-            pwindo.dismiss();
-
-        }
-    };
-
-
-
+    JSONObject lang;
+    String cityName;
+    int cityID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         final ListView listView = (ListView) findViewById(R.id.view_cities);
+        registerForContextMenu(listView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -87,49 +74,47 @@ public class MainActivity extends AppCompatActivity {
                 String name = o.toString();
                 try {
                     JSONObject obj = MainActivity.this.json.getJSONObject(name);
-                    Intent intent = new Intent(MainActivity.this, SelectLanguage.class);
-                    intent.putExtra("Name", name);
-                    intent.putExtra("ID", obj.getInt("id"));
-                    intent.putExtra("LanguageData", obj.getString("lang"));
-                    startActivity(intent);
-
-                    //initiatePopupWindow(obj.getJSONObject("lang"));
-                    //Log.d("JSON", obj.getString("lang"));
-                } catch (JSONException e){
+                    MainActivity.this.lang = obj.getJSONObject("lang");
+                    MainActivity.this.cityID = obj.getInt("id");
+                    openContextMenu(view);
+                } catch (JSONException e) {
                     Log.d("JSONException", e.toString());
                 }
-
-
             }
         });
     }
 
-    private void initiatePopupWindow(JSONObject json) {
-        try {
-            LayoutInflater inflater = (LayoutInflater) MainActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View layout = inflater.inflate(R.layout.popop_language, (ViewGroup) findViewById(R.id.popup_element));
-            pwindo = new PopupWindow(layout, 300, 370, true);
-            pwindo.showAtLocation(layout, Gravity.CENTER, 0, 0);
-            pwindo.update(300, 370);
-            ArrayList<String> items = new ArrayList<String>();
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        if (v.getId() == R.id.view_cities) {
+            ListView lv = (ListView) v;
+            cityName = lv.getItemAtPosition(((AdapterContextMenuInfo) menuInfo).position).toString();
+            menu.setHeaderTitle(cityName);
 
-            for(Iterator<String> keys = json.keys(); keys.hasNext(); ){
+            for(Iterator<String> keys = this.lang.keys(); keys.hasNext(); ){
                 String lang = keys.next();
-                items.add(lang);
+                menu.add(lang);
             }
-
-            ListView listViewLang = (ListView) findViewById(R.id.listViewLang);
-            adapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, items);
-            listViewLang.setAdapter(adapter);
-
-
-
-            btnClosePopup = (Button) layout.findViewById(R.id.btn_close_popup);
-            btnClosePopup.setOnClickListener(cancel_button_click_listener);
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        String lang = item.getTitle().toString();
+        try {
+            int langID = this.lang.getInt(lang);
+
+            Intent intent = new Intent(MainActivity.this, SelectMarkers.class);
+            intent.putExtra("cityID", cityID);
+            intent.putExtra("langID", langID);
+            intent.putExtra("cityName", cityName);
+
+            startActivity(intent);
+
+        } catch (JSONException e) {
+            Log.d("JSONException", e.toString());
+        }
+        return true;
     }
 
     private class DownloadCityTask extends AsyncTask<String, Void, String> {

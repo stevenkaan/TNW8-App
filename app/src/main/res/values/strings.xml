@@ -3,20 +3,26 @@
     <string name="title_activity_main">MainActivity</string>
 
     <string name="action_settings">Settings</string>
-    <string name="action_search">Zoeken</string>
+    <string name="action_search">Search</string>
 
 
 
-    <string name="search_button">Steden zoeken</string>
-    <string name="search_input">Zoek een stad</string>
+    <string name="search_button">Search city</string>
+    <string name="search_input">Search for a city</string>
 
     <string name="hello_world">Hello world!</string>
-    <string name="title_activity_select_language">Kies een taal</string>
+    <string name="title_activity_select_language">Select your language</string>
     <string name="test">Test</string>
     <string name="title_activity_select_markers">SelectMarkers</string>
 
-
+    <string name="title_activity_home">Home</string>
+    <string name="menu_item_markers">Tourist attraction</string>
 
     <string name="action_select_city">Select new city</string>
     <string name="title_activity_splash">Splash</string>
+
+    <string name="title_activity_attractions">Tourist attractions</string>
+    <string name="title_activity_attraction_list">...</string>
+
+
 </resources>

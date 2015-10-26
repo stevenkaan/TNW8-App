@@ -44,9 +44,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         new DownloadCityTask().execute("http://www.stevenkaan.com/api/get_city.php");
-
 
         EditText inputSearch = (EditText) findViewById(R.id.itemSearch);
         inputSearch.addTextChangedListener(new TextWatcher() {
@@ -104,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             int langID = this.lang.getInt(lang);
 
-            Intent intent = new Intent(MainActivity.this, SelectMarkers.class);
+            Intent intent = new Intent(MainActivity.this, Home.class);
             intent.putExtra("cityID", cityID);
             intent.putExtra("langID", langID);
             intent.putExtra("cityName", cityName);
@@ -182,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
     public static String convertInputStreamToString(InputStream stream, int length) throws IOException, UnsupportedEncodingException {
         Reader reader = null;
         reader = new InputStreamReader(stream, "UTF-8");
-        char[] buffer = new char[1024];
+        char[] buffer = new char[2048];
         reader.read(buffer);
         return new String(buffer);
     }

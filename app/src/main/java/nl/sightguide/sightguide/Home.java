@@ -42,7 +42,63 @@ public class Home extends AppCompatActivity {
 
         /// to do: insert if statement to see if user already has downloaded a city
         String url = String.format("http://www.stevenkaan.com/api/get_markers.php?city_id=%d&lang_id=%d", 10, langID);
-        new DownloadAllData().execute(url);
+        //new DownloadAllData().execute(url);
+
+        new AsyncTask<String, Integer, String> (){
+
+            @Override
+            protected String doInBackground(String... params) {
+                try {
+                    return MainActivity.run(String.format("http://www.stevenkaan.com/api/get_markers.php?city_id=%d&lang_id=%d", 10, langID));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                try {
+                    JSONObject parent = new JSONObject(result).getJSONObject("city");
+                    String country = parent.getString("country");
+                    double latitude = parent.getDouble("latitude");
+                    double longitude = parent.getDouble("longitude");
+                    String name = parent.getString("name");
+                    int population = parent.getInt("population");
+//                int city_id = parent.getInt("city_id");
+
+                    if(mydb.insertCity(country, latitude, longitude, population)){
+                        Log.d("db", "success");
+                    }else{
+                        Log.d("db", "failed");
+                    }
+
+
+                    JSONArray markers = parent.getJSONArray("markers");
+
+                    List<Map<String, String>> data = new ArrayList<Map<String, String>>();
+                    for(int i = 0; i < markers.length(); i++) {
+                        JSONObject obj = markers.getJSONObject(i);
+
+//                    int type_id = obj.getInt("type_id");
+//                    double markerLat = obj.getDouble("latitude");
+//                    double markerLong = obj.getDouble("longitude");
+                        String markerName = obj.getString("name");
+//                    String markerInfo = obj.getString("information");
+                        String markerInfo = obj.getString("desc");
+
+                        if (mydb.insertMarker(markerName, markerInfo)){
+                            Log.d("db","successfully inserted marker");
+                        }else{
+                            Log.d("db", "failed to insert marker");
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.execute();
 
     }
 
@@ -52,63 +108,6 @@ public class Home extends AppCompatActivity {
         return true;
     }
 
-
-    /// Download all data related to city
-    private class DownloadAllData extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                return MainActivity.downloadContent(params[0]);
-            } catch (IOException e) {
-                return "Unable to retrieve data. URL may be invalid.";
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            //Here you are done with the task
-            try {
-                JSONObject parent = new JSONObject(result).getJSONObject("city");
-                String country = parent.getString("country");
-                double latitude = parent.getDouble("latitude");
-                double longitude = parent.getDouble("longitude");
-                String name = parent.getString("name");
-                int population = parent.getInt("population");
-//                int city_id = parent.getInt("city_id");
-
-                if(mydb.insertCity(country, latitude, longitude, population)){
-                    Log.d("db", "success");
-                }else{
-                    Log.d("db", "failed");
-                }
-
-
-                JSONArray markers = parent.getJSONArray("markers");
-
-                List<Map<String, String>> data = new ArrayList<Map<String, String>>();
-                for(int i = 0; i < markers.length(); i++) {
-                    JSONObject obj = markers.getJSONObject(i);
-
-//                    int type_id = obj.getInt("type_id");
-//                    double markerLat = obj.getDouble("latitude");
-//                    double markerLong = obj.getDouble("longitude");
-                    String markerName = obj.getString("name");
-//                    String markerInfo = obj.getString("information");
-                    String markerInfo = obj.getString("desc");
-
-                    if (mydb.insertMarker(markerName, markerInfo)){
-                        Log.d("db","successfully inserted marker");
-                    }else{
-                        Log.d("db", "failed to insert marker");
-                    }
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
     public void ShowTypes(MenuItem item){
         Intent intent = new Intent(this, Attractions.class);
 

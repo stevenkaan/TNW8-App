@@ -34,7 +34,8 @@ public class AttractionList extends Activity {
         ListView listContent = (ListView)findViewById(R.id.contentlist);
 
         Cursor cursor = mydb.getAttractions();
-        if(cursor.getCount() <= 0) {
+
+        if(cursor.getCount() > 0) {
             if (cursor.moveToFirst()) {
                 do {
                     String[] from = new String[]{mydb.MARKERS_COLUMN_NAME};

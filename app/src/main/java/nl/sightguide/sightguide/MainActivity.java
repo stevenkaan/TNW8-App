@@ -31,6 +31,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import android.widget.Toast;
 
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
 public class MainActivity extends AppCompatActivity {
 
     ArrayAdapter<String> adapter;
@@ -39,12 +43,56 @@ public class MainActivity extends AppCompatActivity {
     String cityName;
     int cityID;
 
+    public static final OkHttpClient client = new OkHttpClient();
+    String s;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        new DownloadCityTask().execute("http://www.stevenkaan.com/api/get_city.php");
+
+
+        new AsyncTask<String, Integer, String> (){
+
+            @Override
+            protected String doInBackground(String... params) {
+                try {
+                    s = run("http://www.stevenkaan.com/api/get_city.php");
+                    return s;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                //Here you are done with the task
+                JSONObject jsonObject;
+                try {
+                    JSONObject parent = new JSONObject(result);
+
+                    jsonObject = parent.getJSONObject("cities");
+                    MainActivity.this.json = jsonObject;
+
+                    ArrayList<String> items = new ArrayList<String>();
+                    for(Iterator<String> keys = jsonObject.keys(); keys.hasNext(); ){
+                        String name = keys.next();
+                        items.add(name);
+                    }
+
+                    ListView monthsListView = (ListView) findViewById(R.id.view_cities);
+                    adapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, items);
+                    monthsListView.setAdapter(adapter);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.execute();
+
+
 
         EditText inputSearch = (EditText) findViewById(R.id.itemSearch);
         inputSearch.addTextChangedListener(new TextWatcher() {
@@ -82,6 +130,17 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
+    public static String run(String url) throws IOException {
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        Response response = client.newCall(request).execute();
+        return response.body().string();
+    }
+
+
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         if (v.getId() == R.id.view_cities) {
@@ -113,75 +172,5 @@ public class MainActivity extends AppCompatActivity {
             Log.d("JSONException", e.toString());
         }
         return true;
-    }
-
-    private class DownloadCityTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                return downloadContent(params[0]);
-            } catch (IOException e) {
-                return "Unable to retrieve data. URL may be invalid.";
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            //Here you are done with the task
-            JSONObject jsonObject;
-            try {
-                JSONObject parent = new JSONObject(result);
-
-                jsonObject = parent.getJSONObject("cities");
-                MainActivity.this.json = jsonObject;
-
-                ArrayList<String> items = new ArrayList<String>();
-                for(Iterator<String> keys = jsonObject.keys(); keys.hasNext(); ){
-                    String name = keys.next();
-                    items.add(name);
-                }
-
-                ListView monthsListView = (ListView) findViewById(R.id.view_cities);
-                adapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, items);
-                monthsListView.setAdapter(adapter);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static String downloadContent(String myurl) throws IOException {
-        InputStream is = null;
-
-        try {
-            URL url = new URL(myurl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000 /* milliseconds */);
-            conn.setConnectTimeout(15000 /* milliseconds */);
-            conn.setRequestMethod("GET");
-            conn.setDoInput(true);
-            conn.connect();
-
-            is = conn.getInputStream();
-            int length = conn.getContentLength();
-
-            // Convert the InputStream into a string
-            String contentAsString = MainActivity.convertInputStreamToString(is, length);
-            return contentAsString;
-        } finally {
-            if (is != null) {
-                is.close();
-            }
-        }
-    }
-
-    public static String convertInputStreamToString(InputStream stream, int length) throws IOException, UnsupportedEncodingException {
-        Reader reader = null;
-        reader = new InputStreamReader(stream, "UTF-8");
-        char[] buffer = new char[2048];
-        reader.read(buffer);
-        return new String(buffer);
     }
 }

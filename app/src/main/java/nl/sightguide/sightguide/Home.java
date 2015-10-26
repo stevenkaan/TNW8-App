@@ -65,9 +65,9 @@ public class Home extends AppCompatActivity {
                     double longitude = parent.getDouble("longitude");
                     String name = parent.getString("name");
                     int population = parent.getInt("population");
-//                int city_id = parent.getInt("city_id");
+                    int city_id = parent.getInt("id");
 
-                    if(mydb.insertCity(country, latitude, longitude, population)){
+                    if(mydb.insertCity(city_id, name, country, latitude, longitude, population)){
                         Log.d("db", "success");
                     }else{
                         Log.d("db", "failed");

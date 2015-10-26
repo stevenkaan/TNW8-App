@@ -42,7 +42,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table cities (id integer primary key autoincrement, country string,latitude double,longitude double, population integer)");
+        //TIJDELIJK SHIT
+        db.execSQL("DROP TABLE IF EXISTS " + CITY_TABLE_NAME);
+
+
+
+        db.execSQL("create table cities (id integer primary key autoincrement, name string, country string,latitude double,longitude double, population integer)");
         db.execSQL("create table cities_info (cities_info_id integer primary key autoincrement, city_id integer,language_id integer,name string, information text)");
         db.execSQL("create table markers (markers_id integer primary key autoincrement, marker_city_id integer,type_id integer, marker_latitude double,marker_longitude double, marker_name string, marker_information text)");
     }
@@ -55,11 +60,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean insertCity(String country, double latitude, double longitude, int population) {
+    public boolean insertCity(int id, String name, String country, double latitude, double longitude, int population) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
+        contentValues.put("id", id);
+        contentValues.put("name", name);
         contentValues.put("country", country);
         contentValues.put("latitude", latitude);
         contentValues.put("longitude", longitude);

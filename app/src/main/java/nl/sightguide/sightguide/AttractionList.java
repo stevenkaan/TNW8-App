@@ -11,7 +11,7 @@ import android.util.Log;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-public class AttractionList extends Activity {
+public class AttractionList extends AppCompatActivity {
 
     private String attractionName;
     private int typeID;
@@ -29,6 +29,7 @@ public class AttractionList extends Activity {
         attractionName = intent.getStringExtra("attractionName");
         typeID = intent.getIntExtra("typeID", 0);
 
+        Log.e("Name", attractionName);
         setTitle(attractionName);
 
         ListView listContent = (ListView)findViewById(R.id.contentlist);

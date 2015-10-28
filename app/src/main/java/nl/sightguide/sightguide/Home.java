@@ -40,10 +40,6 @@ public class Home extends AppCompatActivity {
         cityID = intent.getIntExtra("cityID", 0);
         langID = intent.getIntExtra("langID", 0);
 
-        /// to do: insert if statement to see if user already has downloaded a city
-        String url = String.format("http://www.stevenkaan.com/api/get_markers.php?city_id=%d&lang_id=%d", 10, langID);
-        //new DownloadAllData().execute(url);
-
         new AsyncTask<String, Integer, String> (){
 
             @Override
@@ -67,12 +63,15 @@ public class Home extends AppCompatActivity {
                     int population = parent.getInt("population");
                     int city_id = parent.getInt("id");
 
-                    if(mydb.insertCity(city_id, name, country, latitude, longitude, population)){
-                        Log.d("db", "success");
+                    if(mydb.checkCity(city_id) == false) {
+                        if (mydb.insertCity(city_id, name, country, latitude, longitude, population)) {
+                            Log.e("db", "success");
+                        } else {
+                            Log.e("db", "failed");
+                        }
                     }else{
-                        Log.d("db", "failed");
+                        Log.e("db", "already exists");
                     }
-
 
                     JSONArray markers = parent.getJSONArray("markers");
 
@@ -80,17 +79,19 @@ public class Home extends AppCompatActivity {
                     for(int i = 0; i < markers.length(); i++) {
                         JSONObject obj = markers.getJSONObject(i);
 
-//                    int type_id = obj.getInt("type_id");
-//                    double markerLat = obj.getDouble("latitude");
-//                    double markerLong = obj.getDouble("longitude");
-                        String markerName = obj.getString("name");
-//                    String markerInfo = obj.getString("information");
-                        String markerInfo = obj.getString("desc");
+                        int id = obj.getInt("id");
+                        int type_id = obj.getInt("type_id");
+                        String marker_name = obj.getString("name");
+                        String info = obj.getString("information");
+                        double markerLat = obj.getDouble("latitude");
+                        double markerLong = obj.getDouble("longitude");
 
-                        if (mydb.insertMarker(markerName, markerInfo)){
-                            Log.d("db","successfully inserted marker");
-                        }else{
-                            Log.d("db", "failed to insert marker");
+                        if(mydb.checkMarker(id) == false) {
+                            if (mydb.insertMarker(id, city_id, type_id, marker_name, info, latitude, longitude)) {
+                                Log.d("db", "successfully inserted marker");
+                            } else {
+                                Log.d("db", "failed to insert marker");
+                            }
                         }
                     }
 

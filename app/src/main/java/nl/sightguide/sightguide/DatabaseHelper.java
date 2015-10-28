@@ -32,24 +32,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String MARKERS_COLUMN_TYPE_ID = "type_id";
     public static final String MARKERS_COLUMN_LATITUDE = "marker_latitude";
     public static final String MARKERS_COLUMN_LONGITUDE = "marker_longitude";
-    public static final String MARKERS_COLUMN_NAME = "marker_name";
+    public static final String MARKERS_COLUMN_NAME = "name";
     public static final String MARKERS_COLUMN_INFORMATION = "marker_information";
+
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
         SQLiteDatabase db = this.getWritableDatabase();
+        //onUpgrade(db,1,2);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //TIJDELIJK SHIT
-        db.execSQL("DROP TABLE IF EXISTS " + CITY_TABLE_NAME);
 
+        db.execSQL("create table cities (_id integer primary key autoincrement, name string, country string,latitude double,longitude double, population integer)");
+        db.execSQL("create table markers (_id integer primary key autoincrement, city_id integer, type_id integer, latitude double, longitude double, name string, information text)");
 
+        db.execSQL("create table cities_info (_id integer primary key autoincrement, city_id integer,language_id integer,name string, information text)");
 
-        db.execSQL("create table cities (id integer primary key autoincrement, name string, country string,latitude double,longitude double, population integer)");
-        db.execSQL("create table cities_info (cities_info_id integer primary key autoincrement, city_id integer,language_id integer,name string, information text)");
-        db.execSQL("create table markers (markers_id integer primary key autoincrement, marker_city_id integer,type_id integer, marker_latitude double,marker_longitude double, marker_name string, marker_information text)");
     }
 
     @Override
@@ -65,7 +65,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put("id", id);
+        contentValues.put("_id", id);
         contentValues.put("name", name);
         contentValues.put("country", country);
         contentValues.put("latitude", latitude);
@@ -75,6 +75,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert("cities", null, contentValues);
         return true;
     }
+    public boolean checkCity(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor res = db.rawQuery("select * from cities where _id="+id+"", null);
+
+        if(res.getCount() > 0){
+            return true;
+        }
+        return false;
+    }
+
     public boolean insertCityInfo(int city_id, int language_id, String name, String information) {
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -89,19 +100,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert("cities_info", null, contentValues);
         return true;
     }
-    public boolean insertMarker(String name, String information) {
+    public boolean insertMarker(int id, int city_id, int type_id, String name, String information, double latitude,  double longitude) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-
-        contentValues.put("marker_name", name);
-        contentValues.put("marker_information", information);
-
+        contentValues.put("_id", id);
+        contentValues.put("city_id", city_id);
+        contentValues.put("type_id", type_id);
+        contentValues.put("name", name);
+        contentValues.put("information", information);
+        contentValues.put("latitude", latitude);
+        contentValues.put("longitude", longitude);
 
         db.insert("markers", null, contentValues);
         return true;
     }
+    public boolean checkMarker(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor res = db.rawQuery("select * from markers where _id="+id+"", null);
+
+        if(res.getCount() > 0){
+            return true;
+        }
+        return false;
+    }
+
 //    public boolean insertMarker(int city_id, int type_id, double latitude, double longitude, String name, String information) {
 //
 //        SQLiteDatabase db = this.getWritableDatabase();

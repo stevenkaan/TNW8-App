@@ -57,10 +57,10 @@ public class AttractionList extends ListActivity {
             attractionList.add(attractions[i][1]);
         }
 
+
         this.setListAdapter(new ArrayAdapter<String>(
                 this, R.layout.image_list,
                 R.id.Itemname,attractionList));
-
     }
 
 

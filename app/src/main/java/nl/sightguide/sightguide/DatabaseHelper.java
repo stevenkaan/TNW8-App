@@ -39,17 +39,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String MARKERS_COLUMN_NAME = "marker_name";
     public static final String MARKERS_COLUMN_INFORMATION = "marker_information";
 
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
         SQLiteDatabase db = this.getWritableDatabase();
+        //onUpgrade(db,1,2);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        db.execSQL("create table cities (_id INTEGER PRIMARY KEY AUTOINCREMENT,  country string,latitude double,longitude double, population integer)");
-        db.execSQL("create table cities_info (_id INTEGER PRIMARY KEY AUTOINCREMENT, cities_info_id integer, city_id integer,language_id integer,name string, information text)");
-        db.execSQL("create table markers (_id INTEGER PRIMARY KEY AUTOINCREMENT, marker_id integer, marker_city_id integer,type_id integer, marker_latitude double,marker_longitude double, marker_name string, marker_information text)");
+
+        db.execSQL("create table cities (_id integer primary key autoincrement, name string, country string,latitude double,longitude double, population integer)");
+        db.execSQL("create table markers (_id integer primary key autoincrement, marker_city_id integer, type_id integer, marker_latitude double, longitude double, marker_name string, marker_information text)");
+
+        db.execSQL("create table cities_info (_id integer primary key autoincrement, city_id integer,language_id integer,name string, information text)");
+
 
     }
 
@@ -66,7 +71,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put("id", id);
+        contentValues.put("_id", id);
         contentValues.put("name", name);
         contentValues.put("country", country);
         contentValues.put("latitude", latitude);
@@ -76,6 +81,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert("cities", null, contentValues);
         return true;
     }
+    public boolean checkCity(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor res = db.rawQuery("select * from cities where _id="+id+"", null);
+
+        if(res.getCount() > 0){
+            return true;
+        }
+        return false;
+    }
+
     public boolean insertCityInfo(int city_id, int language_id, String name, String information) {
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -90,18 +106,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert("cities_info", null, contentValues);
         return true;
     }
-    public boolean insertMarker(int id, String name, String information) {
+
+    public boolean insertMarker(int id, int city_id, int type_id, String name, String information, double latitude,  double longitude) {
+
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put("marker_id", id);
-        contentValues.put("marker_name", name);
-        contentValues.put("marker_information", information);
+        contentValues.put("_id", id);
+        contentValues.put("city_id", city_id);
+        contentValues.put("type_id", type_id);
+        contentValues.put("name", name);
+        contentValues.put("information", information);
+        contentValues.put("latitude", latitude);
+        contentValues.put("longitude", longitude);
 
 
         db.insert("markers", null, contentValues);
         return true;
+    }
+
+    public boolean checkMarker(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor res = db.rawQuery("select * from markers where _id="+id+"", null);
+
+        if(res.getCount() > 0){
+            return true;
+        }
+        return false;
     }
 
     public Cursor getCity(int id){

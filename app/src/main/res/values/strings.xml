@@ -23,6 +23,11 @@
 
     <string name="title_activity_attractions">Tourist attractions</string>
     <string name="title_activity_attraction_list">...</string>
+
     <string name="title_activity_attraction">Attraction</string>
+
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_zoeken">Search</string>
+
 
 </resources>

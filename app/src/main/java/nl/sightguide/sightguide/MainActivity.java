@@ -2,6 +2,8 @@ package nl.sightguide.sightguide;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -20,20 +22,9 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
-import android.widget.Toast;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,55 +33,32 @@ public class MainActivity extends AppCompatActivity {
     JSONObject lang;
     String cityName;
     int cityID;
+    private SwipeRefreshLayout swipeView;
 
-    public static final OkHttpClient client = new OkHttpClient();
+
     String s;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        swipeView = (SwipeRefreshLayout) findViewById(R.id.swipe);
 
-
-
-        new AsyncTask<String, Integer, String> (){
-
+        swipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            protected String doInBackground(String... params) {
-                try {
-                    s = run("http://www.stevenkaan.com/api/get_city.php");
-                    return s;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(String result) {
-                //Here you are done with the task
-                JSONObject jsonObject;
-                try {
-                    JSONObject parent = new JSONObject(result);
-
-                    jsonObject = parent.getJSONObject("cities");
-                    MainActivity.this.json = jsonObject;
-
-                    ArrayList<String> items = new ArrayList<String>();
-                    for(Iterator<String> keys = jsonObject.keys(); keys.hasNext(); ){
-                        String name = keys.next();
-                        items.add(name);
+            public void onRefresh() {
+                swipeView.setRefreshing(true);
+                Log.d("Swipe", "Refreshing Number");
+                ( new Handler()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        new DownloadTask().execute();
                     }
-
-                    ListView monthsListView = (ListView) findViewById(R.id.view_cities);
-                    adapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, items);
-                    monthsListView.setAdapter(adapter);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                }, 3000);
             }
-        }.execute();
+        });
+
+        new DownloadTask().execute();
 
 
 
@@ -130,14 +98,47 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private class DownloadTask extends AsyncTask<String, Void, String> {
 
-    public static String run(String url) throws IOException {
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                s = Utils.run(MainActivity.this, "http://www.stevenkaan.com/api/get_city.php");
+                return s;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
 
-        Response response = client.newCall(request).execute();
-        return response.body().string();
+        @Override
+        protected void onPostExecute(String result) {
+            //Here you are done with the task
+            JSONObject jsonObject;
+            try {
+                swipeView.setRefreshing(false);
+                if(result  == null){
+                    return;
+                }
+                JSONObject parent = new JSONObject(result);
+
+                jsonObject = parent.getJSONObject("cities");
+                MainActivity.this.json = jsonObject;
+
+                ArrayList<String> items = new ArrayList<String>();
+                for(Iterator<String> keys = jsonObject.keys(); keys.hasNext(); ){
+                    String name = keys.next();
+                    items.add(name);
+                }
+
+                ListView monthsListView = (ListView) findViewById(R.id.view_cities);
+                adapter = new ArrayAdapter(MainActivity.this, android.R.layout.simple_list_item_1, items);
+                monthsListView.setAdapter(adapter);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 

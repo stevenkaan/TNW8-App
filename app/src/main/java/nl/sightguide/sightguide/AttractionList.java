@@ -21,6 +21,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +30,7 @@ import java.util.Iterator;
 import java.util.Objects;
 
 public class AttractionList extends ListActivity {
+
 
     private String attractionName;
     private int typeID;

@@ -28,7 +28,6 @@ public class Attractions extends ListActivity {
         @Override
         protected void onListItemClick(ListView l, View v, int position, long id) {
             // TODO Auto-generated method stub
-//            super.onListItemClick(l, v, position, id);
             String selection = l.getItemAtPosition(position).toString();
             Intent intent = new Intent(this, AttractionList.class);
             intent.putExtra("typeID", position);

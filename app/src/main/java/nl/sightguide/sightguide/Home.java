@@ -89,15 +89,15 @@ public class Home extends AppCompatActivity {
                 List<Map<String, String>> data = new ArrayList<Map<String, String>>();
                 for(int i = 0; i < markers.length(); i++) {
                     JSONObject obj = markers.getJSONObject(i);
-
+                    int id = obj.getInt("id");
 //                    int type_id = obj.getInt("type_id");
 //                    double markerLat = obj.getDouble("latitude");
 //                    double markerLong = obj.getDouble("longitude");
                     String markerName = obj.getString("name");
 //                    String markerInfo = obj.getString("information");
-                    String markerInfo = obj.getString("desc");
+                    String markerInfo = obj.getString("information");
 
-                    if (mydb.insertMarker(markerName, markerInfo)){
+                    if (mydb.insertMarker(id, markerName, markerInfo)){
                         Log.d("db","successfully inserted marker");
                     }else{
                         Log.d("db", "failed to insert marker");
@@ -110,7 +110,7 @@ public class Home extends AppCompatActivity {
         }
     }
     public void ShowTypes(MenuItem item){
-        Intent intent = new Intent(this, Attractions.class);
+        Intent intent = new Intent(this, AttractionList.class);
 
         startActivity(intent);
     }

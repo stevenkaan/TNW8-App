@@ -6,7 +6,8 @@
     >
 
     <ListView
-        android:id="@+id/contentlist"
+        android:id="@id/android:list"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
+        android:layout_height="match_parent" />
+
 </LinearLayout>

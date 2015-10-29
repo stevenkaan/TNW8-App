@@ -6,6 +6,11 @@ package nl.sightguide.sightguide;
         import android.database.DatabaseUtils;
         import android.database.sqlite.SQLiteDatabase;
         import android.database.sqlite.SQLiteOpenHelper;
+        import android.util.Log;
+
+        import java.lang.reflect.Array;
+        import java.util.ArrayList;
+        import java.util.Arrays;
 
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -26,7 +31,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String CITIESINFO_COLUMN_INFORMATION = "information";
 
     public static final String MARKERS_TABLE_NAME = "markers";
-    public static final String MARKERS_COLUMN_ID = "markers_id";
+    public static final String MARKERS_COLUMN_ID = "marker_id";
     public static final String MARKERS_COLUMN_CITY_ID = "marker_city_id";
     public static final String MARKERS_COLUMN_TYPE_ID = "type_id";
     public static final String MARKERS_COLUMN_LATITUDE = "marker_latitude";
@@ -41,9 +46,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table cities (id integer primary key autoincrement, country string,latitude double,longitude double, population integer)");
-        db.execSQL("create table cities_info (cities_info_id integer primary key autoincrement, city_id integer,language_id integer,name string, information text)");
-        db.execSQL("create table markers (markers_id integer primary key autoincrement, marker_city_id integer,type_id integer, marker_latitude double,marker_longitude double, marker_name string, marker_information text)");
+        db.execSQL("create table cities (_id INTEGER PRIMARY KEY AUTOINCREMENT,  country string,latitude double,longitude double, population integer)");
+        db.execSQL("create table cities_info (_id INTEGER PRIMARY KEY AUTOINCREMENT, cities_info_id integer, city_id integer,language_id integer,name string, information text)");
+        db.execSQL("create table markers (_id INTEGER PRIMARY KEY AUTOINCREMENT, marker_id integer, marker_city_id integer,type_id integer, marker_latitude double,marker_longitude double, marker_name string, marker_information text)");
     }
 
     @Override
@@ -81,12 +86,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert("cities_info", null, contentValues);
         return true;
     }
-    public boolean insertMarker(String name, String information) {
+    public boolean insertMarker(int id, String name, String information) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-
+        contentValues.put("marker_id", id);
         contentValues.put("marker_name", name);
         contentValues.put("marker_information", information);
 
@@ -94,22 +99,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert("markers", null, contentValues);
         return true;
     }
-//    public boolean insertMarker(int city_id, int type_id, double latitude, double longitude, String name, String information) {
-//
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        ContentValues contentValues = new ContentValues();
-//
-//        contentValues.put("city_id", city_id);
-//        contentValues.put("type_id", type_id);
-//        contentValues.put("latitude", latitude);
-//        contentValues.put("longitude", longitude);
-//        contentValues.put("name", name);
-//        contentValues.put("information", information);
-//
-//
-//        db.insert("markers", null, contentValues);
-//        return true;
-//    }
 
     public Cursor getCity(int id){
         SQLiteDatabase db = this.getReadableDatabase();
@@ -122,9 +111,67 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor res = db.rawQuery("select * from cities_info  where id="+id+"", null);
         return res;
     }
-    public Cursor getAttractions(){
+
+    public String[][] getAttractions(){
+
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("select * from markers", null);
+        String[] columns = new String[]{MARKERS_COLUMN_NAME, MARKERS_COLUMN_ID};
+        Cursor c = db.query(MARKERS_TABLE_NAME, columns, null, null, null, null, null);
+        ArrayList<ArrayList<String>> res = new ArrayList<ArrayList<String>>();
+
+        int indexName = c.getColumnIndex(MARKERS_COLUMN_NAME);
+        int indexID = c.getColumnIndex(MARKERS_COLUMN_ID);
+
+        int resCount = c.getCount();
+        Log.e("err","count: "+ resCount);
+        String[][] attrList = new String[resCount][2];
+
+        int i = 0;
+        for( c.moveToFirst(); !c.isAfterLast(); c.moveToNext()){
+            String id =  c.getString(indexID);
+            String name =  c.getString(indexName);
+
+            attrList[i][0] = id;
+            attrList[i][1] = name;
+
+
+            i++;
+
+        }
+
+        return attrList;
+    }
+    public ArrayList getAttraction(String attr){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] columns = new String[]{MARKERS_COLUMN_NAME, MARKERS_COLUMN_INFORMATION,
+                MARKERS_COLUMN_LATITUDE, MARKERS_COLUMN_LONGITUDE, MARKERS_COLUMN_TYPE_ID};
+        String search = MARKERS_COLUMN_NAME + "=?";
+        String[] selectionArgs = new String[1];
+        selectionArgs[0] = attr;
+        Cursor c = db.query(MARKERS_TABLE_NAME, columns, search, new String[]{attr}, null, null, "1");
+        c.moveToFirst();
+        ArrayList<String> res = new ArrayList<String>();
+
+        int indexName = c.getColumnIndex(MARKERS_COLUMN_NAME);
+        int indexInfo = c.getColumnIndex(MARKERS_COLUMN_INFORMATION);
+        int indexLat = c.getColumnIndex(MARKERS_COLUMN_LATITUDE);
+        int indexLong = c.getColumnIndex(MARKERS_COLUMN_LONGITUDE);
+        int indexType = c.getColumnIndex(MARKERS_COLUMN_TYPE_ID);
+
+
+        String name =  c.getString(indexName);
+        String information =  c.getString(indexInfo);
+        String latitude =  c.getString(indexLat);
+        String longitude =  c.getString(indexLong);
+        String type =  c.getString(indexType);
+
+
+        res.add(name);
+        res.add(information);
+        res.add(latitude);
+        res.add(longitude);
+        res.add(type);
+
         return res;
     }
 

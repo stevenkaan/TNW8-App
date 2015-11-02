@@ -1,30 +1,74 @@
 package nl.sightguide.sightguide;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 
 public class Splash extends Activity {
 
-    /** Duration of wait **/
-    private final int SPLASH_DISPLAY_LENGTH = 1000;
+    private final int SPLASH_DISPLAY_LENGTH = 2000;
+    private AlertDialog.Builder builder;
 
-    /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle icicle) {
+        builder = new AlertDialog.Builder(Splash.this);
+
         super.onCreate(icicle);
         setContentView(R.layout.activity_splash);
 
-        /* New Handler to start the Menu-Activity
-         * and close this Splash-Screen after some seconds.*/
+
         new Handler().postDelayed(new Runnable(){
             @Override
             public void run() {
-                /* Create an Intent that will start the Menu-Activity. */
-                Intent mainIntent = new Intent(Splash.this, MainActivity.class);
-                Splash.this.startActivity(mainIntent);
-                Splash.this.finish();
+
+                SharedPreferences settings = getSharedPreferences("SightGuide", 0);
+                int lastCity = settings.getInt("lastCity", 0);
+
+                Intent intent;
+                boolean changeActivity = true;
+
+                if(lastCity > 0){
+                    int lastLang = settings.getInt("lastLang", 0);
+                    String lastName = settings.getString("lastName", null);
+
+                    intent = new Intent(Splash.this, Home.class);
+                    intent.putExtra("cityID", lastCity);
+                    intent.putExtra("langID", lastLang);
+                    intent.putExtra("cityName", lastName);
+
+                    Splash.this.startActivity(intent);
+                    Splash.this.finish();
+                }else{
+                    if(Utils.checkNetwork(Splash.this)){
+                        Splash.this.startActivity(new Intent(Splash.this, MainActivity.class));
+                        Splash.this.finish();
+
+                    }else{
+                        Utils.toast(Splash.this, "Unable to connect to the internet");
+
+                        builder.setMessage("Unable to connect to the internet")
+                        .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                if(Utils.checkNetwork(Splash.this)){
+                                    Splash.this.startActivity(new Intent(Splash.this, MainActivity.class));
+                                }else{
+                                    builder.show();
+                                }
+                            }
+                        }).setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Splash.this.finish();
+                                System.exit(0);
+                            }
+                        });
+                        builder.create().show();
+
+                    }
+                }
             }
         }, SPLASH_DISPLAY_LENGTH);
     }

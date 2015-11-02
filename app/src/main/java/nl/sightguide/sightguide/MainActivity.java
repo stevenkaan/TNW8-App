@@ -1,6 +1,7 @@
 package nl.sightguide.sightguide;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -166,6 +167,14 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("cityID", cityID);
             intent.putExtra("langID", langID);
             intent.putExtra("cityName", cityName);
+
+            SharedPreferences settings = getSharedPreferences("SightGuide", 0);
+            SharedPreferences.Editor editor = settings.edit();
+
+            editor.putInt("lastCity", cityID);
+            editor.putInt("lastLang", langID);
+            editor.putString("lastName", cityName);
+            editor.commit();
 
             startActivity(intent);
 

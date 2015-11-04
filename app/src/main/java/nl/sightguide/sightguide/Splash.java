@@ -27,34 +27,28 @@ public class Splash extends Activity {
 
                 SharedPreferences settings = getSharedPreferences("SightGuide", 0);
                 int lastCity = settings.getInt("lastCity", 0);
-
                 Intent intent;
-                boolean changeActivity = true;
 
                 if(lastCity > 0){
                     int lastLang = settings.getInt("lastLang", 0);
-                    String lastName = settings.getString("lastName", null);
 
                     intent = new Intent(Splash.this, Home.class);
                     intent.putExtra("cityID", lastCity);
                     intent.putExtra("langID", lastLang);
-                    intent.putExtra("cityName", lastName);
 
                     Splash.this.startActivity(intent);
                     Splash.this.finish();
                 }else{
                     if(Utils.checkNetwork(Splash.this)){
-                        Splash.this.startActivity(new Intent(Splash.this, MainActivity.class));
+                        Splash.this.startActivity(new Intent(Splash.this, Launcher.class));
                         Splash.this.finish();
 
                     }else{
-                        Utils.toast(Splash.this, "Unable to connect to the internet");
-
                         builder.setMessage("Unable to connect to the internet")
                         .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 if(Utils.checkNetwork(Splash.this)){
-                                    Splash.this.startActivity(new Intent(Splash.this, MainActivity.class));
+                                    Splash.this.startActivity(new Intent(Splash.this, Launcher.class));
                                 }else{
                                     builder.show();
                                 }
@@ -66,7 +60,6 @@ public class Splash extends Activity {
                             }
                         });
                         builder.create().show();
-
                     }
                 }
             }

@@ -24,28 +24,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_main" >
-        </activity>
-        <activity
-            android:name=".SelectMarkers"
-            android:label="@string/title_activity_select_markers" >
-        </activity>
-        <activity
             android:name=".Home"
             android:label="@string/title_activity_home" >
         </activity>
         <activity
-            android:name=".Attractions"
-            android:label="@string/title_activity_attractions" >
+            android:name=".Launcher"
+            android:label="@string/title_activity_home" >
         </activity>
         <activity
             android:name=".AttractionList"
-            android:label="@string/title_activity_attraction" >
+            android:label="@string/title_activity_attraction"
+            android:parentActivityName=".Home" >
         </activity>
         <activity
             android:name=".Attraction"
-            android:label="@string/title_activity_attraction" >
+            android:label="@string/title_activity_attraction"
+            android:parentActivityName=".AttractionList" >
         </activity>
 
         <!--
@@ -59,7 +53,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
     </application>
 
 </manifest>

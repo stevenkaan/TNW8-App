@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ListView;
 
 
 import java.lang.reflect.Array;
@@ -29,7 +30,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
 
-public class AttractionList extends ListActivity {
+public class AttractionList extends AppCompatActivity {
 
 
     private String attractionName;
@@ -38,20 +39,20 @@ public class AttractionList extends ListActivity {
     private DatabaseHelper mydb ;
     private Attraction attr ;
     private String[][] attractions ;
-    private ArrayList attractionList;
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attraction_list);
-        mydb = new DatabaseHelper(this);
 
+        setTitle("Tourist attractions");
+
+        mydb = new DatabaseHelper(this);
 
         Intent intent = getIntent();
         attractionName = intent.getStringExtra("attractionName");
         typeID = intent.getIntExtra("typeID", 0);
-
-        setTitle("Tourist attractions");
 
         attractions = mydb.getAttractions();
         ArrayList<String> attractionList = new ArrayList<String>();
@@ -60,21 +61,22 @@ public class AttractionList extends ListActivity {
         }
 
 
-        this.setListAdapter(new ArrayAdapter<String>(
+        listView = (ListView) findViewById(android.R.id.list);
+
+        listView.setAdapter(new ArrayAdapter<String>(
                 this, R.layout.image_list,
                 R.id.Itemname,attractionList));
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                String title = listView.getItemAtPosition(position).toString();
+                Intent intent = new Intent(AttractionList.this, Attraction.class);
+                intent.putExtra("name", title);
+
+                startActivity(intent);
+            }
+        });
     }
-
-
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-
-        String title = l.getItemAtPosition(position).toString();
-        Intent intent = new Intent(this, Attraction.class);
-        intent.putExtra("name", title);
-
-        startActivity(intent);
-
-    }
-
 }

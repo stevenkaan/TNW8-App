@@ -17,7 +17,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "app.db";
 
     public static final String CITY_TABLE_NAME = "cities";
-    public static final String CITY_COLUMN_ID = "id";
+    public static final String CITY_COLUMN_ID = "_id";
     public static final String CITY_COLUMN_COUNTRY = "country";
     public static final String CITY_COLUMN_LATITUDE = "latitude";
     public static final String CITY_COLUMN_LONGITUDE = "longitude";
@@ -31,13 +31,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String CITIESINFO_COLUMN_INFORMATION = "information";
 
     public static final String MARKERS_TABLE_NAME = "markers";
-    public static final String MARKERS_COLUMN_ID = "marker_id";
-    public static final String MARKERS_COLUMN_CITY_ID = "marker_city_id";
+    public static final String MARKERS_COLUMN_ID = "_id";
+    public static final String MARKERS_COLUMN_CITY_ID = "city_id";
     public static final String MARKERS_COLUMN_TYPE_ID = "type_id";
-    public static final String MARKERS_COLUMN_LATITUDE = "marker_latitude";
-    public static final String MARKERS_COLUMN_LONGITUDE = "marker_longitude";
-    public static final String MARKERS_COLUMN_NAME = "marker_name";
-    public static final String MARKERS_COLUMN_INFORMATION = "marker_information";
+    public static final String MARKERS_COLUMN_LATITUDE = "latitude";
+    public static final String MARKERS_COLUMN_LONGITUDE = "longitude";
+    public static final String MARKERS_COLUMN_NAME = "name";
+    public static final String MARKERS_COLUMN_INFORMATION = "information";
 
 
     public DatabaseHelper(Context context) {
@@ -50,8 +50,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
 
-        db.execSQL("create table cities (_id integer primary key autoincrement, name string, country string,latitude double,longitude double, population integer)");
-        db.execSQL("create table markers (_id integer primary key autoincrement, marker_city_id integer, type_id integer, marker_latitude double, longitude double, marker_name string, marker_information text)");
+        db.execSQL("create table "+CITY_TABLE_NAME+" ("+CITY_COLUMN_ID+" integer primary key autoincrement, "+CITY_TABLE_NAME+" string, "+CITY_COLUMN_COUNTRY+" string, "+CITY_COLUMN_LATITUDE+" double, "+CITY_COLUMN_LONGITUDE+" double, "+CITY_COLUMN_POPULATION+" integer)");
+        db.execSQL("create table "+MARKERS_TABLE_NAME+" ("+MARKERS_COLUMN_ID+" integer primary key autoincrement, "+MARKERS_COLUMN_CITY_ID+" integer, "+MARKERS_COLUMN_TYPE_ID+" integer, "+MARKERS_COLUMN_LATITUDE+" double, "+MARKERS_COLUMN_LONGITUDE+" double, "+MARKERS_COLUMN_NAME+" string, "+MARKERS_COLUMN_INFORMATION+" text)");
 
         db.execSQL("create table cities_info (_id integer primary key autoincrement, city_id integer,language_id integer,name string, information text)");
 
@@ -66,13 +66,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean insertCity(int id, String name, String country, double latitude, double longitude, int population) {
+    public boolean insertCity(int id, String country, double latitude, double longitude, int population) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
         contentValues.put("_id", id);
-        contentValues.put("name", name);
         contentValues.put("country", country);
         contentValues.put("latitude", latitude);
         contentValues.put("longitude", longitude);
@@ -129,7 +128,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean checkMarker(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor res = db.rawQuery("select * from markers where _id="+id+"", null);
+        Cursor res = db.rawQuery("select * from markers where _id=" + id + "", null);
 
         if(res.getCount() > 0){
             return true;
@@ -137,10 +136,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return false;
     }
 
-    public Cursor getCity(int id){
+    public ArrayList getCity(int id){
+
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("select * from cities where id="+id+"", null);
-        return res;
+        String[] columns = new String[]{CITY_COLUMN_ID, CITY_COLUMN_COUNTRY, CITY_COLUMN_LATITUDE, CITY_COLUMN_LONGITUDE, CITY_COLUMN_POPULATION};
+        String search = CITY_COLUMN_ID + "=?";
+
+        Cursor c = db.query(CITY_TABLE_NAME, columns, search, new String[]{String.format("%d", id)}, null, null, "1");
+        if(c.getCount() > 0) {
+            c.moveToFirst();
+            ArrayList<String> res = new ArrayList<String>();
+
+            int indexId = c.getColumnIndex(CITY_COLUMN_ID);
+            int indexCountry = c.getColumnIndex(CITY_COLUMN_COUNTRY);
+            int indexLatitude = c.getColumnIndex(CITY_COLUMN_LATITUDE);
+            int indexLongitude = c.getColumnIndex(CITY_COLUMN_LONGITUDE);
+            int indexPopulation = c.getColumnIndex(CITY_COLUMN_POPULATION);
+
+            String city_id = c.getString(indexId);
+            String country = c.getString(indexCountry);
+            String latitude = c.getString(indexLatitude);
+            String longitude = c.getString(indexLongitude);
+            String population = c.getString(indexPopulation);
+
+            res.add(city_id);
+            res.add(country);
+            res.add(latitude);
+            res.add(longitude);
+            res.add(population);
+
+            return res;
+        }else{
+            Log.e("getCity", "Not found");
+        }
+
+        return null;
     }
 
     public Cursor getCityInfo(int id){

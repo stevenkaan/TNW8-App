@@ -20,7 +20,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "app.db";
 
     public static final String CITY_TABLE_NAME = "cities";
-    public static final String CITY_COLUMN_ID = "id";
+    public static final String CITY_COLUMN_ID = "_id";
     public static final String CITY_COLUMN_COUNTRY = "country";
     public static final String CITY_COLUMN_LATITUDE = "latitude";
     public static final String CITY_COLUMN_LONGITUDE = "longitude";
@@ -51,14 +51,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
-
-        db.execSQL("create table cities (_id integer primary key autoincrement, name string, country string,latitude double,longitude double, population integer)");
+        db.execSQL("create table "+CITY_TABLE_NAME+" ("+CITY_COLUMN_ID+" integer primary key autoincrement, "+CITY_TABLE_NAME+" string, "+CITY_COLUMN_COUNTRY+" string, "+CITY_COLUMN_LATITUDE+" double, "+CITY_COLUMN_LONGITUDE+" double, "+CITY_COLUMN_POPULATION+" integer)");
         db.execSQL("create table "+MARKERS_TABLE_NAME+" ("+MARKERS_COLUMN_ID+" integer primary key autoincrement, "+MARKERS_COLUMN_CITY_ID+" integer, "+MARKERS_COLUMN_TYPE_ID+" integer, "+MARKERS_COLUMN_LATITUDE+" double, "+MARKERS_COLUMN_LONGITUDE+" double, "+MARKERS_COLUMN_NAME+" string, "+MARKERS_COLUMN_INFORMATION+" text)");
 
         db.execSQL("create table cities_info (_id integer primary key autoincrement, city_id integer,language_id integer,name string, information text)");
-
-
     }
 
     @Override
@@ -69,13 +65,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean insertCity(int id, String name, String country, double latitude, double longitude, int population) {
+    public boolean insertCity(int id, String country, double latitude, double longitude, int population) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
         contentValues.put("_id", id);
-        contentValues.put("name", name);
         contentValues.put("country", country);
         contentValues.put("latitude", latitude);
         contentValues.put("longitude", longitude);
@@ -132,7 +127,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean checkMarker(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor res = db.rawQuery("select * from markers where _id="+id+"", null);
+        Cursor res = db.rawQuery("select * from markers where _id=" + id + "", null);
 
         if(res.getCount() > 0){
             return true;
@@ -140,10 +135,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return false;
     }
 
-    public Cursor getCity(int id){
+    public ArrayList getCity(int id){
+
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res = db.rawQuery("select * from cities where id="+id+"", null);
-        return res;
+        String[] columns = new String[]{CITY_COLUMN_ID, CITY_COLUMN_COUNTRY, CITY_COLUMN_LATITUDE, CITY_COLUMN_LONGITUDE, CITY_COLUMN_POPULATION};
+        String search = CITY_COLUMN_ID + "=?";
+
+        Cursor c = db.query(CITY_TABLE_NAME, columns, search, new String[]{String.format("%d", id)}, null, null, "1");
+        if(c.getCount() > 0) {
+            c.moveToFirst();
+            ArrayList<String> res = new ArrayList<String>();
+
+            int indexId = c.getColumnIndex(CITY_COLUMN_ID);
+            int indexCountry = c.getColumnIndex(CITY_COLUMN_COUNTRY);
+            int indexLatitude = c.getColumnIndex(CITY_COLUMN_LATITUDE);
+            int indexLongitude = c.getColumnIndex(CITY_COLUMN_LONGITUDE);
+            int indexPopulation = c.getColumnIndex(CITY_COLUMN_POPULATION);
+
+            String city_id = c.getString(indexId);
+            String country = c.getString(indexCountry);
+            String latitude = c.getString(indexLatitude);
+            String longitude = c.getString(indexLongitude);
+            String population = c.getString(indexPopulation);
+
+            res.add(city_id);
+            res.add(country);
+            res.add(latitude);
+            res.add(longitude);
+            res.add(population);
+
+            return res;
+        }else{
+            Log.e("getCity", "Not found");
+        }
+
+        return null;
     }
 
     public Cursor getCityInfo(int id){
@@ -153,7 +179,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public String[][] getAttractions(){
-
         SQLiteDatabase db = this.getReadableDatabase();
         String[] columns = new String[]{MARKERS_COLUMN_NAME, MARKERS_COLUMN_ID, MARKERS_COLUMN_INFORMATION};
         Cursor c = db.query(MARKERS_TABLE_NAME, columns, null, null, null, null, null);
@@ -178,48 +203,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             i++;
         }
-
-
         return attrList;
-
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        String[] columns = new String[]{MARKERS_COLUMN_NAME, MARKERS_COLUMN_ID,MARKERS_COLUMN_INFORMATION};
-//        Cursor c = db.query(MARKERS_TABLE_NAME, columns, null, null, null, null, null);
-//
-//        int indexName = c.getColumnIndex(MARKERS_COLUMN_NAME);
-//        int indexID = c.getColumnIndex(MARKERS_COLUMN_ID);
-//        int indexInfo = c.getColumnIndex(MARKERS_COLUMN_INFORMATION);
-//
-//        int resCount = c.getCount();
-//        String[][] attrList = new String[resCount][3];
-//
-//        List<Map> list = new ArrayList<Map>();
-//
-//
-//        int i = 0;
-//        for( c.moveToFirst(); !c.isAfterLast(); c.moveToNext()){
-//            String id =  c.getString(indexID);
-//            String name =  c.getString(indexName);
-//            String info =  c.getString(indexInfo);
-//
-//            attrList[i][0] = id;
-//            attrList[i][1] = name;
-//            attrList[i][2] = info;
-//
-//            Map map = new HashMap();
-//            map.put("id", id);
-//            map.put("name", name);
-//            map.put("info", info);
-//            list.add(map);
-//
-//            i++;
-//
-//        }
-//
-//        return list;
-
-
-
     }
     public ArrayList getAttraction(String attr){
         SQLiteDatabase db = this.getReadableDatabase();

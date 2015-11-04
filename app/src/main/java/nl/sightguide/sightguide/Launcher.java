@@ -1,6 +1,7 @@
 package nl.sightguide.sightguide;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -12,12 +13,12 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,8 +34,9 @@ public class Launcher extends AppCompatActivity {
     int cityID;
     private SwipeRefreshLayout swipeView;
 
-
-    String s;
+    private DatabaseHelper mydb ;
+    private static SharedPreferences settings;
+    private static SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,21 +44,27 @@ public class Launcher extends AppCompatActivity {
         setContentView(R.layout.activity_launcher);
         swipeView = (SwipeRefreshLayout) findViewById(R.id.swipe);
 
+        settings = getSharedPreferences("SightGuide", 0);
+        editor = settings.edit();
+
+        mydb = new DatabaseHelper(this);
+
         swipeView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 swipeView.setRefreshing(true);
-                Log.d("Swipe", "Refreshing Number");
+
                 (new Handler()).postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        new DownloadTask().execute();
+                        new DownloadCityTask().execute();
                     }
                 }, 3000);
             }
         });
 
-        new DownloadTask().execute();
+        new DownloadCityTask().execute();
+
 
         final ListView listView = (ListView) findViewById(R.id.view_cities);
 
@@ -96,13 +104,87 @@ public class Launcher extends AppCompatActivity {
         });
     }
 
-    private class DownloadTask extends AsyncTask<String, Void, String> {
+    private class DownloadMarkers extends  AsyncTask<String, Void, String> {
+        private String city_id;
+        private String lang_id;
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                this.city_id = "20";
+
+                if(params[0].equals("10")) {
+                    this.city_id = "10";
+                }
+                this.lang_id = params[1];
+                String url = String.format("http://www.stevenkaan.com/api/get_markers.php?city_id=%s&lang_id=%s", this.city_id, this.lang_id);
+
+                return Utils.run(Launcher.this, url);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            try {
+                JSONObject parent = new JSONObject(result).getJSONObject("city");
+                String country = parent.getString("country");
+                double latitude = parent.getDouble("latitude");
+                double longitude = parent.getDouble("longitude");
+                int population = parent.getInt("population");
+                int city_id = parent.getInt("id");
+
+                if(mydb.checkCity(Integer.parseInt(this.city_id)) == false) {
+                    if (mydb.insertCity(Integer.parseInt(this.city_id), country, latitude, longitude, population)) {
+                        Log.e("db", "success");
+                    } else {
+                        Log.e("db", "failed");
+                    }
+                }else{
+                    Log.e("db", "already exists");
+                }
+
+                JSONArray markers = parent.getJSONArray("markers");
+                for(int i = 0; i < markers.length(); i++) {
+                    JSONObject obj = markers.getJSONObject(i);
+
+                    int id = obj.getInt("id");
+                    int type_id = obj.getInt("type_id");
+                    String marker_name = obj.getString("name");
+                    String info = obj.getString("information");
+                    double markerLat = obj.getDouble("latitude");
+                    double markerLong = obj.getDouble("longitude");
+
+                    if(mydb.checkMarker(id) == false) {
+                        if (mydb.insertMarker(id, city_id, type_id, marker_name, info, markerLat, markerLong)) {
+                            Log.d("db", "successfully inserted marker");
+                        } else {
+                            Log.d("db", "failed to insert marker");
+                        }
+                    }else{
+                        Log.e("db", "marker already exist");
+                    }
+                }
+                editor.putInt("lastCity", Integer.parseInt(this.city_id));
+                editor.putInt("lastLang", Integer.parseInt(this.lang_id));
+                editor.commit();
+
+
+                Intent intent = new Intent(Launcher.this, Home.class);
+                startActivity(intent);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    private class DownloadCityTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
             try {
-                s = Utils.run(Launcher.this, "http://www.stevenkaan.com/api/get_city.php");
-                return s;
+                return Utils.run(Launcher.this, "http://www.stevenkaan.com/api/get_city.php");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -158,15 +240,9 @@ public class Launcher extends AppCompatActivity {
     public boolean onContextItemSelected(MenuItem item) {
         String lang = item.getTitle().toString();
         try {
-            int langID = this.lang.getInt(lang);
+            String langID = this.lang.getString(lang);
 
-            Intent intent = new Intent(Launcher.this, Home.class);
-            intent.putExtra("cityID", cityID);
-            intent.putExtra("langID", langID);
-            intent.putExtra("cityName", cityName);
-
-            startActivity(intent);
-
+            new DownloadMarkers().execute(String.format("%d", cityID), langID);
         } catch (JSONException e) {
             Log.d("JSONException", e.toString());
         }

@@ -1,42 +1,16 @@
 package nl.sightguide.sightguide;
 
 
-import android.app.Activity;
-import android.app.ListActivity;
-import android.content.ContentUris;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ListView;
-
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 public class AttractionList extends AppCompatActivity {
-
 
     private String attractionName;
     private int typeID;
@@ -59,8 +33,8 @@ public class AttractionList extends AppCompatActivity {
         typeID = intent.getIntExtra("typeID", 0);
 
         String[][] attractions = mydb.getAttractions();
-
         AttractionAdapter adapter = new AttractionAdapter(this, attractions);
+
 
         listView = (ListView) findViewById(android.R.id.list);
         listView.setAdapter(adapter);

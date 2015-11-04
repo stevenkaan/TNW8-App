@@ -1,4 +1,6 @@
 <resources>
+    <string name="package_name">nl.sightguide.sightguide</string>
+
     <string name="app_name">Sight Guide</string>
     <string name="title_activity_main">MainActivity</string>
 
@@ -30,4 +32,12 @@
     <string name="title_activity_zoeken">Search</string>
 
 
+
+    <string-array name="planets_array">
+        <item>Mercury</item>
+        <item>Venus</item>
+        <item>Earth</item>
+        <item>Mars</item>
+    </string-array>
+    <string name="title_activity_empty">Empty</string>
 </resources>

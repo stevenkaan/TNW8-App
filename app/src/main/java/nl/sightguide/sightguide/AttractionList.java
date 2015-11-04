@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
@@ -57,20 +58,12 @@ public class AttractionList extends AppCompatActivity {
         attractionName = intent.getStringExtra("attractionName");
         typeID = intent.getIntExtra("typeID", 0);
 
-        List<Map> attractions = mydb.getAttractions();
-        Log.e("values","dit dus:"+attractions);
+        String[][] attractions = mydb.getAttractions();
+
+        AttractionAdapter adapter = new AttractionAdapter(this, attractions);
 
         listView = (ListView) findViewById(android.R.id.list);
-
-        for(int k = 0; k < attractions.size(); k++){
-            Map map = attractions.get(k);
-            SimpleAdapter adapter = new SimpleAdapter(this, map,
-                    R.layout.image_list, new String[] { "name", "info"},
-                    new int[] { R.id.Itemname, R.id.ItemInfo });
-            listView.setAdapter(adapter);
-        }
-//        https://shenhengbin.wordpress.com/2012/03/17/listview-simpleadapter/
-
+        listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

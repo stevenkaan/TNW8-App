@@ -1,16 +1,19 @@
 package nl.sightguide.sightguide;
 
-        import android.content.ContentValues;
-        import android.content.Context;
-        import android.database.Cursor;
-        import android.database.DatabaseUtils;
-        import android.database.sqlite.SQLiteDatabase;
-        import android.database.sqlite.SQLiteOpenHelper;
-        import android.util.Log;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
-        import java.lang.reflect.Array;
-        import java.util.ArrayList;
-        import java.util.Arrays;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -31,13 +34,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String CITIESINFO_COLUMN_INFORMATION = "information";
 
     public static final String MARKERS_TABLE_NAME = "markers";
-    public static final String MARKERS_COLUMN_ID = "marker_id";
-    public static final String MARKERS_COLUMN_CITY_ID = "marker_city_id";
+    public static final String MARKERS_COLUMN_ID = "_id";
+    public static final String MARKERS_COLUMN_CITY_ID = "city_id";
     public static final String MARKERS_COLUMN_TYPE_ID = "type_id";
-    public static final String MARKERS_COLUMN_LATITUDE = "marker_latitude";
-    public static final String MARKERS_COLUMN_LONGITUDE = "marker_longitude";
-    public static final String MARKERS_COLUMN_NAME = "marker_name";
-    public static final String MARKERS_COLUMN_INFORMATION = "marker_information";
+    public static final String MARKERS_COLUMN_LATITUDE = "latitude";
+    public static final String MARKERS_COLUMN_LONGITUDE = "longitude";
+    public static final String MARKERS_COLUMN_NAME = "name";
+    public static final String MARKERS_COLUMN_INFORMATION = "information";
 
 
     public DatabaseHelper(Context context) {
@@ -51,7 +54,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
         db.execSQL("create table cities (_id integer primary key autoincrement, name string, country string,latitude double,longitude double, population integer)");
-        db.execSQL("create table markers (_id integer primary key autoincrement, marker_city_id integer, type_id integer, marker_latitude double, longitude double, marker_name string, marker_information text)");
+        db.execSQL("create table "+MARKERS_TABLE_NAME+" ("+MARKERS_COLUMN_ID+" integer primary key autoincrement, "+MARKERS_COLUMN_CITY_ID+" integer, "+MARKERS_COLUMN_TYPE_ID+" integer, "+MARKERS_COLUMN_LATITUDE+" double, "+MARKERS_COLUMN_LONGITUDE+" double, "+MARKERS_COLUMN_NAME+" string, "+MARKERS_COLUMN_INFORMATION+" text)");
 
         db.execSQL("create table cities_info (_id integer primary key autoincrement, city_id integer,language_id integer,name string, information text)");
 
@@ -149,34 +152,73 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return res;
     }
 
-    public String[][] getAttractions(){
+    public List<Map> getAttractions(){
+
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        String[] columns = new String[]{MARKERS_COLUMN_NAME, MARKERS_COLUMN_ID};
+//        Cursor c = db.query(MARKERS_TABLE_NAME, columns, null, null, null, null, null);
+//        ArrayList<ArrayList<String>> res = new ArrayList<ArrayList<String>>();
+//
+//        int indexName = c.getColumnIndex(MARKERS_COLUMN_NAME);
+//        int indexID = c.getColumnIndex(MARKERS_COLUMN_ID);
+//
+//        int resCount = c.getCount();
+//        Log.e("err","count: "+ resCount);
+//        String[][] attrList = new String[resCount][2];
+//
+//        int i = 0;
+//        for( c.moveToFirst(); !c.isAfterLast(); c.moveToNext()){
+//            String id =  c.getString(indexID);
+//            String name =  c.getString(indexName);
+//
+//            attrList[i][0] = id;
+//            attrList[i][1] = name;
+//
+//
+//            i++;
+//
+//        }
+//
+//        return attrList;
 
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] columns = new String[]{MARKERS_COLUMN_NAME, MARKERS_COLUMN_ID};
+        String[] columns = new String[]{MARKERS_COLUMN_NAME, MARKERS_COLUMN_ID,MARKERS_COLUMN_INFORMATION};
         Cursor c = db.query(MARKERS_TABLE_NAME, columns, null, null, null, null, null);
-        ArrayList<ArrayList<String>> res = new ArrayList<ArrayList<String>>();
 
         int indexName = c.getColumnIndex(MARKERS_COLUMN_NAME);
         int indexID = c.getColumnIndex(MARKERS_COLUMN_ID);
+        int indexInfo = c.getColumnIndex(MARKERS_COLUMN_INFORMATION);
 
         int resCount = c.getCount();
-        Log.e("err","count: "+ resCount);
-        String[][] attrList = new String[resCount][2];
+        String[][] attrList = new String[resCount][3];
+
+        List<Map> list = new ArrayList<Map>();
+
 
         int i = 0;
         for( c.moveToFirst(); !c.isAfterLast(); c.moveToNext()){
             String id =  c.getString(indexID);
             String name =  c.getString(indexName);
+            String info =  c.getString(indexInfo);
 
             attrList[i][0] = id;
             attrList[i][1] = name;
+            attrList[i][2] = info;
 
+            Map map = new HashMap();
+            map.put("id", id);
+            map.put("name", name);
+            map.put("info", info);
+            list.add(map);
 
             i++;
 
         }
 
-        return attrList;
+        return list;
+
+
+
     }
     public ArrayList getAttraction(String attr){
         SQLiteDatabase db = this.getReadableDatabase();

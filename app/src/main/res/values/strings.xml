@@ -8,7 +8,7 @@
 
 
     <string name="search_button">Search city</string>
-    <string name="search_input">Search for a city</string>
+    <string name="search_input">Search city</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_select_language">Select your language</string>

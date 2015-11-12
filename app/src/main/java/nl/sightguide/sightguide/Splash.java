@@ -29,7 +29,7 @@ public class Splash extends Activity {
                 Intent intent;
 
                 if(lastCity > 0){
-                    int lastLang = settings.getInt("lastLang", 0);
+                    String lastLang = settings.getString("lastLang", null);
 
                     intent = new Intent(Splash.this, Home.class);
                     intent.putExtra("cityID", lastCity);

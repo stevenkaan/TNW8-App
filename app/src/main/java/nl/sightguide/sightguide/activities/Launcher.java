@@ -1,8 +1,10 @@
-package nl.sightguide.sightguide;
+package nl.sightguide.sightguide.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -18,12 +20,24 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.Volley;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import nl.sightguide.sightguide.helpers.DatabaseHelper;
+import nl.sightguide.sightguide.R;
+import nl.sightguide.sightguide.Utils;
+import nl.sightguide.sightguide.helpers.DownloadHelper;
 
 public class Launcher extends AppCompatActivity {
 
@@ -104,9 +118,10 @@ public class Launcher extends AppCompatActivity {
         });
     }
 
-    private class DownloadMarkers extends  AsyncTask<String, Void, String> {
+    private class DownloadMarkers extends AsyncTask<String, Void, String> {
         private String city_id;
-        private String lang_id;
+        private String lang;
+        private RequestQueue rq;
         @Override
         protected String doInBackground(String... params) {
             try {
@@ -115,8 +130,10 @@ public class Launcher extends AppCompatActivity {
                 if(params[0].equals("10")) {
                     this.city_id = "10";
                 }
-                this.lang_id = params[1];
-                String url = String.format("http://www.stevenkaan.com/api/get_markers.php?city_id=%s&lang_id=%s", this.city_id, this.lang_id);
+                this.lang = params[1];
+
+                String url = String.format("http://www.stevenkaan.com/api/get_markers.php?city_id=%s&lang=%s", this.city_id, this.lang);
+                Log.e("URL", url);
 
                 return Utils.run(Launcher.this, url);
             } catch (Exception e) {
@@ -149,6 +166,13 @@ public class Launcher extends AppCompatActivity {
                 for(int i = 0; i < markers.length(); i++) {
                     JSONObject obj = markers.getJSONObject(i);
 
+
+                    String imgUrl = obj.getString("image");
+                    Log.e("IMG", imgUrl);
+                    String imgName = imgUrl.substring(imgUrl.lastIndexOf('/') + 1);
+
+                    new DownloadHelper(Launcher.this, imgName, imgUrl, "marker");
+
                     int id = obj.getInt("id");
                     int type_id = obj.getInt("type_id");
                     String marker_name = obj.getString("name");
@@ -157,7 +181,7 @@ public class Launcher extends AppCompatActivity {
                     double markerLong = obj.getDouble("longitude");
 
                     if(mydb.checkMarker(id) == false) {
-                        if (mydb.insertMarker(id, city_id, type_id, marker_name, info, markerLat, markerLong)) {
+                        if (mydb.insertMarker(id, city_id, type_id, marker_name, info, markerLat, markerLong, imgName)) {
                             Log.d("db", "successfully inserted marker");
                         } else {
                             Log.d("db", "failed to insert marker");
@@ -167,7 +191,7 @@ public class Launcher extends AppCompatActivity {
                     }
                 }
                 editor.putInt("lastCity", Integer.parseInt(this.city_id));
-                editor.putInt("lastLang", Integer.parseInt(this.lang_id));
+                editor.putString("lastLang", this.lang);
                 editor.commit();
 
 
@@ -178,6 +202,8 @@ public class Launcher extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+
+
     }
     private class DownloadCityTask extends AsyncTask<String, Void, String> {
 
@@ -239,13 +265,7 @@ public class Launcher extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         String lang = item.getTitle().toString();
-        try {
-            String langID = this.lang.getString(lang);
-
-            new DownloadMarkers().execute(String.format("%d", cityID), langID);
-        } catch (JSONException e) {
-            Log.d("JSONException", e.toString());
-        }
+        new DownloadMarkers().execute(String.format("%d", cityID), lang);
         return true;
     }
 }

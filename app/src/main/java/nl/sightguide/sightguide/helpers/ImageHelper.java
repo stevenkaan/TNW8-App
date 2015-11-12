@@ -1,4 +1,4 @@
-package nl.sightguide.sightguide;
+package nl.sightguide.sightguide.helpers;
 
 
 import android.graphics.Bitmap;

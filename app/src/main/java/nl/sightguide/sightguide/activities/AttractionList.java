@@ -1,4 +1,4 @@
-package nl.sightguide.sightguide;
+package nl.sightguide.sightguide.activities;
 
 
 import android.content.Intent;
@@ -9,6 +9,10 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import nl.sightguide.sightguide.helpers.AttractionHelper;
+import nl.sightguide.sightguide.helpers.DatabaseHelper;
+import nl.sightguide.sightguide.R;
 
 public class AttractionList extends AppCompatActivity {
 
@@ -32,9 +36,7 @@ public class AttractionList extends AppCompatActivity {
         attractionName = intent.getStringExtra("attractionName");
         typeID = intent.getIntExtra("typeID", 0);
 
-        String[][] attractions = mydb.getAttractions();
-        AttractionAdapter adapter = new AttractionAdapter(this, attractions);
-
+        AttractionHelper adapter = new AttractionHelper(this, mydb.getAttractions());
 
         listView = (ListView) findViewById(android.R.id.list);
         listView.setAdapter(adapter);

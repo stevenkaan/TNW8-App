@@ -1,11 +1,10 @@
-package nl.sightguide.sightguide;
+package nl.sightguide.sightguide.activities;
 
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -20,6 +19,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+
+import nl.sightguide.sightguide.helpers.DatabaseHelper;
+import nl.sightguide.sightguide.R;
 
 
 public class Home extends AppCompatActivity implements OnMapReadyCallback {

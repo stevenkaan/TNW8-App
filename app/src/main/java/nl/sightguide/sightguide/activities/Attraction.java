@@ -1,13 +1,15 @@
-package nl.sightguide.sightguide;
+package nl.sightguide.sightguide.activities;
 
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
+import nl.sightguide.sightguide.helpers.DatabaseHelper;
+import nl.sightguide.sightguide.R;
 
 public class Attraction extends AppCompatActivity {
 

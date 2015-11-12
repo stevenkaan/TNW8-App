@@ -1,4 +1,4 @@
-package nl.sightguide.sightguide;
+package nl.sightguide.sightguide.activities;
 
 
 import android.content.Intent;
@@ -14,7 +14,11 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import nl.sightguide.sightguide.helpers.DatabaseHelper;
+import nl.sightguide.sightguide.R;
+
 public class Attraction extends AppCompatActivity implements View.OnClickListener {
+
 
     private String attractionName;
     private int cityID;
@@ -35,23 +39,23 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
         seekBar.setMax(audio.getDuration());
         toggle = (ImageView) findViewById(R.id.toggle);
         toggle.setOnClickListener(this);
-//
-//        mydb = new DatabaseHelper(this);
-//
-//        Intent intent = getIntent();
-//
-//        attractionName = intent.getStringExtra("name");
-//        setTitle(attractionName);
-//
-//        TextView attrInfoText = new TextView(this);
-//        attrInfoText = (TextView)findViewById(R.id.attrInfo);
-//
-//
-//        ArrayList values = mydb.getAttraction(attractionName);
-//        Object attrName = values.get(0);
-//        Object attrInfo = values.get(1);
-//
-//        attrInfoText.setText(attrInfo.toString());
+
+        mydb = new DatabaseHelper(this);
+
+        Intent intent = getIntent();
+
+        attractionName = intent.getStringExtra("name");
+        setTitle(attractionName);
+
+        TextView attrInfoText = new TextView(this);
+        attrInfoText = (TextView)findViewById(R.id.attrInfo);
+
+
+        ArrayList values = mydb.getAttraction(attractionName);
+        Object attrName = values.get(0);
+        Object attrInfo = values.get(1);
+
+        attrInfoText.setText(attrInfo.toString());
 
         updateSeekBar = new Thread() {
             @Override

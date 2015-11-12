@@ -1,4 +1,4 @@
-package nl.sightguide.sightguide;
+package nl.sightguide.sightguide.helpers;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -41,6 +41,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String MARKERS_COLUMN_LONGITUDE = "longitude";
     public static final String MARKERS_COLUMN_NAME = "name";
     public static final String MARKERS_COLUMN_INFORMATION = "information";
+    public static final String MARKERS_COLUMN_IMAGE = "image";
 
 
     public DatabaseHelper(Context context) {
@@ -52,7 +53,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table "+CITY_TABLE_NAME+" ("+CITY_COLUMN_ID+" integer primary key autoincrement, "+CITY_TABLE_NAME+" string, "+CITY_COLUMN_COUNTRY+" string, "+CITY_COLUMN_LATITUDE+" double, "+CITY_COLUMN_LONGITUDE+" double, "+CITY_COLUMN_POPULATION+" integer)");
-        db.execSQL("create table "+MARKERS_TABLE_NAME+" ("+MARKERS_COLUMN_ID+" integer primary key autoincrement, "+MARKERS_COLUMN_CITY_ID+" integer, "+MARKERS_COLUMN_TYPE_ID+" integer, "+MARKERS_COLUMN_LATITUDE+" double, "+MARKERS_COLUMN_LONGITUDE+" double, "+MARKERS_COLUMN_NAME+" string, "+MARKERS_COLUMN_INFORMATION+" text)");
+        db.execSQL("create table "+MARKERS_TABLE_NAME+" ("+MARKERS_COLUMN_ID+" integer primary key autoincrement, "+MARKERS_COLUMN_CITY_ID+" integer, "+MARKERS_COLUMN_TYPE_ID+" integer, "+MARKERS_COLUMN_LATITUDE+" double, "+MARKERS_COLUMN_LONGITUDE+" double, "+MARKERS_COLUMN_NAME+" string, "+MARKERS_COLUMN_INFORMATION+" text, "+MARKERS_COLUMN_IMAGE+" string)");
 
         db.execSQL("create table cities_info (_id integer primary key autoincrement, city_id integer,language_id integer,name string, information text)");
     }
@@ -105,7 +106,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public boolean insertMarker(int id, int city_id, int type_id, String name, String information, double latitude,  double longitude) {
+    public boolean insertMarker(int id, int city_id, int type_id, String name, String information, double latitude,  double longitude, String imgName) {
 
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -118,6 +119,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("information", information);
         contentValues.put("latitude", latitude);
         contentValues.put("longitude", longitude);
+        contentValues.put("image", imgName);
+        Log.e("marker", imgName);
 
 
         db.insert("markers", null, contentValues);
@@ -180,15 +183,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public String[][] getAttractions(){
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] columns = new String[]{MARKERS_COLUMN_NAME, MARKERS_COLUMN_ID, MARKERS_COLUMN_INFORMATION};
+        String[] columns = new String[]{MARKERS_COLUMN_NAME, MARKERS_COLUMN_ID, MARKERS_COLUMN_INFORMATION,MARKERS_COLUMN_IMAGE};
         Cursor c = db.query(MARKERS_TABLE_NAME, columns, null, null, null, null, null);
 
         int indexName = c.getColumnIndex(MARKERS_COLUMN_NAME);
         int indexID = c.getColumnIndex(MARKERS_COLUMN_ID);
         int indexInfo = c.getColumnIndex(MARKERS_COLUMN_INFORMATION);
+        int indexImage = c.getColumnIndex(MARKERS_COLUMN_IMAGE);
 
         int resCount = c.getCount();
-        String[][] attrList = new String[resCount][3];
+        String[][] attrList = new String[resCount][4];
 
         int i = 0;
         for( c.moveToFirst(); !c.isAfterLast(); c.moveToNext()){
@@ -196,10 +200,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             String id =  c.getString(indexID);
             String name =  c.getString(indexName);
             String info = c.getString(indexInfo);
+            String image = c.getString(indexImage);
 
             attrList[i][0] = id;
             attrList[i][1] = name;
             attrList[i][2] = info;
+            attrList[i][3] = image;
 
             i++;
         }

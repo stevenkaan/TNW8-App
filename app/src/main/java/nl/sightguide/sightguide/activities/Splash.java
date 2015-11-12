@@ -1,4 +1,4 @@
-package nl.sightguide.sightguide;
+package nl.sightguide.sightguide.activities;
 
 import android.app.Activity;
 import android.content.DialogInterface;
@@ -7,6 +7,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
+
+import nl.sightguide.sightguide.R;
+import nl.sightguide.sightguide.Utils;
 
 public class Splash extends Activity {
 

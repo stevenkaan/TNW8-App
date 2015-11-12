@@ -214,7 +214,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ArrayList getAttraction(String attr){
         SQLiteDatabase db = this.getReadableDatabase();
         String[] columns = new String[]{MARKERS_COLUMN_NAME, MARKERS_COLUMN_INFORMATION,
-                MARKERS_COLUMN_LATITUDE, MARKERS_COLUMN_LONGITUDE, MARKERS_COLUMN_TYPE_ID};
+                MARKERS_COLUMN_LATITUDE, MARKERS_COLUMN_LONGITUDE, MARKERS_COLUMN_TYPE_ID, MARKERS_COLUMN_IMAGE};
         String search = MARKERS_COLUMN_NAME + "=?";
         String[] selectionArgs = new String[1];
         selectionArgs[0] = attr;
@@ -227,6 +227,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         int indexLat = c.getColumnIndex(MARKERS_COLUMN_LATITUDE);
         int indexLong = c.getColumnIndex(MARKERS_COLUMN_LONGITUDE);
         int indexType = c.getColumnIndex(MARKERS_COLUMN_TYPE_ID);
+        int indexImage = c.getColumnIndex(MARKERS_COLUMN_IMAGE);
 
 
         String name =  c.getString(indexName);
@@ -234,6 +235,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String latitude =  c.getString(indexLat);
         String longitude =  c.getString(indexLong);
         String type =  c.getString(indexType);
+        String image = c.getString(indexImage);
 
 
         res.add(name);
@@ -241,6 +243,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         res.add(latitude);
         res.add(longitude);
         res.add(type);
+        res.add(image);
 
         return res;
     }

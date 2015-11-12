@@ -2,8 +2,11 @@ package nl.sightguide.sightguide.activities;
 
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -47,14 +50,22 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
         attractionName = intent.getStringExtra("name");
         setTitle(attractionName);
 
-        TextView attrInfoText = new TextView(this);
-        attrInfoText = (TextView)findViewById(R.id.attrInfo);
-
+        TextView attrInfoText = (TextView)findViewById(R.id.attrInfo);
 
         ArrayList values = mydb.getAttraction(attractionName);
         Object attrName = values.get(0);
         Object attrInfo = values.get(1);
 
+        String imgName = values.get(5).toString();
+        String photoPath = Environment.getExternalStorageDirectory()+"/sightguide_images/"+imgName;
+        Log.e("Path", photoPath);
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = 8;
+        Bitmap bitmap = BitmapFactory.decodeFile(photoPath, options);
+        ImageView imageView = (ImageView) findViewById(R.id.mainImage);
+
+        imageView.setImageBitmap(bitmap);
         attrInfoText.setText(attrInfo.toString());
 
         updateSeekBar = new Thread() {

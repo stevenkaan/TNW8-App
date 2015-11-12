@@ -25,6 +25,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+
 public class Launcher extends AppCompatActivity {
 
     ArrayAdapter<String> adapter;
@@ -106,7 +107,7 @@ public class Launcher extends AppCompatActivity {
 
     private class DownloadMarkers extends  AsyncTask<String, Void, String> {
         private String city_id;
-        private String lang_id;
+        private String lang;
         @Override
         protected String doInBackground(String... params) {
             try {
@@ -115,9 +116,11 @@ public class Launcher extends AppCompatActivity {
                 if(params[0].equals("10")) {
                     this.city_id = "10";
                 }
-                this.lang_id = params[1];
-                String url = String.format("http://www.stevenkaan.com/api/get_markers.php?city_id=%s&lang_id=%s", this.city_id, this.lang_id);
+                this.lang = params[1];
+                Log.e("URL", this.lang);
 
+                String url = String.format("http://www.stevenkaan.com/api/get_markers.php?city_id=%s&lang=%s", this.city_id, this.lang);
+                Log.e("URL", url);
                 return Utils.run(Launcher.this, url);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -167,7 +170,7 @@ public class Launcher extends AppCompatActivity {
                     }
                 }
                 editor.putInt("lastCity", Integer.parseInt(this.city_id));
-                editor.putInt("lastLang", Integer.parseInt(this.lang_id));
+                editor.putString("lastLang", this.lang);
                 editor.commit();
 
 
@@ -239,13 +242,7 @@ public class Launcher extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         String lang = item.getTitle().toString();
-        try {
-            String langID = this.lang.getString(lang);
-
-            new DownloadMarkers().execute(String.format("%d", cityID), langID);
-        } catch (JSONException e) {
-            Log.d("JSONException", e.toString());
-        }
+        new DownloadMarkers().execute(String.format("%d", cityID), lang);
         return true;
     }
 }

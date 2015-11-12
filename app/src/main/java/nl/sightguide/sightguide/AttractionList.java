@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class AttractionList extends AppCompatActivity {
 
@@ -38,14 +39,16 @@ public class AttractionList extends AppCompatActivity {
 
         listView = (ListView) findViewById(android.R.id.list);
         listView.setAdapter(adapter);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                String title = listView.getItemAtPosition(position).toString();
+                TextView val = (TextView)view.findViewById(R.id.Itemname);
+                String title= val.getText().toString();
+
                 Intent intent = new Intent(AttractionList.this, Attraction.class);
                 intent.putExtra("name", title);
-                Log.e("dit","click");
                 startActivity(intent);
             }
         });

@@ -30,7 +30,7 @@ xmlns:android="http://schemas.android.com/apk/res/android">
     android:layout_alignStart="@+id/ItemInfo"
     android:textColor="#333"
     android:textSize="18sp"
-    android:textIsSelectable="true" />
+    android:textIsSelectable="false" />
 <ImageView
     android:id="@+id/icon"
     android:src="@drawable/icon"

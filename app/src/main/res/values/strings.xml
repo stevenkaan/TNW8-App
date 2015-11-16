@@ -33,7 +33,7 @@
 
     <string name="listen_audio">Beluister audiofragment</string>
 
-
+    <string name="routes">Looproutes</string>
 
     <string-array name="planets_array">
         <item>Mercury</item>

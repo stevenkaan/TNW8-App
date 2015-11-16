@@ -50,5 +50,11 @@
         <item name="android:layout_marginLeft">40dp</item>
         <item name="android:layout_marginTop">1dp</item>
     </style>
+    <style name="seekbar">
+        <item name="android:layout_marginTop">45dp</item>
+        <item name="android:thumbTint">#3abdbd</item>
+        <item name="android:secondaryProgressTint">#3abdbd</item>
+        <item name="android:progressBackgroundTint">#f1a397</item>
+    </style>
 
 </resources>

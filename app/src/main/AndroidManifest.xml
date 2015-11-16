@@ -53,6 +53,18 @@
             android:parentActivityName=".activities.AttractionList"
             android:screenOrientation="portrait" >
         </activity>
+        <activity
+            android:name=".activities.RouteList"
+            android:label="@string/title_activity_attraction"
+            android:parentActivityName=".activities.Home"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".activities.Route"
+            android:label="@string/title_activity_attraction"
+            android:parentActivityName=".activities.RouteList"
+            android:screenOrientation="portrait" >
+        </activity>
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

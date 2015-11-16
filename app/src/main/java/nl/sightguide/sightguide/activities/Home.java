@@ -83,6 +83,10 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
         Intent intent = new Intent(this, AttractionList.class);
         startActivity(intent);
     }
+    public void ShowRoutes(MenuItem item) {
+        Intent intent = new Intent(this, RouteList.class);
+        startActivity(intent);
+    }
 
 
     @Override

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/panel"
+        android:layout_height="155dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_alignParentBottom="false"
+            android:layout_height="145dp"
+            android:animateLayoutChanges="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="false"
+            android:id="@+id/relativeLayout">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/dashboard"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/gradient"
+                android:scaleType="fitXY" />
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:id="@+id/imageView2"
+                android:src="@drawable/ic_keyboard_arrow_right_white_24dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:id="@+id/imageView3"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:src="@drawable/ic_keyboard_arrow_left_white_24dp"
+                android:adjustViewBounds="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Martinitoren"
+                android:id="@+id/textView2"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/imageView3"
+                android:layout_toLeftOf="@+id/imageView2"
+                android:layout_toStartOf="@+id/imageView2"
+                android:textStyle="bold"
+                android:textColor="#FFF"
+                android:textSize="18sp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="5dp"
+                android:gravity="center" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/toggle"
+                android:layout_centerVertical="true"
+                android:layout_alignLeft="@+id/textView2"
+                android:layout_alignStart="@+id/textView2"
+                android:src="@drawable/play" />
+
+            <SeekBar style="seekbar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/seekBar"
+                android:layout_alignTop="@+id/toggle"
+                android:layout_alignBottom="@+id/toggle"
+                android:layout_alignRight="@+id/textView2"
+                android:layout_alignEnd="@+id/textView2"
+                android:layout_toRightOf="@+id/toggle"
+                android:layout_toEndOf="@+id/toggle"
+                android:layout_marginLeft="10dp" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lorem ipsum hele lange tekst dolor sit amet. Lorem ipsum hele lange tekst dolor sit amet. Lorem ipsum hele lange tekst dolor sit amet. Lorem ipsum hele lange tekst dolor sit amet. Lorem ipsum hele lange tekst dolor sit amet. Lorem ipsum hele lange tekst dolor sit amet. Lorem ipsum hele lange tekst dolor sit amet. Lorem ipsum hele lange tekst dolor sit amet. "
+            android:id="@+id/textView3"
+            android:layout_below="@+id/relativeLayout"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp"
+            android:textSize="16sp"
+            android:textColor="#000" />
+
+    </RelativeLayout>
+</RelativeLayout>

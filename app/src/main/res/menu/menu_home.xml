@@ -6,4 +6,6 @@
         android:orderInCategory="100" app:showAsAction="never" android:onClick="GoToLauncher" />
     <item android:id="@+id/menu_item_markers" android:title="@string/menu_item_markers"
         android:orderInCategory="1" app:showAsAction="never" android:onClick="ShowTypes" />
+    <item android:id="@+id/menu_item_routes" android:title="@string/routes"
+        android:orderInCategory="2" app:showAsAction="never" android:onClick="ShowRoutes" />
 </menu>

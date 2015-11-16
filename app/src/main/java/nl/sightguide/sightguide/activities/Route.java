@@ -44,6 +44,7 @@ public class Route extends AppCompatActivity implements View.OnClickListener{
     private DatabaseHelper mydb ;
     static MediaPlayer audio;
     private boolean playing = false;
+    private TextView routeInfo;
     Thread updateSeekBar;
     SeekBar seekBar;
     ImageView toggle;
@@ -57,6 +58,7 @@ public class Route extends AppCompatActivity implements View.OnClickListener{
         audio = MediaPlayer.create(this, R.raw.frogsound);
         seekBar.setMax(audio.getDuration());
         toggle = (ImageView) findViewById(R.id.toggle);
+
         toggle.setOnClickListener(this);
 
 
@@ -138,9 +140,14 @@ public class Route extends AppCompatActivity implements View.OnClickListener{
     public static void swipeLeft(View v) {
     }
     public static void swipeUp(View v) {
-        v.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+//        v.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+        TextView routeInfo = (TextView) v.findViewById(R.id.routeInfo);
+        routeInfo.setText("helehelehf ds sd sd fgds fdgsdfgsfgd helehelehf ds sd sd fgds fdgsdfgsfgd helehelehf ds sd sd fgds fdgsdfgsfgd helehelehf ds sd sd fgds fdgsdfgsfgd helehelehf ds sd sd fgds fdgsdfgsfgd ");
     }
+
     public static void swipeDown(View v) {
-        v.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 200));
+//        v.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 200));
+        TextView routeInfo = (TextView) v.findViewById(R.id.routeInfo);
+        routeInfo.setText("");
     }
 }

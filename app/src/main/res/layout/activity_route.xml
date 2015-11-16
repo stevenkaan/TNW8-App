@@ -6,7 +6,8 @@
         android:layout_width="match_parent"
         android:layout_alignParentBottom="true"
         android:id="@+id/panel"
-        android:layout_height="155dp">
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_alignParentBottom="false"
@@ -89,8 +90,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Lorem ipsum hele lange tekst dolor sit amet. Lorem ipsum hele lange tekst dolor sit amet. Lorem ipsum hele lange tekst dolor sit amet. Lorem ipsum hele lange tekst dolor sit amet. Lorem ipsum hele lange tekst dolor sit amet. Lorem ipsum hele lange tekst dolor sit amet. Lorem ipsum hele lange tekst dolor sit amet. Lorem ipsum hele lange tekst dolor sit amet. "
-            android:id="@+id/textView3"
+            android:text=""
+            android:id="@+id/routeInfo"
             android:layout_below="@+id/relativeLayout"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"

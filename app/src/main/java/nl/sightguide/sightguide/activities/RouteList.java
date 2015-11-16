@@ -44,7 +44,7 @@ public class RouteList extends AppCompatActivity {
                 TextView val = (TextView) view.findViewById(R.id.Itemname);
                 String title = val.getText().toString();
 
-                Intent intent = new Intent(RouteList.this, Route.class);
+                Intent intent = new Intent(RouteList.this, RouteLauncher.class);
                 intent.putExtra("name", title);
                 startActivity(intent);
             }

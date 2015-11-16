@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView
+        android:id="@+id/ItemInfo"
+        android:layout_width="244dp"
+        android:layout_height="23dp"
+        android:text="Hier komt dan het begin van de volledige tekst, maar deze moet wel afgekort worden anders wordt deze veeeeel te lang."
+        android:layout_below="@+id/Itemname"
+        android:layout_toRightOf="@+id/icon"
+        android:layout_toEndOf="@+id/icon"
+        android:textColor="#777"
+        android:layout_marginLeft="15dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:maxLength="65"
+        android:layout_alignBottom="@+id/icon" />
+    <TextView
+        android:id="@+id/Itemname"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:maxLength="25"
+        android:layout_width="257dp"
+        android:layout_height="25dp"
+        android:text="TextView"
+        android:layout_alignTop="@+id/icon"
+        android:layout_alignLeft="@+id/ItemInfo"
+        android:layout_alignStart="@+id/ItemInfo"
+        android:textColor="#333"
+        android:textSize="18sp"
+        android:textIsSelectable="false" />
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:scaleType="centerCrop"
+        android:background="#369"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="20dp" />
+    <View android:layout_width="6dip"
+        android:layout_height="30dp"
+        android:background="#CCC"
+        android:layout_marginRight="27dp"
+        android:layout_marginEnd="25dp"
+        android:layout_below="@+id/ItemInfo"
+        android:layout_alignRight="@+id/icon"
+        android:layout_alignEnd="@+id/icon"
+        android:id="@+id/view" />
+
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:id="@+id/imageView4"
+        android:src="@drawable/circular_cover"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/icon"
+        android:layout_alignStart="@+id/icon" />
+
+</RelativeLayout>

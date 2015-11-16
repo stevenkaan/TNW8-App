@@ -33,7 +33,12 @@
 
     <string name="listen_audio">Beluister audiofragment</string>
 
-    <string name="routes">Looproutes</string>
+    <string name="routes">Walking Routes</string>
+    <string name="route">Walking Route</string>
+    <string name="start_tour">Start Tour</string>
+    <string name="distance">Distance</string>
+    <string name="kilometer">Km</string>
+    <string name="view_route">Bekijk route</string>
 
     <string-array name="planets_array">
         <item>Mercury</item>

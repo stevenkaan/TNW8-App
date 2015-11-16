@@ -18,13 +18,11 @@
             android:name=".activities.Splash"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".activities.Launcher"
@@ -60,9 +58,21 @@
             android:screenOrientation="portrait">
         </activity>
         <activity
+            android:name=".activities.RouteLauncher"
+            android:label="@string/title_activity_attraction"
+            android:parentActivityName=".activities.RouteList"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
             android:name=".activities.Route"
             android:label="@string/title_activity_attraction"
             android:parentActivityName=".activities.RouteList"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activities.RouteTimeline"
+            android:label="@string/title_activity_attraction"
+            android:parentActivityName=".activities.Route"
             android:screenOrientation="portrait" >
         </activity>
 

@@ -1,6 +1,7 @@
 package nl.sightguide.sightguide;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
@@ -12,7 +13,14 @@ import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 
+import io.realm.Realm;
+
 public class Utils {
+
+    public static Realm realm;
+    public static SharedPreferences preferences;
+    public static SharedPreferences.Editor editor;
+
 
     public static final OkHttpClient client = new OkHttpClient();
 

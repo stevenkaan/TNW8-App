@@ -34,10 +34,13 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import io.realm.Realm;
 import nl.sightguide.sightguide.helpers.DatabaseHelper;
 import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.Utils;
 import nl.sightguide.sightguide.helpers.DownloadHelper;
+import nl.sightguide.sightguide.models.City;
+import nl.sightguide.sightguide.models.Marker;
 
 public class Launcher extends AppCompatActivity {
 
@@ -146,22 +149,33 @@ public class Launcher extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             try {
+                Realm realm = Realm.getDefaultInstance();
+                realm.beginTransaction();
+
                 JSONObject parent = new JSONObject(result).getJSONObject("city");
+                String name = parent.getString("name");
+                String information = parent.getString("information");
                 String country = parent.getString("country");
                 double latitude = parent.getDouble("latitude");
                 double longitude = parent.getDouble("longitude");
                 int population = parent.getInt("population");
                 int city_id = parent.getInt("id");
 
-                if(mydb.checkCity(Integer.parseInt(this.city_id)) == false) {
-                    if (mydb.insertCity(Integer.parseInt(this.city_id), country, latitude, longitude, population)) {
-                        Log.e("db", "success");
-                    } else {
-                        Log.e("db", "failed");
-                    }
-                }else{
-                    Log.e("db", "already exists");
+                City city = realm.where(City.class).equalTo("id", city_id).findFirst();
+                if(city == null){
+                    city = new City();
+                    city.setId(city_id);
                 }
+
+                city.setName(name);
+                city.setInformation(information);
+                city.setCountry(country);
+                city.setLatitude(latitude);
+                city.setLongitude(longitude);
+                city.setPopulation(population);
+
+                realm.copyToRealmOrUpdate(city);
+
 
                 JSONArray markers = parent.getJSONArray("markers");
                 for(int i = 0; i < markers.length(); i++) {
@@ -169,7 +183,6 @@ public class Launcher extends AppCompatActivity {
 
 
                     String imgUrl = obj.getString("image");
-                    Log.e("IMG", imgUrl);
                     String imgName = imgUrl.substring(imgUrl.lastIndexOf('/') + 1);
 
                     new DownloadHelper(Launcher.this, imgName, imgUrl, "marker");
@@ -181,21 +194,26 @@ public class Launcher extends AppCompatActivity {
                     double markerLat = obj.getDouble("latitude");
                     double markerLong = obj.getDouble("longitude");
 
-                    if(mydb.checkMarker(id) == false) {
-                        if (mydb.insertMarker(id, city_id, type_id, marker_name, info, markerLat, markerLong, imgName)) {
-                            Log.d("db", "successfully inserted marker");
-                        } else {
-                            Log.d("db", "failed to insert marker");
-                        }
-                    }else{
-                        Log.e("db", "marker already exist");
+                    Marker marker = realm.where(Marker.class).equalTo("id", id).findFirst();
+                    if(marker == null){
+                        marker = new Marker();
+                        marker.setId(id);
                     }
+                    marker.setCity(city);
+                    marker.setType_id(type_id);
+                    marker.setName(marker_name);
+                    marker.setInformation(info);
+                    marker.setLatitude(markerLat);
+                    marker.setLongitude(markerLong);
+                    marker.setImage(imgName);
+
+                    realm.copyToRealmOrUpdate(marker);
                 }
                 editor.putInt("lastCity", Integer.parseInt(this.city_id));
                 editor.putString("lastLang", this.lang);
                 editor.commit();
 
-
+                realm.commitTransaction();
                 Intent intent = new Intent(Launcher.this, Home.class);
                 startActivity(intent);
 
@@ -208,10 +226,33 @@ public class Launcher extends AppCompatActivity {
     }
     private class DownloadCityTask extends AsyncTask<String, Void, String> {
 
+        private ArrayAdapter adapter;
+
         @Override
         protected String doInBackground(String... params) {
             try {
-                return Utils.run(Launcher.this, "http://www.stevenkaan.com/api/get_city.php");
+                String result = Utils.run(Launcher.this, "http://www.stevenkaan.com/api/get_city.php");
+
+                JSONObject jsonObject;
+                try {
+                    JSONObject parent = new JSONObject(result);
+
+                    jsonObject = parent.getJSONObject("cities");
+                    Launcher.this.json = jsonObject;
+
+                    ArrayList<String> items = new ArrayList<String>();
+                    for(Iterator<String> keys = jsonObject.keys(); keys.hasNext(); ){
+                        String name = keys.next();
+                        items.add(name);
+                    }
+
+                    adapter = new ArrayAdapter(Launcher.this, android.R.layout.simple_list_item_1, items);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                return result;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -220,31 +261,9 @@ public class Launcher extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            //Here you are done with the task
-            JSONObject jsonObject;
-            try {
-                swipeView.setRefreshing(false);
-                if(result  == null){
-                    return;
-                }
-                JSONObject parent = new JSONObject(result);
-
-                jsonObject = parent.getJSONObject("cities");
-                Launcher.this.json = jsonObject;
-
-                ArrayList<String> items = new ArrayList<String>();
-                for(Iterator<String> keys = jsonObject.keys(); keys.hasNext(); ){
-                    String name = keys.next();
-                    items.add(name);
-                }
-
-                ListView monthsListView = (ListView) findViewById(R.id.view_cities);
-                adapter = new ArrayAdapter(Launcher.this, android.R.layout.simple_list_item_1, items);
-                monthsListView.setAdapter(adapter);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            swipeView.setRefreshing(false);
+            ListView monthsListView = (ListView) findViewById(R.id.view_cities);
+            monthsListView.setAdapter(adapter);
         }
     }
 

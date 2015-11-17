@@ -28,4 +28,5 @@ dependencies {
     compile 'org.slf4j:slf4j-simple:1.6.1'
     compile 'com.android.support:design:23.1.0'
     compile 'com.mcxiaoke.volley:library:1.0.19'
+    compile 'io.realm:realm-android:0.84.2'
 }

@@ -33,14 +33,12 @@ public class DownloadHelper implements Response.Listener<Bitmap> {
 
         if (file.exists ()) {
             file.delete ();
-            Log.e("IMG", "deleting " + this.imgName);
         }
         try {
             FileOutputStream out = new FileOutputStream(file);
             response.compress(Bitmap.CompressFormat.JPEG, 90, out);
             out.flush();
             out.close();
-            Log.e("IMG", "adding "+this.imgName);
 
         } catch (Exception e) {
             e.printStackTrace();

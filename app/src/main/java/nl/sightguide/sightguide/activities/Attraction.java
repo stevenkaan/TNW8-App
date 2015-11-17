@@ -17,8 +17,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import nl.sightguide.sightguide.Utils;
 import nl.sightguide.sightguide.helpers.DatabaseHelper;
 import nl.sightguide.sightguide.R;
+import nl.sightguide.sightguide.models.Marker;
 
 public class Attraction extends AppCompatActivity implements View.OnClickListener {
 
@@ -43,22 +45,17 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
         toggle = (ImageView) findViewById(R.id.toggle);
         toggle.setOnClickListener(this);
 
-        mydb = new DatabaseHelper(this);
-
         Intent intent = getIntent();
 
         attractionName = intent.getStringExtra("name");
-        setTitle(attractionName);
 
-        TextView attrInfoText = (TextView)findViewById(R.id.attrInfo);
+        TextView informationView = (TextView)findViewById(R.id.attrInfo);
 
-        ArrayList values = mydb.getAttraction(attractionName);
-        Object attrName = values.get(0);
-        Object attrInfo = values.get(1);
+        Marker marker = Utils.realm.where(Marker.class).equalTo("name", attractionName).findFirst();
 
-        String imgName = values.get(5).toString();
-        String photoPath = Environment.getExternalStorageDirectory()+"/sightguide_images/"+imgName;
-        Log.e("Path", photoPath);
+        setTitle(marker.getName());
+
+        String photoPath = Environment.getExternalStorageDirectory()+"/sightguide_images/"+marker.getImage();
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = 8;
@@ -66,7 +63,7 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
         ImageView imageView = (ImageView) findViewById(R.id.mainImage);
 
         imageView.setImageBitmap(bitmap);
-        attrInfoText.setText(attrInfo.toString());
+        informationView.setText(marker.getInformation());
 
         updateSeekBar = new Thread() {
             @Override

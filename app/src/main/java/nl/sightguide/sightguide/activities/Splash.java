@@ -7,7 +7,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.Utils;
 
@@ -15,6 +18,7 @@ public class Splash extends Activity {
 
     private final int SPLASH_DISPLAY_LENGTH = 2000;
     private AlertDialog.Builder builder;
+    private static SharedPreferences.Editor editor;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -23,16 +27,30 @@ public class Splash extends Activity {
         super.onCreate(icicle);
         setContentView(R.layout.activity_splash);
 
+        Utils.preferences = getSharedPreferences("SightGuide", 0);
+        Utils.editor = Utils.preferences.edit();
+
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(this).build();
+
+        if(Utils.preferences.getBoolean("firstRun", true)){
+            Utils.editor.putBoolean("firstRun", false);
+            Utils.editor.commit();
+
+            Realm.deleteRealm(realmConfiguration);
+        }
+        Realm.setDefaultConfiguration(realmConfiguration);
+
+        Utils.realm = Realm.getDefaultInstance();
 
         new Handler().postDelayed(new Runnable(){
             @Override
             public void run() {
-                SharedPreferences settings = getSharedPreferences("SightGuide", 0);
-                int lastCity = settings.getInt("lastCity", 0);
+
+                int lastCity = Utils.preferences.getInt("lastCity", 0);
                 Intent intent;
 
                 if(lastCity > 0){
-                    String lastLang = settings.getString("lastLang", null);
+                    String lastLang = Utils.preferences.getString("lastLang", null);
 
                     intent = new Intent(Splash.this, Home.class);
                     intent.putExtra("cityID", lastCity);

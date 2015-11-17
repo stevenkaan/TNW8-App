@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -20,13 +21,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
+import io.realm.Realm;
+import io.realm.RealmResults;
+import nl.sightguide.sightguide.Utils;
 import nl.sightguide.sightguide.helpers.DatabaseHelper;
 import nl.sightguide.sightguide.R;
+import nl.sightguide.sightguide.models.City;
 
 
 public class Home extends AppCompatActivity implements OnMapReadyCallback {
 
-    private ArrayList city;
     private GoogleMap mMap;
     private LatLng cityLatLng;
     private Float maxZoom = 8f;
@@ -34,38 +38,30 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
 
     private String[] mPlanetTitles;
     private ListView mDrawerList;
-    private SharedPreferences settings;
 
-    private DatabaseHelper mydb;
+    private City city;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        mydb = new DatabaseHelper(this);
+        int cityID = Utils.preferences.getInt("lastCity", 0);
 
-        settings = getSharedPreferences("SightGuide", 0);
-        int cityID = settings.getInt("lastCity", 0);
+        city = Utils.realm.where(City.class).equalTo("id", cityID).findFirst();
 
-        city = mydb.getCity(cityID);
+        setTitle(city.getName());
+        cityLatLng = new LatLng(city.getLatitude(), city.getLongitude());
 
-        cityLatLng = new LatLng(Float.parseFloat(city.get(2).toString()), Float.parseFloat(city.get(3).toString()));
-
-        MapFragment mapFrag =
-                (MapFragment)getFragmentManager().findFragmentById(R.id.map);
+        MapFragment mapFrag = (MapFragment)getFragmentManager().findFragmentById(R.id.map);
 
         if (savedInstanceState == null) {
             mapFrag.getMapAsync(this);
         }
 
-
         mPlanetTitles = getResources().getStringArray(R.array.planets_array);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mPlanetTitles));
+        mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, mPlanetTitles));
 
     }
 
@@ -81,6 +77,7 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
     }
     public void ShowTypes(MenuItem item){
         Intent intent = new Intent(this, AttractionList.class);
+        intent.putExtra("city_id", city.getId());
         startActivity(intent);
     }
 

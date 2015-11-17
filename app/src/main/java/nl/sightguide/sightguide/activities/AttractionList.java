@@ -4,22 +4,23 @@ package nl.sightguide.sightguide.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import nl.sightguide.sightguide.helpers.AttractionHelper;
+import nl.sightguide.sightguide.Utils;
+import nl.sightguide.sightguide.adapters.AttractionAdapter;
 import nl.sightguide.sightguide.helpers.DatabaseHelper;
 import nl.sightguide.sightguide.R;
+import nl.sightguide.sightguide.models.Marker;
 
 public class AttractionList extends AppCompatActivity {
 
     private String attractionName;
-    private int typeID;
-    private int langID;
+    private int city_id;
+
     private DatabaseHelper mydb ;
     private Attraction attr ;
     private ListView listView;
@@ -35,9 +36,9 @@ public class AttractionList extends AppCompatActivity {
 
         Intent intent = getIntent();
         attractionName = intent.getStringExtra("attractionName");
-        typeID = intent.getIntExtra("typeID", 0);
+        city_id = intent.getIntExtra("city_id", 0);
 
-        AttractionHelper adapter = new AttractionHelper(this, mydb.getAttractions());
+        AttractionAdapter adapter = new AttractionAdapter(this, Utils.realm.where(Marker.class).equalTo("city.id", city_id).findAll(), true);
 
         listView = (ListView) findViewById(android.R.id.list);
         listView.setAdapter(adapter);

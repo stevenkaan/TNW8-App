@@ -21,7 +21,6 @@ import nl.sightguide.sightguide.helpers.SwipeDetector;
 public class RouteLauncher extends AppCompatActivity {
 
     private String routeName;
-    private TextView routeInfo;
     private DatabaseHelper mydb ;
     private ListView listView;
 

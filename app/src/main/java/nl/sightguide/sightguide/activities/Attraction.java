@@ -16,6 +16,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import nl.sightguide.sightguide.helpers.DatabaseHelper;
 import nl.sightguide.sightguide.R;
@@ -26,6 +27,8 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
     private String attractionName;
     private int cityID;
     private int langID;
+    private TextView progress;
+    private TextView duration;
     private DatabaseHelper mydb ;
     static MediaPlayer audio;
     private boolean playing = false;
@@ -38,6 +41,8 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attraction);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
+        progress =  (TextView) findViewById(R.id.progress);
+        duration =  (TextView) findViewById(R.id.duration);
         audio = MediaPlayer.create(this, R.raw.frogsound);
         seekBar.setMax(audio.getDuration());
         toggle = (ImageView) findViewById(R.id.toggle);
@@ -68,6 +73,12 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
         imageView.setImageBitmap(bitmap);
         attrInfoText.setText(attrInfo.toString());
 
+        final String totalDuration = String.format("%d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(audio.getDuration()),
+                TimeUnit.MILLISECONDS.toSeconds(audio.getDuration()),
+                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(audio.getDuration())));
+        duration.setText(" / "+totalDuration);
+
         updateSeekBar = new Thread() {
             @Override
             public void run(){
@@ -78,6 +89,18 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
                         sleep(500);
                         currentPosition = audio.getCurrentPosition();
                         seekBar.setProgress(currentPosition);
+                        final String time = String.format("%d:%02d",
+                                TimeUnit.MILLISECONDS.toMinutes(currentPosition),
+                                TimeUnit.MILLISECONDS.toSeconds(currentPosition),
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(currentPosition)));
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                progress.setText(time);
+
+                            }
+                        });
                     }catch (InterruptedException e){
                         e.printStackTrace();
                     }

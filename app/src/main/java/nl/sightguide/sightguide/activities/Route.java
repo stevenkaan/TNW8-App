@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
@@ -17,12 +18,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.Utils;
@@ -45,6 +48,8 @@ public class Route extends AppCompatActivity implements View.OnClickListener{
     static MediaPlayer audio;
     private boolean playing = false;
     private TextView routeInfo;
+    private TextView progress;
+    private TextView duration;
     Thread updateSeekBar;
     SeekBar seekBar;
     ImageView toggle;
@@ -54,14 +59,14 @@ public class Route extends AppCompatActivity implements View.OnClickListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route);
+        progress =  (TextView) findViewById(R.id.progress);
+        duration =  (TextView) findViewById(R.id.duration);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
         audio = MediaPlayer.create(this, R.raw.frogsound);
         seekBar.setMax(audio.getDuration());
         toggle = (ImageView) findViewById(R.id.toggle);
 
         toggle.setOnClickListener(this);
-
-
         mydb = new DatabaseHelper(this);
 
         Intent intent = getIntent();
@@ -73,6 +78,12 @@ public class Route extends AppCompatActivity implements View.OnClickListener{
         panel = (RelativeLayout)this.findViewById(R.id.panel);
         panel.setOnTouchListener(s);
 
+        final String totalDuration = String.format("%d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(audio.getDuration()),
+                TimeUnit.MILLISECONDS.toSeconds(audio.getDuration()),
+                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(audio.getDuration())));
+        duration.setText(" / "+totalDuration);
+
         updateSeekBar = new Thread() {
             @Override
             public void run(){
@@ -83,6 +94,20 @@ public class Route extends AppCompatActivity implements View.OnClickListener{
                         sleep(500);
                         currentPosition = audio.getCurrentPosition();
                         seekBar.setProgress(currentPosition);
+
+                        final String time = String.format("%d:%02d",
+                                TimeUnit.MILLISECONDS.toMinutes(currentPosition),
+                                TimeUnit.MILLISECONDS.toSeconds(currentPosition),
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(currentPosition)));
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                progress.setText(time);
+
+                            }
+                        });
+
                     }catch (InterruptedException e){
                         e.printStackTrace();
                     }
@@ -140,14 +165,15 @@ public class Route extends AppCompatActivity implements View.OnClickListener{
     public static void swipeLeft(View v) {
     }
     public static void swipeUp(View v) {
-//        v.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
-        TextView routeInfo = (TextView) v.findViewById(R.id.routeInfo);
-        routeInfo.setText("helehelehf ds sd sd fgds fdgsdfgsfgd helehelehf ds sd sd fgds fdgsdfgsfgd helehelehf ds sd sd fgds fdgsdfgsfgd helehelehf ds sd sd fgds fdgsdfgsfgd helehelehf ds sd sd fgds fdgsdfgsfgd ");
+
+        RelativeLayout extraInfo =(RelativeLayout)v.findViewById(R.id.extraInfo);
+        extraInfo.setVisibility(LinearLayout.VISIBLE);
+
     }
 
     public static void swipeDown(View v) {
-//        v.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 200));
-        TextView routeInfo = (TextView) v.findViewById(R.id.routeInfo);
-        routeInfo.setText("");
+
+        RelativeLayout extraInfo =(RelativeLayout)v.findViewById(R.id.extraInfo);
+        extraInfo.setVisibility(LinearLayout.GONE);
     }
 }

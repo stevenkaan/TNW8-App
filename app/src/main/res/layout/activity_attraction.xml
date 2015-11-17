@@ -86,6 +86,38 @@
                     android:thumbTint="#3abdbd"
                     android:secondaryProgressTint="#3abdbd"
                     android:progressBackgroundTint="#f1a397" />
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/toggle"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="0:00"
+                        android:id="@+id/progress"
+                        android:textSize="15sp"
+                        android:textColor="#FFF"
+                        android:layout_marginStart="132dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text=" / 0:00"
+                        android:id="@+id/duration"
+                        android:layout_alignBottom="@+id/progress"
+                        android:layout_toRightOf="@+id/progress"
+                        android:layout_toEndOf="@+id/progress"
+                        android:textSize="15sp"
+                        android:textColor="#FFF" />
+
+                </RelativeLayout>
 
             </RelativeLayout>
 

@@ -2,7 +2,6 @@ package nl.sightguide.sightguide.helpers;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
@@ -16,31 +15,35 @@ import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-public class DownloadHelper implements Response.Listener<Bitmap> {
+public class ImageDownloader implements Response.Listener<Bitmap> {
     private String name;
-    private String baseDir;
+    private String url;
+    private String baseDir = "Images";
 
-    public DownloadHelper(Context c, String name, String url, String baseDir) {
+    public ImageDownloader(String name, String url) {
+        this.url = url;
+        this.name = name;
+
+
+    }
+
+    public ImageRequest execute() {
         try {
-
             String fileName = URLEncoder.encode(name, "UTF-8");
 
-
-            RequestQueue rq = Volley.newRequestQueue(c);
             ImageRequest ir = new ImageRequest(url + "/" + fileName.replace("+", "%20"), this, 0, 0, null, null, null);
-            this.name = name;
-            this.baseDir = baseDir;
-            rq.add(ir);
+
+            return ir;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
+        return null;
     }
 
     @Override
     public void onResponse(Bitmap response) {
         String root = Environment.getExternalStorageDirectory().toString();
-        Log.e("BaseDir", baseDir);
 
         File rootDir = new File(root + "/SightGuide/"+baseDir);
         rootDir.mkdirs();

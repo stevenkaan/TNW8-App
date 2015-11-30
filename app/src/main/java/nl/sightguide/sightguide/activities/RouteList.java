@@ -3,38 +3,32 @@ package nl.sightguide.sightguide.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import io.realm.RealmResults;
 import nl.sightguide.sightguide.R;
-import nl.sightguide.sightguide.helpers.RouteHelper;
-import nl.sightguide.sightguide.helpers.DatabaseHelper;
+import nl.sightguide.sightguide.Utils;
+import nl.sightguide.sightguide.adapters.RouteAdapter;
+import nl.sightguide.sightguide.models.Route;
 
 public class RouteList extends AppCompatActivity {
-    private String attractionName;
-    private int typeID;
-    private int langID;
-    private DatabaseHelper mydb ;
-    private Attraction attr ;
-    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_routes_list);
 
-        mydb = new DatabaseHelper(this);
+        setTitle("Route overzicht");
 
-        Intent intent = getIntent();
-        attractionName = intent.getStringExtra("attractionName");
-        typeID = intent.getIntExtra("typeID", 0);
+        RealmResults<Route> results = Utils.realm.where(Route.class).equalTo("city.id", Utils.city_id).findAll();
 
-        RouteHelper adapter = new RouteHelper(this, mydb.getAttractions());
+        RouteAdapter adapter = new RouteAdapter(this, results, true);
 
-        listView = (ListView) findViewById(android.R.id.list);
+        ListView listView = (ListView) findViewById(android.R.id.list);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

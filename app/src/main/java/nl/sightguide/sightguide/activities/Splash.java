@@ -13,6 +13,7 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.Utils;
+import nl.sightguide.sightguide.services.LocationService;
 
 public class Splash extends Activity {
 
@@ -21,10 +22,14 @@ public class Splash extends Activity {
     private static SharedPreferences.Editor editor;
 
     @Override
-    public void onCreate(Bundle icicle) {
+    public void onCreate(Bundle bundle) {
         builder = new AlertDialog.Builder(Splash.this);
 
-        super.onCreate(icicle);
+        super.onCreate(bundle);
+
+
+        startService(new Intent(this, LocationService.class));
+
         setContentView(R.layout.activity_splash);
 
         Utils.preferences = getSharedPreferences("SightGuide", 0);
@@ -45,43 +50,38 @@ public class Splash extends Activity {
         new Handler().postDelayed(new Runnable(){
             @Override
             public void run() {
+            int lastCity = Utils.preferences.getInt("lastCity", 0);
+            Intent intent;
+            if(lastCity > 0){
+                intent = new Intent(Splash.this, Home.class);
+                Utils.city_id = Utils.preferences.getInt("lastCity", 0);
 
-                int lastCity = Utils.preferences.getInt("lastCity", 0);
-                Intent intent;
-
-                if(lastCity > 0){
-                    String lastLang = Utils.preferences.getString("lastLang", null);
-
-                    intent = new Intent(Splash.this, Home.class);
-                    intent.putExtra("cityID", lastCity);
-                    intent.putExtra("langID", lastLang);
-
-                    Splash.this.startActivity(intent);
+                Splash.this.startActivity(intent);
+                Splash.this.finish();
+            }else{
+                if(Utils.checkNetwork(Splash.this)){
+                    Splash.this.startActivity(new Intent(Splash.this, Launcher.class));
                     Splash.this.finish();
-                }else{
-                    if(Utils.checkNetwork(Splash.this)){
-                        Splash.this.startActivity(new Intent(Splash.this, Launcher.class));
-                        Splash.this.finish();
 
-                    }else{
-                        builder.setMessage("Unable to connect to the internet")
-                        .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                if(Utils.checkNetwork(Splash.this)){
-                                    Splash.this.startActivity(new Intent(Splash.this, Launcher.class));
-                                }else{
-                                    builder.show();
-                                }
-                            }
-                        }).setNegativeButton("Close", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Splash.this.finish();
-                                System.exit(0);
-                            }
-                        });
-                        builder.create().show();
-                    }
+                }else{
+                    builder.setMessage("Unable to connect to the internet")
+                    .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        if(Utils.checkNetwork(Splash.this)){
+                            Splash.this.startActivity(new Intent(Splash.this, Launcher.class));
+                        }else{
+                            builder.show();
+                        }
+                        }
+                    }).setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        Splash.this.finish();
+                        System.exit(0);
+                        }
+                    });
+                    builder.create().show();
                 }
+            }
             }
         }, SPLASH_DISPLAY_LENGTH);
     }

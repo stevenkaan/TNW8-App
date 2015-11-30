@@ -2,38 +2,26 @@ package nl.sightguide.sightguide.activities;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.gesture.GestureOverlayView;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.Utils;
-import nl.sightguide.sightguide.helpers.DatabaseHelper;
 import nl.sightguide.sightguide.helpers.SwipeDetector;
+import nl.sightguide.sightguide.models.Route;
 
 
-public class Route extends AppCompatActivity implements View.OnClickListener{
+public class RouteInfo extends AppCompatActivity implements View.OnClickListener{
 
     private String routeName;
 
@@ -42,9 +30,6 @@ public class Route extends AppCompatActivity implements View.OnClickListener{
     static final int MIN_DISTANCE = 100;
     private float downX, downY, upX, upY;
 
-    private int cityID;
-    private int langID;
-    private DatabaseHelper mydb ;
     static MediaPlayer audio;
     private boolean playing = false;
     private TextView routeInfo;
@@ -67,8 +52,6 @@ public class Route extends AppCompatActivity implements View.OnClickListener{
         toggle = (ImageView) findViewById(R.id.toggle);
 
         toggle.setOnClickListener(this);
-        mydb = new DatabaseHelper(this);
-
         Intent intent = getIntent();
 
         routeName = intent.getStringExtra("name");

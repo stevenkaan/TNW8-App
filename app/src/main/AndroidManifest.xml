@@ -75,6 +75,12 @@
             android:parentActivityName=".activities.Route"
             android:screenOrientation="portrait" >
         </activity>
+        <activity
+            android:name=".activities.CityInfo"
+            android:label="@string/title_activity_city_info"
+            android:parentActivityName=".activities.Home"
+            android:screenOrientation="portrait" >
+        </activity>
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

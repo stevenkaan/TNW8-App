@@ -40,11 +40,16 @@
     <string name="kilometer">Km</string>
     <string name="view_route">Bekijk route</string>
 
-    <string-array name="planets_array">
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
+    <string-array name="menu_array">
+
+        <item id="1">Attractions</item>
+        <item id="2">Walking routes</item>
+        <item id="3">City information</item>
+        <item id="4">My cities</item>
     </string-array>
     <string name="title_activity_empty">Empty</string>
+
+    <string name="title_activity_city_info">City information</string>
+    <string name="drawer_open">0</string>
+    <string name="drawer_close">1</string>
 </resources>

@@ -4,12 +4,19 @@ package nl.sightguide.sightguide.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -36,8 +43,14 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
     private Float maxZoom = 8f;
     private Float startingZoom = 11f;
 
-    private String[] mPlanetTitles;
+    private String[] mMenuItems;
     private ListView mDrawerList;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private MenuItem item;
+
+    private boolean menuOpen = false;
+    private boolean itemSet = false;
 
     private City city;
 
@@ -59,30 +72,88 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
             mapFrag.getMapAsync(this);
         }
 
-        mPlanetTitles = getResources().getStringArray(R.array.planets_array);
+        mMenuItems = getResources().getStringArray(R.array.menu_array);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, mPlanetTitles));
+        mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, mMenuItems));
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, null, R.string.drawer_open, R.string.drawer_close) {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                menuOpen = false;
+                if(itemSet){
+                    item.setIcon(R.drawable.ic_menu_white_24dp);
+                }
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                menuOpen = true;
+                if(itemSet) {
+                    item.setIcon(R.drawable.abc_ic_clear_mtrl_alpha);
+                }
+            }
+        };
+
+
+        // Set the drawer toggle as the DrawerListener
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
 
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
     }
 
-    public void GoToLauncher(MenuItem item){
-        Intent intent = new Intent(this, Launcher.class);
-        startActivity(intent);
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView parent, View view, int position, long id) {
+            SwitchView(position);
+        }
     }
-    public void ShowTypes(MenuItem item){
-        Intent intent = new Intent(this, AttractionList.class);
-        intent.putExtra("city_id", city.getId());
-        startActivity(intent);
+    public void ToggleDrawer(MenuItem item){
+        this.item = item;
+        itemSet = true;
+        if(menuOpen){
+            mDrawerLayout.closeDrawer(Gravity.LEFT);
+            menuOpen = false;
+            item.setIcon(R.drawable.ic_menu_white_24dp);
+        } else {
+            mDrawerLayout.openDrawer(Gravity.LEFT);
+            item.setIcon(R.drawable.abc_ic_clear_mtrl_alpha);
+            menuOpen = true;
+        }
     }
-    public void ShowRoutes(MenuItem item) {
-        Intent intent = new Intent(this, RouteList.class);
-        startActivity(intent);
+    public void SwitchView(int item){
+
+        Intent intent;
+        switch (item) {
+            case 0:
+                intent = new Intent(this, AttractionList.class);
+                intent.putExtra("city_id", city.getId());
+                startActivity(intent);
+                break;
+            case 1:
+                intent = new Intent(this, RouteList.class);
+                startActivity(intent);
+                break;
+            case 2:
+                intent = new Intent(this, CityInfo.class);
+                startActivity(intent);
+                break;
+            case 3:
+                intent = new Intent(this, Launcher.class);
+                startActivity(intent);
+                break;
+            default:
+                break;
+        }
     }
 
 

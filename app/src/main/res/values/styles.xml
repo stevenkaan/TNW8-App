@@ -56,5 +56,8 @@
         <item name="android:secondaryProgressTint">#3abdbd</item>
         <item name="android:progressBackgroundTint">#f1a397</item>
     </style>
+    <style name="toolbar">
+        <item name="android:background">@color/ColorPrimary</item>
+    </style>
 
 </resources>

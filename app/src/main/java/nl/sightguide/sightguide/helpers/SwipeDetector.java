@@ -4,9 +4,8 @@ import android.app.Activity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 
-import nl.sightguide.sightguide.activities.Route;
+import nl.sightguide.sightguide.activities.RouteInfo;
 
 public class SwipeDetector implements View.OnTouchListener {
 
@@ -21,22 +20,22 @@ public class SwipeDetector implements View.OnTouchListener {
 
         public void onRightSwipe(View v){
             Log.i(logTag, "RightToLeftSwipe!");
-            Route.swipeRight(v);
+            RouteInfo.swipeRight(v);
         }
 
         public void onLeftSwipe(View v){
             Log.i(logTag, "LeftToRightSwipe!");
-            Route.swipeLeft(v);
+            RouteInfo.swipeLeft(v);
         }
 
         public void onDownSwipe(View v){
             Log.i(logTag, "onTopToBottomSwipe!");
-            Route.swipeDown(v);
+            RouteInfo.swipeDown(v);
         }
 
         public void onUpSwipe(View v){
             Log.i(logTag, "onBottomToTopSwipe!");
-            Route.swipeUp(v);
+            RouteInfo.swipeUp(v);
         }
 
         public boolean onTouch(View v, MotionEvent event) {

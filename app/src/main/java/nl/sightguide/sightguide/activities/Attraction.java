@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -19,9 +20,12 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import nl.sightguide.sightguide.Utils;
+import nl.sightguide.sightguide.helpers.AudioHelper;
 import nl.sightguide.sightguide.helpers.DatabaseHelper;
 import nl.sightguide.sightguide.R;
+import nl.sightguide.sightguide.helpers.ImageHelper;
 import nl.sightguide.sightguide.models.Marker;
+import nl.sightguide.sightguide.services.AudioServices;
 
 public class Attraction extends AppCompatActivity implements View.OnClickListener {
 
@@ -45,8 +49,6 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
         seekBar = (SeekBar) findViewById(R.id.seekBar);
         progress =  (TextView) findViewById(R.id.progress);
         duration =  (TextView) findViewById(R.id.duration);
-        audio = MediaPlayer.create(this, R.raw.frogsound);
-        seekBar.setMax(audio.getDuration());
         toggle = (ImageView) findViewById(R.id.toggle);
         toggle.setOnClickListener(this);
 
@@ -60,21 +62,19 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
 
         setTitle(marker.getName());
 
-        String photoPath = Environment.getExternalStorageDirectory()+"/sightguide_images/"+marker.getImage();
-
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = 8;
-        Bitmap bitmap = BitmapFactory.decodeFile(photoPath, options);
         ImageView imageView = (ImageView) findViewById(R.id.mainImage);
 
-        imageView.setImageBitmap(bitmap);
+        imageView.setImageBitmap(ImageHelper.getImage(marker.getImage()));
         informationView.setText(marker.getInformation());
 
-        final String totalDuration = String.format("%d:%02d",
-                TimeUnit.MILLISECONDS.toMinutes(audio.getDuration()),
-                TimeUnit.MILLISECONDS.toSeconds(audio.getDuration()),
-                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(audio.getDuration())));
-        duration.setText(" / "+totalDuration);
+        audio = AudioHelper.getAudio(marker.getAudio());
+
+        //audio.setScreenOnWhilePlaying(true);
+        audio.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
+        seekBar.setMax(audio.getDuration());
+
+
+        duration.setText(" / "+AudioHelper.getDuration());
 
         updateSeekBar = new Thread() {
             @Override
@@ -86,10 +86,8 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
                         sleep(500);
                         currentPosition = audio.getCurrentPosition();
                         seekBar.setProgress(currentPosition);
-                        final String time = String.format("%d:%02d",
-                                TimeUnit.MILLISECONDS.toMinutes(currentPosition),
-                                TimeUnit.MILLISECONDS.toSeconds(currentPosition),
-                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(currentPosition)));
+
+                        final String time = AudioHelper.getCurrentTime(currentPosition);
 
                         runOnUiThread(new Runnable() {
                             @Override
@@ -132,20 +130,20 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
     @Override
     public void onClick(View view){
 
-        if(playing == false){
-            audio.start();
-            toggle.setImageResource(R.drawable.pause);
-            if (updateSeekBar.getState() == Thread.State.NEW)
-            {
-                updateSeekBar.start();
-            }
-            playing = true;
-        }else{
-            audio.pause();
-            toggle.setImageResource(R.drawable.play);
-            playing = false;
-        }
+//        if(playing == false){
+//            audio.start();
+//            toggle.setImageResource(R.drawable.pause);
+//            if (updateSeekBar.getState() == Thread.State.NEW)
+//            {
+//                updateSeekBar.start();
+//            }
+//            playing = true;
+//        }else{
+//            audio.pause();
+//            toggle.setImageResource(R.drawable.play);
+//            playing = false;
+//        }
 
-    };
+    }
 
 }

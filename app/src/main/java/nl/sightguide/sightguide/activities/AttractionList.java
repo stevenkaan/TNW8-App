@@ -1,6 +1,5 @@
 package nl.sightguide.sightguide.activities;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,18 +11,10 @@ import android.widget.TextView;
 
 import nl.sightguide.sightguide.Utils;
 import nl.sightguide.sightguide.adapters.AttractionAdapter;
-import nl.sightguide.sightguide.helpers.DatabaseHelper;
 import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.models.Marker;
 
 public class AttractionList extends AppCompatActivity {
-
-    private String attractionName;
-    private int city_id;
-
-    private DatabaseHelper mydb ;
-    private Attraction attr ;
-    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,15 +23,9 @@ public class AttractionList extends AppCompatActivity {
 
         setTitle("Tourist attractions");
 
-        mydb = new DatabaseHelper(this);
+        AttractionAdapter adapter = new AttractionAdapter(this, Utils.realm.where(Marker.class).equalTo("city.id", Utils.city_id).findAll(), true);
 
-        Intent intent = getIntent();
-        attractionName = intent.getStringExtra("attractionName");
-        city_id = intent.getIntExtra("city_id", 0);
-
-        AttractionAdapter adapter = new AttractionAdapter(this, Utils.realm.where(Marker.class).equalTo("city.id", city_id).findAll(), true);
-
-        listView = (ListView) findViewById(android.R.id.list);
+        ListView listView = (ListView) findViewById(android.R.id.list);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

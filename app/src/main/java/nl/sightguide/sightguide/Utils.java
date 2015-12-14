@@ -20,6 +20,9 @@ public class Utils {
     public static Realm realm;
     public static SharedPreferences preferences;
     public static SharedPreferences.Editor editor;
+    public static int city_id;
+    public static Float maxZoom = 8f;
+    public static Float startingZoom = 11f;
 
 
     public static final OkHttpClient client = new OkHttpClient();

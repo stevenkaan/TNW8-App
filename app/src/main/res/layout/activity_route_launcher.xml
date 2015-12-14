@@ -58,7 +58,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="Large Text"
-                    android:id="@+id/textView3"
+                    android:id="@+id/routeName"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
@@ -74,9 +74,9 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="@string/distance"
                     android:id="@+id/distanceText"
-                    android:layout_below="@+id/textView3"
-                    android:layout_alignLeft="@+id/textView3"
-                    android:layout_alignStart="@+id/textView3" />
+                    android:layout_below="@+id/routeName"
+                    android:layout_alignLeft="@+id/routeName"
+                    android:layout_alignStart="@+id/routeName" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -84,7 +84,7 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="Medium Text"
                     android:id="@+id/distance"
-                    android:layout_below="@+id/textView3"
+                    android:layout_below="@+id/routeName"
                     android:layout_toRightOf="@+id/distanceText"
                     android:layout_toEndOf="@+id/distanceText"
                     android:layout_marginLeft="8dp"
@@ -96,7 +96,7 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:text="@string/kilometer"
                     android:id="@+id/textView6"
-                    android:layout_below="@+id/textView3"
+                    android:layout_below="@+id/routeName"
                     android:layout_toRightOf="@+id/distance"
                     android:layout_toEndOf="@+id/distance" />
 
@@ -106,7 +106,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu."
-                android:id="@+id/textView5"
+                android:id="@+id/infoText"
                 android:textSize="15sp"
                 android:textIsSelectable="true"
                 android:layout_below="@+id/relativeLayout2"
@@ -116,7 +116,8 @@
                 android:layout_marginRight="20dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginBottom="30dp"
-                android:layout_alignParentEnd="true" />
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"/>
 
             <Button
                 android:layout_width="wrap_content"
@@ -126,11 +127,11 @@
                 android:background="@color/ColorPrimary"
                 android:textColor="#FFF"
                 android:textSize="18sp"
-                android:layout_below="@+id/textView5"
-                android:layout_alignLeft="@+id/textView5"
-                android:layout_alignStart="@+id/textView5"
-                android:layout_alignRight="@+id/textView5"
-                android:layout_alignEnd="@+id/textView5"
+                android:layout_below="@+id/infoText"
+                android:layout_alignLeft="@+id/infoText"
+                android:layout_alignStart="@+id/infoText"
+                android:layout_alignRight="@+id/infoText"
+                android:layout_alignEnd="@+id/infoText"
                 android:layout_marginBottom="30dp"
                 android:onClick="viewRoute"
                 android:layout_marginTop="20dp" />

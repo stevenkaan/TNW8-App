@@ -40,8 +40,6 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private LatLng cityLatLng;
-    private Float maxZoom = 8f;
-    private Float startingZoom = 11f;
 
     private String[] mMenuItems;
     private ListView mDrawerList;
@@ -59,12 +57,9 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        int cityID = Utils.preferences.getInt("lastCity", 0);
-
-        city = Utils.realm.where(City.class).equalTo("id", cityID).findFirst();
+        city = Utils.realm.where(City.class).equalTo("id", Utils.city_id).findFirst();
 
         setTitle(city.getName());
-        cityLatLng = new LatLng(city.getLatitude(), city.getLongitude());
 
         MapFragment mapFrag = (MapFragment)getFragmentManager().findFragmentById(R.id.map);
 
@@ -161,13 +156,16 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        cityLatLng = new LatLng(city.getLatitude(), city.getLongitude());
+
+
         mMap.setMyLocationEnabled(true);
         mMap.setOnCameraChangeListener(
                 new GoogleMap.OnCameraChangeListener() {
                     @Override
                     public void onCameraChange(CameraPosition position) {
-                        if (position.zoom < maxZoom)
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cityLatLng, maxZoom));
+                        if (position.zoom < Utils.maxZoom)
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cityLatLng, Utils.maxZoom));
                     }
                 }
         );
@@ -176,7 +174,7 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
                 .position(cityLatLng)
                 .title("Hello world"));
         //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cityLatLng, 17f));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cityLatLng, startingZoom));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cityLatLng, Utils.startingZoom));
     }
 
 }

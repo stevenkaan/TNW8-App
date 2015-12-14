@@ -35,12 +35,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import io.realm.Realm;
+import io.realm.RealmList;
+import nl.sightguide.sightguide.helpers.AudioDownloader;
 import nl.sightguide.sightguide.helpers.DatabaseHelper;
 import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.Utils;
 import nl.sightguide.sightguide.helpers.DownloadHelper;
+import nl.sightguide.sightguide.helpers.ImageDownloader;
 import nl.sightguide.sightguide.models.City;
 import nl.sightguide.sightguide.models.Marker;
+import nl.sightguide.sightguide.models.Route;
+import nl.sightguide.sightguide.requests.AudioRequest;
 
 public class Launcher extends AppCompatActivity {
 
@@ -149,8 +154,7 @@ public class Launcher extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             try {
-                Realm realm = Realm.getDefaultInstance();
-                realm.beginTransaction();
+                Utils.realm.beginTransaction();
 
                 JSONObject parent = new JSONObject(result).getJSONObject("city");
                 String name = parent.getString("name");
@@ -161,7 +165,7 @@ public class Launcher extends AppCompatActivity {
                 int population = parent.getInt("population");
                 int city_id = parent.getInt("id");
 
-                City city = realm.where(City.class).equalTo("id", city_id).findFirst();
+                City city = Utils.realm.where(City.class).equalTo("id", city_id).findFirst();
                 if(city == null){
                     city = new City();
                     city.setId(city_id);
@@ -174,7 +178,7 @@ public class Launcher extends AppCompatActivity {
                 city.setLongitude(longitude);
                 city.setPopulation(population);
 
-                realm.copyToRealmOrUpdate(city);
+                Utils.realm.copyToRealmOrUpdate(city);
 
 
                 JSONArray markers = parent.getJSONArray("markers");
@@ -182,10 +186,21 @@ public class Launcher extends AppCompatActivity {
                     JSONObject obj = markers.getJSONObject(i);
 
 
-                    String imgUrl = obj.getString("image");
-                    String imgName = imgUrl.substring(imgUrl.lastIndexOf('/') + 1);
+                    String imgFullUrl = obj.getString("image");
+                    String imgName = imgFullUrl.substring(imgFullUrl.lastIndexOf('/') + 1);
+                    String imgUrl = imgFullUrl.substring(0, imgFullUrl.lastIndexOf('/'));
 
-                    new DownloadHelper(Launcher.this, imgName, imgUrl, "marker");
+                    String audioFullUrl = obj.getString("audio");
+                    String audioName = audioFullUrl.substring(audioFullUrl.lastIndexOf('/') + 1);
+                    String audioUrl = audioFullUrl.substring(0, audioFullUrl.lastIndexOf('/'));
+
+                    RequestQueue rq = Volley.newRequestQueue(Launcher.this);
+
+                    ImageRequest ir = new ImageDownloader(imgName, imgUrl).execute();
+                    AudioRequest ar = new AudioDownloader(audioName, audioUrl).execute();
+
+                    rq.add(ir);
+                    rq.add(ar);
 
                     int id = obj.getInt("id");
                     int type_id = obj.getInt("type_id");
@@ -194,7 +209,7 @@ public class Launcher extends AppCompatActivity {
                     double markerLat = obj.getDouble("latitude");
                     double markerLong = obj.getDouble("longitude");
 
-                    Marker marker = realm.where(Marker.class).equalTo("id", id).findFirst();
+                    Marker marker = Utils.realm.where(Marker.class).equalTo("id", id).findFirst();
                     if(marker == null){
                         marker = new Marker();
                         marker.setId(id);
@@ -206,14 +221,55 @@ public class Launcher extends AppCompatActivity {
                     marker.setLatitude(markerLat);
                     marker.setLongitude(markerLong);
                     marker.setImage(imgName);
+                    marker.setAudio(audioName);
 
-                    realm.copyToRealmOrUpdate(marker);
+                    Utils.realm.copyToRealmOrUpdate(marker);
                 }
+
+                JSONArray routes = parent.getJSONArray("routes");
+                for(int i = 0; i < routes.length(); i++) {
+                    JSONObject obj = routes.getJSONObject(i);
+
+                    int id = obj.getInt("id");
+                    String route_name = obj.getString("name");
+                    String route_information = obj.getString("information");
+                    double distance = obj.getDouble("distance");
+                    JSONArray route_markers = obj.getJSONArray("markers");
+
+                    Route route = Utils.realm.where(Route.class).equalTo("id", id).findFirst();
+                    if(route == null){
+                        route = new Route();
+                        route.setId(city_id);
+                    }
+
+                    Log.e("Info", route_name);
+                    Log.e("Info", route_information);
+
+                    route.setName(route_name);
+                    route.setInfomation(route_information);
+                    route.setDistance(distance);
+                    route.setCity(city);
+
+
+                    RealmList<Marker> list = new RealmList<>();
+
+                    for(int x = 0; x < route_markers.length(); x++) {
+                        int marker_id = route_markers.getInt(x);
+                        Marker marker = Utils.realm.where(Marker.class).equalTo("id", marker_id).findFirst();
+                        list.add(marker);
+                    }
+
+                    route.setMarkers(list);
+                    Utils.realm.copyToRealmOrUpdate(route);
+
+                }
+                Utils.city_id = Integer.parseInt(this.city_id);
+
+
                 editor.putInt("lastCity", Integer.parseInt(this.city_id));
-                editor.putString("lastLang", this.lang);
                 editor.commit();
 
-                realm.commitTransaction();
+                Utils.realm.commitTransaction();
                 Intent intent = new Intent(Launcher.this, Home.class);
                 startActivity(intent);
 

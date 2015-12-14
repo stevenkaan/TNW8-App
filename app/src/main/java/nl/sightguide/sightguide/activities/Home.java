@@ -66,6 +66,11 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
         return true;
     }
 
+    /**
+     * Redirect users to other activities when clicking on a menu item
+     *
+     * @todo Change 3 functions to one
+     */
     public void GoToLauncher(MenuItem item){
         Intent intent = new Intent(this, Launcher.class);
         startActivity(intent);

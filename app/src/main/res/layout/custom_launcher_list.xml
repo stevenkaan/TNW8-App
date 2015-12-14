@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#FFF">
+    <TextView
+        android:id="@+id/CountryName"
+        android:layout_width="244dp"
+        android:layout_height="23dp"
+        android:text="Dit wordt het land naam"
+        android:layout_below="@+id/CityName"
+        android:textColor="#777"
+        android:layout_marginLeft="15dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:maxLength="65" />
+    <TextView
+        android:id="@+id/CityName"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:maxLength="25"
+        android:layout_width="257dp"
+        android:layout_height="25dp"
+        android:text="Stadsnaam"
+        android:layout_alignLeft="@+id/CountryName"
+        android:layout_alignStart="@+id/CountryName"
+        android:textColor="#333"
+        android:textSize="18sp"
+        android:textIsSelectable="false" />
+
+</RelativeLayout>

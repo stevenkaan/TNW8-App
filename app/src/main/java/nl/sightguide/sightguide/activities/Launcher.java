@@ -182,6 +182,7 @@ public class Launcher extends AppCompatActivity {
                     String audioUrl = audioFullUrl.substring(0, audioFullUrl.lastIndexOf('/'));
 
                     RequestQueue rq = Volley.newRequestQueue(Launcher.this);
+                    //
 
                     ImageRequest ir = new ImageDownloader(imgName, imgUrl).execute();
                     AudioRequest ar = new AudioDownloader(audioName, audioUrl).execute();

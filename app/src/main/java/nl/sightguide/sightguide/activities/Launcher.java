@@ -1,5 +1,7 @@
 package nl.sightguide.sightguide.activities;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -13,12 +15,15 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -36,6 +41,7 @@ import java.util.Iterator;
 
 import io.realm.Realm;
 import io.realm.RealmList;
+import nl.sightguide.sightguide.adapters.LauncherAdapter;
 import nl.sightguide.sightguide.helpers.AudioDownloader;
 import nl.sightguide.sightguide.helpers.DatabaseHelper;
 import nl.sightguide.sightguide.R;
@@ -43,6 +49,7 @@ import nl.sightguide.sightguide.Utils;
 import nl.sightguide.sightguide.helpers.DownloadHelper;
 import nl.sightguide.sightguide.helpers.ImageDownloader;
 import nl.sightguide.sightguide.models.City;
+import nl.sightguide.sightguide.models.LauncherCity;
 import nl.sightguide.sightguide.models.Marker;
 import nl.sightguide.sightguide.models.Route;
 import nl.sightguide.sightguide.requests.AudioRequest;
@@ -50,8 +57,8 @@ import nl.sightguide.sightguide.requests.AudioRequest;
 public class Launcher extends AppCompatActivity {
 
     ArrayAdapter<String> adapter;
-    JSONObject json;
-    JSONObject lang;
+    public JSONArray cityJSON;
+    public JSONArray lang;
     String cityName;
     int cityID;
     private SwipeRefreshLayout swipeView;
@@ -66,8 +73,11 @@ public class Launcher extends AppCompatActivity {
         setContentView(R.layout.activity_launcher);
         swipeView = (SwipeRefreshLayout) findViewById(R.id.swipe);
 
+        setTitle("Select a city");
+
         settings = getSharedPreferences("SightGuide", 0);
         editor = settings.edit();
+
 
         mydb = new DatabaseHelper(this);
 
@@ -90,38 +100,15 @@ public class Launcher extends AppCompatActivity {
 
         final ListView listView = (ListView) findViewById(R.id.view_cities);
 
-        EditText inputSearch = (EditText) findViewById(R.id.itemSearch);
-        inputSearch.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
-                Launcher.this.adapter.getFilter().filter(cs);
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable arg0) {
-            }
-        });
-
-
         registerForContextMenu(listView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Object o = listView.getItemAtPosition(position);
-                String name = o.toString();
-                try {
-                    JSONObject obj = Launcher.this.json.getJSONObject(name);
-                    Launcher.this.lang = obj.getJSONObject("lang");
-                    Launcher.this.cityID = obj.getInt("id");
-                    openContextMenu(view);
-                } catch (JSONException e) {
-                    Log.d("JSONException", e.toString());
-                }
+                LauncherCity city = (LauncherCity) view.getTag();
+                Launcher.this.lang = city.getLanguages();
+                Launcher.this.cityID = city.getId();
+
+                openContextMenu(view);
             }
         });
     }
@@ -195,6 +182,7 @@ public class Launcher extends AppCompatActivity {
                     String audioUrl = audioFullUrl.substring(0, audioFullUrl.lastIndexOf('/'));
 
                     RequestQueue rq = Volley.newRequestQueue(Launcher.this);
+                    //
 
                     ImageRequest ir = new ImageDownloader(imgName, imgUrl).execute();
                     AudioRequest ar = new AudioDownloader(audioName, audioUrl).execute();
@@ -282,28 +270,40 @@ public class Launcher extends AppCompatActivity {
     }
     private class DownloadCityTask extends AsyncTask<String, Void, String> {
 
-        private ArrayAdapter adapter;
+        private LauncherAdapter adapter;
 
         @Override
         protected String doInBackground(String... params) {
             try {
-                String result = Utils.run(Launcher.this, "http://www.stevenkaan.com/api/get_city.php");
+                String result = Utils.run(Launcher.this, "getcities/2");
 
-                JSONObject jsonObject;
                 try {
-                    JSONObject parent = new JSONObject(result);
+                    JSONArray parent = new JSONArray(result);
 
-                    jsonObject = parent.getJSONObject("cities");
-                    Launcher.this.json = jsonObject;
+                    Launcher.this.cityJSON = parent;
 
-                    ArrayList<String> items = new ArrayList<String>();
-                    for(Iterator<String> keys = jsonObject.keys(); keys.hasNext(); ){
-                        String name = keys.next();
-                        items.add(name);
+                    ArrayList<LauncherCity> items = new ArrayList<>();
+
+                    for(int i = 0; i < parent.length(); i++) {
+                        JSONObject obj = parent.getJSONObject(i);
+
+                        if(!obj.getString("get_languages").equals("none")) {
+
+                            LauncherCity city = new LauncherCity();
+
+                            city.setId(obj.getInt("id"));
+                            city.setPosition(i);
+                            city.setCountry(obj.getString("country_id"));
+                            city.setName(obj.getString("city_name"));
+
+
+                            //city.setLanguages(obj.getJSONArray("get_languages"));
+                            city.setLanguages(new JSONArray(obj.getString("get_languages")));
+
+                            items.add(city);
+                        }
                     }
-
-                    adapter = new ArrayAdapter(Launcher.this, android.R.layout.simple_list_item_1, items);
-
+                    adapter = new LauncherAdapter(Launcher.this, 1, items);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -324,16 +324,22 @@ public class Launcher extends AppCompatActivity {
     }
 
 
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         if (v.getId() == R.id.view_cities) {
-            ListView lv = (ListView) v;
-            cityName = lv.getItemAtPosition(((AdapterView.AdapterContextMenuInfo) menuInfo).position).toString();
-            menu.setHeaderTitle(cityName);
 
-            for(Iterator<String> keys = this.lang.keys(); keys.hasNext(); ){
-                String lang = keys.next();
-                menu.add(lang);
+            try {
+                for (int i = 0; i < this.lang.length(); i++) {
+                    String language = this.lang.getString(i);
+                    menu.add(language);
+                }
+            } catch (JSONException e) {
+                Log.e("JSONExceoption", e.toString());
             }
         }
     }

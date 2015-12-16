@@ -17,7 +17,7 @@ public class LauncherCity {
 
     public int getId() {return id; }
     public int getPosition() { return position; }
-    public String getCountry() { return "Nederland"; }
+    public String getCountry() { return country; }
     public String getName() { return name; }
     public JSONArray getLanguages() { return languages; }
 }

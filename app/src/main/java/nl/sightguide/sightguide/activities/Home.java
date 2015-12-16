@@ -58,6 +58,7 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
         setContentView(R.layout.activity_home);
 
         city = Utils.realm.where(City.class).equalTo("id", Utils.city_id).findFirst();
+        Log.e("id", ""+Utils.city_id);
         if(city == null){
             Log.e("ERROR", "Doesn't exists");
             setTitle("Error");
@@ -145,7 +146,7 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
                 startActivity(intent);
                 break;
             case 3:
-                intent = new Intent(this, Launcher.class);
+                intent = new Intent(this, CityList.class);
                 startActivity(intent);
                 break;
             case 4:
@@ -155,6 +156,10 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
             default:
                 break;
         }
+    }
+    public void setFilter (View v) {
+        Intent intent = new Intent(this, FilterList.class);
+        startActivity(intent);
     }
 
 

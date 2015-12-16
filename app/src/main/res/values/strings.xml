@@ -67,4 +67,9 @@
     <string name="autoplay">Autoplay</string>
     <string name="autoplay_desc">Autoplay walking routes</string>
 
+    <!-- My cities -->
+    <string name="title_activity_city_list">My cities</string>
+
+    <!-- Marker filter -->
+    <string name="title_activity_filter_list">Set Filters</string>
 </resources>

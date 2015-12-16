@@ -17,9 +17,7 @@ import nl.sightguide.sightguide.models.City;
 import nl.sightguide.sightguide.models.LauncherCity;
 import nl.sightguide.sightguide.models.Marker;
 
-/**
- * Created by Jarvis on 15/12/15.
- */
+
 public class CityListAdapter extends RealmBaseAdapter<City> implements ListAdapter {
     private final Activity activity;
 
@@ -36,9 +34,11 @@ public class CityListAdapter extends RealmBaseAdapter<City> implements ListAdapt
 
         City city = realmResults.get(position);
 
+        TextView idView = (TextView) rowView.findViewById(R.id.CityId);
         TextView nameView = (TextView) rowView.findViewById(R.id.CityName);
         TextView countryView = (TextView) rowView.findViewById(R.id.CountryName);
 
+        idView.setText(String.format("%d", city.getId()));
         nameView.setText(city.getName());
         countryView.setText(city.getCountry());
 

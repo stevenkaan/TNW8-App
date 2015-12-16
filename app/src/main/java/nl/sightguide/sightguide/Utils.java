@@ -26,7 +26,7 @@ public class Utils {
 
 
     public static String apiURL = "http://sightguide.eu:3000/";
-    //public static String apiURL = "http://stevenkaan.com/api/";
+//    public static String apiURL = "http://stevenkaan.com/api/";
 
 
 

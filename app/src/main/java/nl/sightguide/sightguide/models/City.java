@@ -36,3 +36,4 @@ public class City extends RealmObject {
     public String getImage_3() { return image_3; }
     public String getImage_4() { return image_4; }
 }
+

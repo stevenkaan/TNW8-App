@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.models.LauncherCity;
 
-public class LauncherAdapter extends ArrayAdapter<LauncherCity> {
+public class LauncherAdapter extends ArrayAdapter<LauncherCity> implements ListAdapter {
 
     private final Activity activity;
 

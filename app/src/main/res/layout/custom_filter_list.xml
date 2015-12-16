@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#FFF"
+    android:paddingLeft="15dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
+
+    <TextView
+        android:id="@+id/FilterName"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:maxLength="25"
+        android:layout_width="fill_parent"
+        android:layout_height="25dp"
+        android:text="type"
+        android:textColor="#333"
+        android:textSize="18sp"
+        android:textIsSelectable="false"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/TypeIcon"
+        android:layout_toEndOf="@+id/TypeIcon"
+        android:layout_marginLeft="15dp" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:id="@+id/CityId"
+        android:layout_below="@+id/FilterName" />
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:id="@+id/TypeIcon"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignBottom="@+id/CityId"
+        android:background="#e96745" />
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/DisplayToggle"
+        android:checked="false"
+        android:layout_alignTop="@+id/FilterName"
+        android:layout_alignRight="@+id/FilterName"
+        android:layout_alignEnd="@+id/FilterName"
+        android:layout_marginRight="15dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"/>
+
+</RelativeLayout>

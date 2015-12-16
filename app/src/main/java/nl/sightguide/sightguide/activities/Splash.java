@@ -28,7 +28,7 @@ public class Splash extends Activity {
         super.onCreate(bundle);
 
 
-        startService(new Intent(this, LocationService.class));
+        //startService(new Intent(this, LocationService.class));
 
         setContentView(R.layout.activity_splash);
 
@@ -39,11 +39,14 @@ public class Splash extends Activity {
 
         if(Utils.preferences.getBoolean("firstRun", true)){
             Utils.editor.putBoolean("firstRun", false);
+            Utils.editor.putBoolean("autoPlay", false);
+            Utils.editor.putBoolean("proximitySensor", false);
             Utils.editor.commit();
 
             Realm.deleteRealm(realmConfiguration);
         }
         Realm.setDefaultConfiguration(realmConfiguration);
+
 
         Utils.realm = Realm.getDefaultInstance();
 

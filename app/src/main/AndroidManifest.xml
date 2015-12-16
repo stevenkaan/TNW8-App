@@ -87,6 +87,24 @@
             android:parentActivityName=".activities.Home"
             android:screenOrientation="portrait" >
         </activity>
+        <activity
+            android:name=".activities.SettingList"
+            android:label="@string/title_activity_setting_list"
+            android:parentActivityName=".activities.Home"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activities.FilterList"
+            android:label="@string/title_activity_setting_list"
+            android:parentActivityName=".activities.SettingList"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activities.CityList"
+            android:label="@string/title_activity_setting_list"
+            android:parentActivityName=".activities.SettingList"
+            android:screenOrientation="portrait" >
+        </activity>
 
         <service android:name=".services.LocationService" />
 

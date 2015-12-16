@@ -147,6 +147,10 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
                 intent = new Intent(this, Launcher.class);
                 startActivity(intent);
                 break;
+            case 4:
+                intent = new Intent(this, SettingList.class);
+                startActivity(intent);
+                break;
             default:
                 break;
         }

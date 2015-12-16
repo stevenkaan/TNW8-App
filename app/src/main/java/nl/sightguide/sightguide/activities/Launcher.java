@@ -117,19 +117,13 @@ public class Launcher extends AppCompatActivity {
         private String city_id;
         private String lang;
 
-        private RequestQueue rq;
-
         @Override
         protected String doInBackground(String... params) {
             try {
-                this.city_id = "20";
-
-                if(params[0].equals("10")) {
-                    this.city_id = "10";
-                }
+                this.city_id = params[0];
                 this.lang = params[1];
 
-                String url = String.format("http://www.stevenkaan.com/api/get_markers.php?city_id=%s&lang=%s", this.city_id, this.lang);
+                String url = String.format("getcity/%s/%s", this.city_id, this.lang);
                 Log.e("URL", url);
                 return Utils.run(Launcher.this, url);
             } catch (Exception e) {
@@ -152,6 +146,8 @@ public class Launcher extends AppCompatActivity {
                 int population = parent.getInt("population");
                 int city_id = parent.getInt("id");
 
+                Log.e("Realm", "Transaction started");
+
                 City city = Utils.realm.where(City.class).equalTo("id", city_id).findFirst();
                 if(city == null){
                     city = new City();
@@ -166,7 +162,7 @@ public class Launcher extends AppCompatActivity {
                 city.setPopulation(population);
 
                 Utils.realm.copyToRealmOrUpdate(city);
-
+                Log.e("Realm", "Added or update city");
 
                 JSONArray markers = parent.getJSONArray("markers");
                 for(int i = 0; i < markers.length(); i++) {
@@ -182,7 +178,6 @@ public class Launcher extends AppCompatActivity {
                     String audioUrl = audioFullUrl.substring(0, audioFullUrl.lastIndexOf('/'));
 
                     RequestQueue rq = Volley.newRequestQueue(Launcher.this);
-                    //
 
                     ImageRequest ir = new ImageDownloader(imgName, imgUrl).execute();
                     AudioRequest ar = new AudioDownloader(audioName, audioUrl).execute();
@@ -212,6 +207,8 @@ public class Launcher extends AppCompatActivity {
                     marker.setAudio(audioName);
 
                     Utils.realm.copyToRealmOrUpdate(marker);
+                    Log.e("Realm", "Added or update marker (" + marker.getName() + ")");
+
                 }
 
                 JSONArray routes = parent.getJSONArray("routes");
@@ -230,9 +227,6 @@ public class Launcher extends AppCompatActivity {
                         route.setId(city_id);
                     }
 
-                    Log.e("Info", route_name);
-                    Log.e("Info", route_information);
-
                     route.setName(route_name);
                     route.setInfomation(route_information);
                     route.setDistance(distance);
@@ -249,6 +243,8 @@ public class Launcher extends AppCompatActivity {
 
                     route.setMarkers(list);
                     Utils.realm.copyToRealmOrUpdate(route);
+                    Log.e("Realm", "Added or update marker (" + route.getName() + ")");
+
 
                 }
                 Utils.city_id = Integer.parseInt(this.city_id);
@@ -256,6 +252,8 @@ public class Launcher extends AppCompatActivity {
 
                 editor.putInt("lastCity", Integer.parseInt(this.city_id));
                 editor.commit();
+
+                Log.e("Realm", "commiting transaction");
 
                 Utils.realm.commitTransaction();
                 Intent intent = new Intent(Launcher.this, Home.class);
@@ -265,9 +263,8 @@ public class Launcher extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-
-
     }
+
     private class DownloadCityTask extends AsyncTask<String, Void, String> {
 
         private LauncherAdapter adapter;
@@ -275,7 +272,7 @@ public class Launcher extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             try {
-                String result = Utils.run(Launcher.this, "getcities/2");
+                String result = Utils.run(Launcher.this, "getcities");
 
                 try {
                     JSONArray parent = new JSONArray(result);
@@ -287,18 +284,17 @@ public class Launcher extends AppCompatActivity {
                     for(int i = 0; i < parent.length(); i++) {
                         JSONObject obj = parent.getJSONObject(i);
 
-                        if(!obj.getString("get_languages").equals("none")) {
+                        if(!obj.getString("languages").equals("none")) {
 
                             LauncherCity city = new LauncherCity();
 
                             city.setId(obj.getInt("id"));
                             city.setPosition(i);
-                            city.setCountry(obj.getString("country_id"));
-                            city.setName(obj.getString("city_name"));
+                            city.setCountry(obj.getString("country"));
+                            city.setName(obj.getString("name"));
 
 
-                            //city.setLanguages(obj.getJSONArray("get_languages"));
-                            city.setLanguages(new JSONArray(obj.getString("get_languages")));
+                            city.setLanguages(new JSONArray(obj.getString("languages")));
 
                             items.add(city);
                         }
@@ -347,6 +343,7 @@ public class Launcher extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         String lang = item.getTitle().toString();
+        Log.e("API", "DownloadMarkers");
         new DownloadMarkers().execute(String.format("%d", cityID), lang);
         return true;
     }

@@ -24,7 +24,7 @@ public class Utils {
     public static Float maxZoom = 8f;
     public static Float startingZoom = 11f;
 
-    public static String apiURL = "http://sightguide.eu:3000/api/";
+    public static String apiURL = "http://stevenkaan.com/api/";
 
 
     public static final OkHttpClient client = new OkHttpClient();
@@ -43,19 +43,12 @@ public class Utils {
     public static String run(Context c, String url) throws IOException {
         if(checkNetwork(c) == true) {
             Request request = new Request.Builder()
-                    .url(Utils.apiURL + url)
+                    .url(Utils.apiURL + "api/" + url)
                     .build();
 
             Response response = client.newCall(request).execute();
             return response.body().string();
         }
         return null;
-    }
-    public static float dpFromPx(final Context context, final float px) {
-        return px / context.getResources().getDisplayMetrics().density;
-    }
-
-    public static float pxFromDp(final Context context, final float dp) {
-        return dp * context.getResources().getDisplayMetrics().density;
     }
 }

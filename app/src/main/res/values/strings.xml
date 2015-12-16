@@ -54,6 +54,7 @@
     <string name="drawer_open">0</string>
     <string name="drawer_close">1</string>
 
+
     <!-- Settings -->
     <string name="title_activity_setting_list">Settings</string>
     <string name="set_filters">Set filters</string>
@@ -65,4 +66,5 @@
     <string name="proximity_desc">Automatically play audio of nearby attractions</string>
     <string name="autoplay">Autoplay</string>
     <string name="autoplay_desc">Autoplay walking routes</string>
+
 </resources>

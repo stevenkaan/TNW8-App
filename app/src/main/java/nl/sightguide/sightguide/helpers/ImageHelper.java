@@ -38,8 +38,8 @@ public class ImageHelper {
         return output;
     }
 
-    public static Bitmap getImage(String image){
-        String photoPath = Environment.getExternalStorageDirectory()+"/SightGuide/Images/"+image;
+    public static Bitmap getImage(String image, String subDir){
+        String photoPath = Environment.getExternalStorageDirectory()+"/SightGuide/Images/"+subDir+"/"+image;
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         Bitmap bitmap = BitmapFactory.decodeFile(photoPath, options);

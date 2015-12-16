@@ -1,7 +1,10 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:fitsSystemWindows="true"
+    tools:context="nl.sightguide.sightguide.Test">
 
 
     <android.support.v4.widget.DrawerLayout
@@ -19,6 +22,9 @@
                 android:layout_height="fill_parent"
                 android:name="com.google.android.gms.maps.MapFragment"
                 android:id="@+id/map" />
+
+
+
         </RelativeLayout>
 
         <ListView android:id="@+id/left_drawer"
@@ -30,4 +36,11 @@
             android:dividerHeight="0dp"
             android:background="#e96745"/>
     </android.support.v4.widget.DrawerLayout>
-</RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton android:id="@+id/fab"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end" android:layout_margin="@dimen/fab_margin"
+        app:fabSize="mini"
+        android:src="@drawable/icon_types" />
+
+</android.support.design.widget.CoordinatorLayout>

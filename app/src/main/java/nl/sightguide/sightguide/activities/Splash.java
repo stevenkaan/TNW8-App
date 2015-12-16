@@ -27,8 +27,7 @@ public class Splash extends Activity {
 
         super.onCreate(bundle);
 
-
-        //startService(new Intent(this, LocationService.class));
+        startService(new Intent(this, LocationService.class));
 
         setContentView(R.layout.activity_splash);
 

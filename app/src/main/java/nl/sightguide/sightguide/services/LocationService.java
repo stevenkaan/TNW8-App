@@ -25,6 +25,15 @@ public class LocationService extends Service
         @Override
         public void onLocationChanged(Location location) {
             Log.e(TAG, "onLocationChanged: " + location);
+
+
+
+            Location l = new Location("");
+            l.setLatitude(53.2119539);
+            l.setLongitude(5.7987931);
+
+            Log.e("Distance", String.format("%f", location.distanceTo(l)));
+
             mLastLocation.set(location);
         }
         @Override

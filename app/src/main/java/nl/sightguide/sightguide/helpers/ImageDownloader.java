@@ -15,15 +15,18 @@ import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import nl.sightguide.sightguide.Utils;
+
 public class ImageDownloader implements Response.Listener<Bitmap> {
     private String name;
     private String url;
     private String baseDir = "Images";
+    private String subDir;
 
-    public ImageDownloader(String name, String url) {
+    public ImageDownloader(String name, String url, String subDir) {
         this.url = url;
         this.name = name;
-
+        this.subDir = subDir;
 
     }
 
@@ -31,7 +34,7 @@ public class ImageDownloader implements Response.Listener<Bitmap> {
         try {
             String fileName = URLEncoder.encode(name, "UTF-8");
 
-            ImageRequest ir = new ImageRequest(url + "/" + fileName.replace("+", "%20"), this, 0, 0, null, null, null);
+            ImageRequest ir = new ImageRequest(Utils.apiURL + url + "/" + fileName.replace("+", "%20"), this, 0, 0, null, null, null);
 
             return ir;
         } catch (UnsupportedEncodingException e) {
@@ -45,7 +48,7 @@ public class ImageDownloader implements Response.Listener<Bitmap> {
     public void onResponse(Bitmap response) {
         String root = Environment.getExternalStorageDirectory().toString();
 
-        File rootDir = new File(root + "/SightGuide/"+baseDir);
+        File rootDir = new File(root + "/SightGuide/"+baseDir+"/"+subDir);
         rootDir.mkdirs();
 
         File file = new File (rootDir, this.name);

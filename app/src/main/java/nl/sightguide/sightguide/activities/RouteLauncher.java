@@ -79,7 +79,7 @@ public class RouteLauncher extends AppCompatActivity implements OnMapReadyCallba
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        cityLatLng = new LatLng(city.getLatitude(), city.getLongitude());
+        cityLatLng = new LatLng(3.14, 3.14);
 
         mMap.setMyLocationEnabled(true);
         mMap.setOnCameraChangeListener(

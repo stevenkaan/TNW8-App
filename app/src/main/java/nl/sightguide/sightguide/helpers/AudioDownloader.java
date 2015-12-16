@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import nl.sightguide.sightguide.Utils;
 import nl.sightguide.sightguide.requests.AudioRequest;
 
 public class AudioDownloader implements Response.Listener<byte[]> {
@@ -30,7 +31,7 @@ public class AudioDownloader implements Response.Listener<byte[]> {
         try {
             String fileName = URLEncoder.encode(name, "UTF-8");
 
-            AudioRequest ir = new AudioRequest(url + "/" + fileName.replace("+", "%20"), this, null, null);
+            AudioRequest ir = new AudioRequest(Utils.apiURL + url + "/" + fileName.replace("+", "%20"), this, null, null);
 
             return ir;
         } catch (UnsupportedEncodingException e) {

@@ -64,7 +64,7 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
 
         ImageView imageView = (ImageView) findViewById(R.id.mainImage);
 
-        imageView.setImageBitmap(ImageHelper.getImage(marker.getImage()));
+        imageView.setImageBitmap(ImageHelper.getImage(marker.getImage_1(), "marker"));
         informationView.setText(marker.getInformation());
 
         audio = AudioHelper.getAudio(marker.getAudio());

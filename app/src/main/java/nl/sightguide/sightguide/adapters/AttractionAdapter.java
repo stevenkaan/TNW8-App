@@ -39,7 +39,7 @@ public class AttractionAdapter extends RealmBaseAdapter<Marker> implements ListA
         TextView nameView = (TextView) rowView.findViewById(R.id.Itemname);
         TextView informationView = (TextView) rowView.findViewById(R.id.ItemInfo);
 
-        Bitmap bitmap = ImageHelper.getImage(marker.getImage());
+        Bitmap bitmap = ImageHelper.getImage(marker.getImage_1(), "marker");
 
         imageView.setImageBitmap(bitmap);
         nameView.setText(marker.getName());

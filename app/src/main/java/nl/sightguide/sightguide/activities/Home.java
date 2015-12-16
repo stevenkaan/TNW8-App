@@ -58,8 +58,13 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
         setContentView(R.layout.activity_home);
 
         city = Utils.realm.where(City.class).equalTo("id", Utils.city_id).findFirst();
+        if(city == null){
+            Log.e("ERROR", "Doesn't exists");
+            setTitle("Error");
+        } else {
+            setTitle(city.getName());
+        }
 
-        setTitle(city.getName());
 
         MapFragment mapFrag = (MapFragment)getFragmentManager().findFragmentById(R.id.map);
 
@@ -74,8 +79,6 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, null, R.string.drawer_open, R.string.drawer_close) {
-
-            /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 menuOpen = false;
@@ -83,8 +86,6 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
                     item.setIcon(R.drawable.ic_menu_white_24dp);
                 }
             }
-
-            /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 menuOpen = true;
@@ -157,8 +158,8 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        cityLatLng = new LatLng(city.getLatitude(), city.getLongitude());
-
+        //cityLatLng = new LatLng(city.getLatitude(), city.getLongitude());
+        cityLatLng = new LatLng(53.2119539, 5.7987931);
 
         mMap.setMyLocationEnabled(true);
         mMap.setOnCameraChangeListener(

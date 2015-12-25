@@ -1,0 +1,54 @@
+<resources>
+    <string name="package_name">nl.sightguide.sightguide</string>
+
+    <string name="app_name">Sight Guide</string>
+
+    <!-- Torist attractions -->
+    <string name="listen_audio">Beluister audio</string>
+    <string name="title_activity_attractions">Bezienswaardigheden</string>
+
+    <!-- Walking routes -->
+    <string name="routes">Wandelroutes</string>
+    <string name="route">Wandelroute</string>
+    <string name="start_tour">Start route</string>
+    <string name="distance">Afstand</string>
+    <string name="kilometer">Km</string>
+    <string name="view_route">Bekijk route</string>
+
+    <!-- Menu drawer -->
+    <string-array name="menu_array">
+
+        <item id="1">Bezienswaardigheden</item>
+        <item id="2">Wandelroutes</item>
+        <item id="3">Stadsinformatie</item>
+        <item id="4">Mijn steden</item>
+        <item id="5">Instellingen</item>
+    </string-array>
+
+    <string name="drawer_open">0</string>
+    <string name="drawer_close">1</string>
+
+    <!-- City information -->
+    <string name="title_activity_city_info">Stadsinformatie</string>
+
+    <!-- Settings -->
+    <string name="title_activity_setting_list">Instellingen</string>
+    <string name="set_filters">Filter instellen</string>
+    <string name="set_filters_desc">Bepaal wat op de kaart getoond wordt</string>
+    <string name="set_city">Selecteer stad</string>
+    <string name="proximity_sensor">Nabijheidssensor</string>
+    <string name="proximity_desc">Audio afspelen in de buurt van bezienswaardigheden</string>
+    <string name="autoplay">Autoplay</string>
+    <string name="autoplay_desc">Wandelroutes automatisch afspelen</string>
+
+    <!-- My cities -->
+    <string name="title_activity_city_list">Mijn steden</string>
+
+    <!-- Marker filter -->
+    <string name="title_activity_filter_list">Filter instellen</string>
+
+    <!-- map -->
+    <string name="location">Mijn locatie</string>
+
+
+</resources>

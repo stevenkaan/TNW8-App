@@ -2,6 +2,7 @@ package nl.sightguide.sightguide;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
@@ -21,6 +22,7 @@ public class Utils {
     public static SharedPreferences preferences;
     public static SharedPreferences.Editor editor;
     public static int city_id;
+    public static int language;
     public static Float maxZoom = 8f;
     public static Float startingZoom = 11f;
 
@@ -55,5 +57,27 @@ public class Utils {
             return response.body().string();
         }
         return null;
+    }
+    public static boolean isConnected(final Context context) {
+        try {
+            final ConnectivityManager connMngr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            final NetworkInfo wifiNetwork = connMngr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            if (wifiNetwork != null && wifiNetwork.isConnectedOrConnecting()) { return true; }
+
+            final NetworkInfo mobileNetwork = connMngr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            if (mobileNetwork != null && mobileNetwork.isConnectedOrConnecting()) { return true; }
+
+            final NetworkInfo activeNetwork = connMngr.getActiveNetworkInfo();
+            if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) { return true; }
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean isGPSTurnOn(final Context context) {
+        final LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        return manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 }

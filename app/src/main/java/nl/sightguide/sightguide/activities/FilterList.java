@@ -15,6 +15,7 @@ import android.widget.TextView;
 import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.Utils;
 import nl.sightguide.sightguide.adapters.FilterListAdapter;
+import nl.sightguide.sightguide.models.Route;
 import nl.sightguide.sightguide.models.Type;
 
 public class FilterList extends AppCompatActivity {
@@ -38,16 +39,22 @@ public class FilterList extends AppCompatActivity {
 
 
                 Switch toggle = (Switch) view.findViewById(R.id.DisplayToggle);
+                TextView filterType = (TextView) view.findViewById(R.id.FilterType);
+                int type  = Integer.parseInt(filterType.getText().toString());
 
+                Type selected = Utils.realm.where(Type.class).equalTo("type", type).findFirst();
+                Utils.realm.beginTransaction();
                 if(toggle.isChecked()){
                     toggle.setChecked(false);
-                    Log.e("toggle","false");
+                    Log.e("toggle", "false");
+                    selected.setDisplay(false);
                 }
                 else{
                     toggle.setChecked(true);
                     Log.e("toggle", "true");
+                    selected.setDisplay(true);
                 }
-
+                Utils.realm.commitTransaction();
 
             }
         });

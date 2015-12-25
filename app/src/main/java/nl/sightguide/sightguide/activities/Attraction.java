@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -31,6 +32,7 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
 
 
     private String attractionName;
+    private String audioFile = "";
     private int cityID;
     private int langID;
     private TextView progress;
@@ -65,7 +67,19 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
         ImageView imageView = (ImageView) findViewById(R.id.mainImage);
 
         imageView.setImageBitmap(ImageHelper.getImage(marker.getImage_1(), "marker"));
+
         informationView.setText(marker.getInformation());
+
+        audioFile = marker.getAudio();
+
+        Log.e("audio","dit: "+ audioFile);
+
+        if(audioFile == null) {
+            ImageView gradient = (ImageView) findViewById(R.id.gradient);
+            gradient.setVisibility(View.GONE);
+            RelativeLayout audioContent = (RelativeLayout) findViewById(R.id.audioContent);
+            audioContent.setVisibility(View.GONE);
+        }
 
         audio = AudioHelper.getAudio(marker.getAudio());
 
@@ -74,11 +88,11 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
         seekBar.setMax(audio.getDuration());
 
 
-        duration.setText(" / "+AudioHelper.getDuration());
+        duration.setText(" / " + AudioHelper.getDuration());
 
         updateSeekBar = new Thread() {
             @Override
-            public void run(){
+            public void run() {
                 int totalDuration = audio.getDuration();
                 int currentPosition = 0;
                 while (currentPosition < totalDuration) {
@@ -96,7 +110,7 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
 
                             }
                         });
-                    }catch (InterruptedException e){
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }

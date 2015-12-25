@@ -34,7 +34,7 @@
             android:choiceMode="singleChoice"
             android:divider="#FFF"
             android:dividerHeight="0dp"
-            android:background="#e96745"/>
+            android:background="#fff"/>
     </android.support.v4.widget.DrawerLayout>
 
     <android.support.design.widget.FloatingActionButton

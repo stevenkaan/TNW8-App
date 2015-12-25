@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -38,6 +39,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Locale;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -70,8 +72,6 @@ public class Launcher extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
         swipeView = (SwipeRefreshLayout) findViewById(R.id.swipe);
-
-        setTitle("Select a city");
 
         settings = getSharedPreferences("SightGuide", 0);
         editor = settings.edit();
@@ -111,6 +111,7 @@ public class Launcher extends AppCompatActivity {
     private class DownloadMarkers extends AsyncTask<String, Void, String> {
         private String city_id;
         private String lang;
+        private Locale locale;
 
         @Override
         protected String doInBackground(String... params) {
@@ -294,9 +295,11 @@ public class Launcher extends AppCompatActivity {
 
                     int id = obj.getInt("id");
                     String route_name = obj.getString("name");
-                    String route_information = obj.getString("information");
+                    String route_information = obj.getString("info");
                     double distance = obj.getDouble("distance");
                     JSONArray route_markers = obj.getJSONArray("markers");
+                    int start = obj.getInt("multiple_startingpoints");
+
 
                     Route route = Utils.realm.where(Route.class).equalTo("id", id).findFirst();
                     if(route == null){
@@ -308,6 +311,7 @@ public class Launcher extends AppCompatActivity {
                     route.setInfomation(route_information);
                     route.setDistance(distance);
                     route.setCity(city);
+                    route.setStart(start);
 
 
                     RealmList<Marker> list = new RealmList<>();
@@ -315,7 +319,9 @@ public class Launcher extends AppCompatActivity {
                     for(int x = 0; x < route_markers.length(); x++) {
                         int marker_id = route_markers.getInt(x);
                         Marker marker = Utils.realm.where(Marker.class).equalTo("id", marker_id).findFirst();
-                        list.add(marker);
+                        if(marker != null) {
+                            list.add(marker);
+                        }
                     }
 
                     route.setMarkers(list);
@@ -323,14 +329,48 @@ public class Launcher extends AppCompatActivity {
 
                 }
                 Utils.city_id = Integer.parseInt(this.city_id);
+                Log.v("Language: ", lang);
+                //Set locale //
+                String setLocale ;
+                if(lang.equals("nld")) {
+                    setLocale = "nl";
+                    editor.putInt("language", 0);
+                    Log.v("Language", "Language set to dutch");
+                }else if ( lang.equals("eng")){
+                    setLocale = "en";
+                    editor.putInt("language", 1);
+                    Log.v("Language", "Language set to english");
+                }else{
+                    setLocale = "es";
+                    editor.putInt("language", 2);
+                    Log.v("Language", "Language set to spanish");
+                }
 
+                locale = new Locale(setLocale);
+
+                Locale current = getResources().getConfiguration().locale;
+
+
+
+                Locale.setDefault(locale);
+                Configuration config = new Configuration();
+                config.locale = locale;
+                getBaseContext().getResources().updateConfiguration(config,
+                        getBaseContext().getResources().getDisplayMetrics());
+
+                Log.e("locale", "set: " + current);
 
                 editor.putInt("lastCity", Integer.parseInt(this.city_id));
                 editor.commit();
+                Utils.realm.commitTransaction();
 
                 Log.e("Realm", "commiting transaction");
 
-                Utils.realm.commitTransaction();
+
+
+
+
+
                 Intent intent = new Intent(Launcher.this, Home.class);
                 startActivity(intent);
 

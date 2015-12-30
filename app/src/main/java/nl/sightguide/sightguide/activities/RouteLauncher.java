@@ -15,10 +15,14 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.util.ArrayList;
 
 import io.realm.RealmList;
 import nl.sightguide.sightguide.R;
@@ -38,6 +42,15 @@ public class RouteLauncher extends AppCompatActivity implements OnMapReadyCallba
     private GoogleMap mMap;
     private LatLng cityLatLng;
     private GPSHelper gps;
+    private int markerIcon;
+    private int currentIcon;
+    private LatLng startingPoint;
+    private LatLngBounds presetBounds;
+    private LatLngBounds bounds;
+    private CameraUpdate cu;
+
+    private LatLng lastMarker;
+    private boolean firstMarker = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +142,8 @@ public class RouteLauncher extends AppCompatActivity implements OnMapReadyCallba
         mMap = googleMap;
 
         cityLatLng = new LatLng(3.14, 3.14);
+        presetBounds  = new LatLngBounds(cityLatLng,cityLatLng);
+        bounds = presetBounds;
 
         mMap.setMyLocationEnabled(true);
         mMap.setOnCameraChangeListener(
@@ -144,24 +159,129 @@ public class RouteLauncher extends AppCompatActivity implements OnMapReadyCallba
         RealmList<Marker> markers = route.getMarkers();
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
+
+        ArrayList<LatLng> locList = new ArrayList<LatLng>();
         for(int i = 0; i < markers.size(); i++) {
             Marker marker = markers.get(i);
 
             LatLng markerLatLng = new LatLng(marker.getLatitude(), marker.getLongitude());
+            locList.add(markerLatLng);
+            int SetIcon;
+            if(i == markerIcon){
+
+                startingPoint = new LatLng(marker.getLatitude(), marker.getLongitude());
+
+
+
+            }
+            switch (i+1) {
+                case 1:  SetIcon = R.drawable.marker_1;
+                    break;
+                case 2:  SetIcon = R.drawable.marker_2;
+                    break;
+                case 3:  SetIcon = R.drawable.marker_3;
+                    break;
+                case 4:  SetIcon = R.drawable.marker_4;
+                    break;
+                case 5:  SetIcon = R.drawable.marker_5;
+                    break;
+                case 6:  SetIcon = R.drawable.marker_6;
+                    break;
+                case 7:  SetIcon = R.drawable.marker_7;
+                    break;
+                case 8:  SetIcon = R.drawable.marker_8;
+                    break;
+                case 9:  SetIcon = R.drawable.marker_9;
+                    break;
+                case 10: SetIcon = R.drawable.marker_10;
+                    break;
+                case 11: SetIcon = R.drawable.marker_11;
+                    break;
+                case 12: SetIcon = R.drawable.marker_12;
+                    break;
+                case 13: SetIcon = R.drawable.marker_13;
+                    break;
+                case 14: SetIcon = R.drawable.marker_14;
+                    break;
+                case 15: SetIcon = R.drawable.marker_15;
+                    break;
+                case 16: SetIcon = R.drawable.marker_16;
+                    break;
+                case 17: SetIcon = R.drawable.marker_17;
+                    break;
+                case 18: SetIcon = R.drawable.marker_18;
+                    break;
+                case 19: SetIcon = R.drawable.marker_19;
+                    break;
+                case 20: SetIcon = R.drawable.marker_20;
+                    break;
+                default: SetIcon = R.drawable.marker_0;
+                    break;
+            }
+
+
+            // add last marker to creat loop in route begin- is also end point
+            Marker firstMarker = markers.get(0);
+            lastMarker = new LatLng(firstMarker.getLatitude(), firstMarker.getLongitude());
 
             mMap.addMarker(new MarkerOptions()
                     .position(markerLatLng)
+                    .anchor(0.5f, 0.5f)
+                    .icon(BitmapDescriptorFactory.fromResource(SetIcon))
                     .title(marker.getName()));
 
             builder.include(markerLatLng);
         }
+        locList.add(lastMarker);
+        mMap.addPolyline((new PolylineOptions()).addAll(locList)
+                .width(7)
+                .color(0xFFe96745)
+                .geodesic(false));
 
-        LatLngBounds bounds = builder.build();
+        ArrayList<LatLng> toStart = new ArrayList<LatLng>();
 
-        int padding = 50; // offset from edges of the map in pixels
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
-        mMap.animateCamera(cu);
+        // add my location
+        gps = new GPSHelper(this);
+        gps.getMyLocation();
+        LatLng myLatLng = new LatLng(gps.getLatitude(), gps.getLongitude());
+        builder.include(myLatLng);
 
-//        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cityLatLng, Utils.startingZoom));
+        if(firstMarker) {
+            toStart.add(myLatLng);
+            toStart.add(startingPoint);
+        }else{
+            Marker lastMarker = markers.get((currentIcon));
+            LatLng last = new LatLng(lastMarker.getLatitude(), lastMarker.getLongitude());
+            Marker destMarker = markers.get(markerIcon);
+            LatLng dest = new LatLng(destMarker.getLatitude(), destMarker.getLongitude());
+            toStart.add(last);
+            toStart.add(dest);
+        }
+        mMap.addPolyline((new PolylineOptions()).addAll(toStart)
+                .width(7)
+                .color(0xFF3abdbd)
+                .geodesic(false));
+
+        mMap.addMarker(new MarkerOptions()
+                .position(myLatLng)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.me))
+                .title(getString (R.string.location)));
+
+
+        bounds = builder.build();
+
+        Log.e("bounds", "" + bounds);
+        int padding = 50;
+        cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+        mMap.setMyLocationEnabled(true);
+        mMap.setOnCameraChangeListener(
+                new GoogleMap.OnCameraChangeListener() {
+                    @Override
+                    public void onCameraChange(CameraPosition position) {
+                        if (position.zoom < Utils.maxZoom)
+                            mMap.moveCamera(cu);
+                    }
+                }
+        );
     }
 }

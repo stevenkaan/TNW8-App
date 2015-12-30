@@ -43,6 +43,11 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
     Thread updateSeekBar;
     SeekBar seekBar;
     ImageView toggle;
+    private ImageView imageView;
+    private int img = 1;
+    int totalImages = 0;
+    private Marker marker;
+    int totalDuration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,34 +59,62 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
         toggle = (ImageView) findViewById(R.id.toggle);
         toggle.setOnClickListener(this);
 
+        // Get intent
         Intent intent = getIntent();
-
         attractionName = intent.getStringExtra("name");
 
-        TextView informationView = (TextView)findViewById(R.id.attrInfo);
 
-        Marker marker = Utils.realm.where(Marker.class).equalTo("name", attractionName).findFirst();
+        // get marker data
+        marker = Utils.realm.where(Marker.class).equalTo("name", attractionName).findFirst();
 
+        //set data
         setTitle(marker.getName());
 
-        ImageView imageView = (ImageView) findViewById(R.id.mainImage);
-
-        imageView.setImageBitmap(ImageHelper.getImage(marker.getImage_1(), "marker"));
-
+        TextView informationView = (TextView)findViewById(R.id.attrInfo);
+        TextView attrName = (TextView)findViewById(R.id.attractionName);
         informationView.setText(marker.getInformation());
+        attrName.setText(marker.getName());
 
+        imageView = (ImageView) findViewById(R.id.mainImage);
+
+        // set first image and count nr of images
+        if (marker.getImage_1() != null && !marker.getImage_1().isEmpty()) {
+            imageView.setImageBitmap(ImageHelper.getImage(marker.getImage_1(), "marker"));
+            totalImages++;
+            if (marker.getImage_2() != null && !marker.getImage_2().isEmpty()) {
+                totalImages++;
+                if (marker.getImage_3() != null && !marker.getImage_3().isEmpty()) {
+                    totalImages++;
+                    if (marker.getImage_4() != null && !marker.getImage_4().isEmpty()) {
+                        totalImages++;
+                    }
+                }
+            }
+        }
+
+        // check if there's audio
         audioFile = marker.getAudio();
-
-        Log.e("audio","dit: "+ audioFile);
+        Log.e("audiofile","path: "+ audioFile);
 
         if(audioFile == null) {
-            ImageView gradient = (ImageView) findViewById(R.id.gradient);
-            gradient.setVisibility(View.GONE);
-            RelativeLayout audioContent = (RelativeLayout) findViewById(R.id.audioContent);
-            audioContent.setVisibility(View.GONE);
+            RelativeLayout audio = (RelativeLayout) findViewById(R.id.audio);
+            audio.setVisibility(View.GONE);
+            RelativeLayout noAudio = (RelativeLayout) findViewById(R.id.no_audio);
+            noAudio.setVisibility(View.VISIBLE);
         }
 
         audio = AudioHelper.getAudio(marker.getAudio());
+        audio.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                Log.e("finished","true");
+                audio.seekTo(0);
+                toggle.setImageResource(R.drawable.play);
+                playing = false;
+            }
+
+        });
 
         //audio.setScreenOnWhilePlaying(true);
         audio.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
@@ -93,7 +126,7 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
         updateSeekBar = new Thread() {
             @Override
             public void run() {
-                int totalDuration = audio.getDuration();
+                totalDuration = audio.getDuration();
                 int currentPosition = 0;
                 while (currentPosition < totalDuration) {
                     try {
@@ -118,6 +151,9 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
 
         };
 
+
+
+
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -134,6 +170,13 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
                 audio.seekTo(seekBar.getProgress());
             }
         });
+        // show nav btns if more than 1 img
+        if(totalImages >  1) {
+            ImageView left = (ImageView) findViewById(R.id.left);
+            ImageView right = (ImageView) findViewById(R.id.right);
+            right.setVisibility(View.VISIBLE);
+            left.setVisibility(View.VISIBLE);
+        }
     }
     @Override
     protected void onPause(){
@@ -144,20 +187,54 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
     @Override
     public void onClick(View view){
 
-//        if(playing == false){
-//            audio.start();
-//            toggle.setImageResource(R.drawable.pause);
-//            if (updateSeekBar.getState() == Thread.State.NEW)
-//            {
-//                updateSeekBar.start();
-//            }
-//            playing = true;
-//        }else{
-//            audio.pause();
-//            toggle.setImageResource(R.drawable.play);
-//            playing = false;
-//        }
+        if(playing == false){
+            audio.start();
+            toggle.setImageResource(R.drawable.pause);
+            if (updateSeekBar.getState() == Thread.State.NEW) {
+                updateSeekBar.start();
+            }
+            playing = true;
+        }else{
+            audio.pause();
+            toggle.setImageResource(R.drawable.play);
+            playing = false;
+        }
 
+    }
+    // show next img
+    public void nextImg(View v){
+        img++;
+        if(img > totalImages){
+            img = 1;
+        }
+        setImage(img);
+    }
+    // show previous img
+    public void prevImg(View v){
+        img--;
+        if(img < 1){
+            img = totalImages;
+        }
+        setImage(img);
+    }
+    public void setImage (int img){
+        switch (img) {
+            case 1:
+                imageView.setImageBitmap(ImageHelper.getImage(marker.getImage_1(), "marker"));
+                break;
+            case 2:
+                imageView.setImageBitmap(ImageHelper.getImage(marker.getImage_2(), "marker"));
+                break;
+            case 3:
+                imageView.setImageBitmap(ImageHelper.getImage(marker.getImage_3(), "marker"));
+                break;
+            case 4:
+                imageView.setImageBitmap(ImageHelper.getImage(marker.getImage_4(), "marker"));
+                break;
+            default:
+                imageView.setImageBitmap(ImageHelper.getImage(marker.getImage_1(), "marker"));
+                break;
+        }
     }
 
 }

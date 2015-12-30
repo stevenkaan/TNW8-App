@@ -27,7 +27,7 @@ public class Utils {
     public static Float startingZoom = 11f;
 
 
-    public static String apiURL = "http://sightguide.eu:3000/";
+    public static String apiURL = "http://sightguide.eu:3000";
 //    public static String apiURL = "http://stevenkaan.com/api/";
 
 
@@ -48,9 +48,9 @@ public class Utils {
     public static String run(Context c, String url) throws IOException {
         if(checkNetwork(c) == true) {
 
-            Log.e("URL", Utils.apiURL +"api/"+ url);
+            Log.e("URL", Utils.apiURL +"/api/"+ url);
             Request request = new Request.Builder()
-                    .url(Utils.apiURL + "api/" + url)
+                    .url(Utils.apiURL + "/api/" + url)
                     .build();
 
             Response response = client.newCall(request).execute();

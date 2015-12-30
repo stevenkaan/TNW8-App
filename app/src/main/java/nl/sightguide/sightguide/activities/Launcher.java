@@ -1,5 +1,6 @@
 package nl.sightguide.sightguide.activities;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -274,15 +276,15 @@ public class Launcher extends AppCompatActivity {
                         marker.setImage_4(img4Name);
                     }
 
-//                    String audioFullUrl = obj.getString("audio");
-//                    String audioName = audioFullUrl.substring(audioFullUrl.lastIndexOf('/') + 1);
-//                    String audioUrl = audioFullUrl.substring(0, audioFullUrl.lastIndexOf('/'));
-//
-//                    AudioRequest ar = new AudioDownloader(audioName, audioUrl).execute();
-//                    rq.add(ar);
+                    String audioFullUrl = obj.getString("audio");
+                    if(!audioFullUrl.equals("null")){
+                        String audioName = audioFullUrl.substring(audioFullUrl.lastIndexOf('/') + 1);
+                        String audioUrl = audioFullUrl.substring(0, audioFullUrl.lastIndexOf('/'));
+                        marker.setAudio(audioName);
+                        AudioRequest ar = new AudioDownloader(audioName, audioUrl).execute();
+                        rq.add(ar);
+                    }
 
-
-//                    marker.setAudio(audioName);
 
                     Utils.realm.copyToRealmOrUpdate(marker);
                     Log.e("Realm", "Added or update marker (" + marker.getName() + ")");
@@ -366,11 +368,6 @@ public class Launcher extends AppCompatActivity {
 
                 Log.e("Realm", "commiting transaction");
 
-
-
-
-
-
                 Intent intent = new Intent(Launcher.this, Home.class);
                 startActivity(intent);
 
@@ -443,10 +440,21 @@ public class Launcher extends AppCompatActivity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         if (v.getId() == R.id.view_cities) {
-
+            menu.setHeaderTitle("Select language");
             try {
                 for (int i = 0; i < this.lang.length(); i++) {
                     String language = this.lang.getString(i);
+                    switch (language) {
+                        case "nld":
+                            language = "Dutch";
+                            break;
+                        case "eng":
+                            language = "English";
+                            break;
+                        case "esp":
+                            language = "Spanish";
+                            break;
+                    }
                     menu.add(language);
                 }
             } catch (JSONException e) {
@@ -458,8 +466,27 @@ public class Launcher extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         String lang = item.getTitle().toString();
+        switch (lang) {
+            case "Dutch":
+                lang = "nld";
+                break;
+            case "English":
+                lang = "eng";
+                break;
+            case "Spanish":
+                lang = "esp";
+                break;
+        }
         Log.e("API", "DownloadMarkers");
         new DownloadMarkers().execute(String.format("%d", cityID), lang);
+//        Toast.makeText(this, "Downloading city...",
+//                Toast.LENGTH_LONG).show();
+        ProgressDialog dialog = new ProgressDialog(Launcher.this);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.setMessage("Downloading city...");
+        dialog.setIndeterminate(true);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
         return true;
     }
 }

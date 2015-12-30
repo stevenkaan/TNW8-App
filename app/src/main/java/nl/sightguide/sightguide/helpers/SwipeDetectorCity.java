@@ -5,37 +5,27 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-import nl.sightguide.sightguide.activities.RouteInfo;
+import nl.sightguide.sightguide.activities.CityInfo;
 
-public class SwipeDetector implements View.OnTouchListener {
+public class SwipeDetectorCity implements View.OnTouchListener {
 
         static final String logTag = "ActivitySwipeDetector";
         private Activity activity;
         static final int MIN_DISTANCE = 100;
         private float downX, downY, upX, upY;
+        private int img = 1;
 
-        public SwipeDetector(Activity activity){
+
+        public SwipeDetectorCity(Activity activity){
             this.activity = activity;
         }
 
-        public void onRightSwipe(View v){
+        public void onRightSwipe(View v, int img){
             Log.i(logTag, "RightToLeftSwipe!");
-            RouteInfo.swipeRight(v);
         }
 
-        public void onLeftSwipe(View v){
+        public void onLeftSwipe(View v, int img){
             Log.i(logTag, "LeftToRightSwipe!");
-            RouteInfo.swipeLeft(v);
-        }
-
-        public void onDownSwipe(View v){
-            Log.i(logTag, "onTopToBottomSwipe!");
-            RouteInfo.swipeDown(v);
-        }
-
-        public void onUpSwipe(View v){
-            Log.i(logTag, "onBottomToTopSwipe!");
-            RouteInfo.swipeUp(v);
         }
 
         public boolean onTouch(View v, MotionEvent event) {
@@ -57,24 +47,19 @@ public class SwipeDetector implements View.OnTouchListener {
                     {
                         if(Math.abs(deltaX) > MIN_DISTANCE){
                             // left or right
-                            if(deltaX > 0) { this.onRightSwipe(v); return true; }
-                            if(deltaX < 0) { this.onLeftSwipe(v); return true; }
+                            if(deltaX > 0) {
+                                img++;
+                                this.onRightSwipe(v,img);
+                                return true;
+                            }
+                            if(deltaX < 0) {
+                                img--;
+                                this.onLeftSwipe(v,img);
+                                return true;
+                            }
                         }
                         else {
                             Log.i(logTag, "Horizontal Swipe was only " + Math.abs(deltaX) + " long, need at least " + MIN_DISTANCE);
-                            return false; // We don't consume the event
-                        }
-                    }
-                    // swipe vertical?
-                    else
-                    {
-                        if(Math.abs(deltaY) > MIN_DISTANCE){
-                            // top or down
-                            if(deltaY < 0) { this.onDownSwipe(v); return true; }
-                            if(deltaY > 0) { this.onUpSwipe(v); return true; }
-                        }
-                        else {
-                            Log.i(logTag, "Vertical Swipe was only " + Math.abs(deltaX) + " long, need at least " + MIN_DISTANCE);
                             return false; // We don't consume the event
                         }
                     }

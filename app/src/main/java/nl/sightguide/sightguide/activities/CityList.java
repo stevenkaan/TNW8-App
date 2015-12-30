@@ -22,6 +22,7 @@ public class CityList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_city_list);
+        setTitle(R.string.title_activity_city_list);
 
         Utils.preferences = getSharedPreferences("SightGuide", 0);
         Utils.editor = Utils.preferences.edit();

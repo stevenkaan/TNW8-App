@@ -11,7 +11,6 @@ xmlns:android="http://schemas.android.com/apk/res/android"
     android:text="Hier komt dan het begin van de volledige tekst, maar deze moet wel afgekort worden anders wordt deze veeeeel te lang."
     android:layout_below="@+id/Itemname"
     android:layout_toRightOf="@+id/icon"
-    android:layout_toEndOf="@+id/icon"
     android:textColor="#777"
     android:layout_marginLeft="15dp"
     android:ellipsize="end"
@@ -34,7 +33,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
     android:textIsSelectable="false" />
 <ImageView
     android:id="@+id/icon"
-    android:src="@drawable/icon"
+    android:src="@drawable/no_attraction"
     android:layout_width="60dp"
     android:layout_height="60dp"
     android:layout_marginTop="15dp"
@@ -42,8 +41,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
     android:scaleType="centerCrop"
     android:layout_alignParentTop="true"
     android:layout_alignParentLeft="true"
-    android:layout_marginBottom="15dp"
-    android:background="#369" />
+    android:layout_marginBottom="15dp" />
 
     <ImageView
         android:layout_width="60dp"

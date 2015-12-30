@@ -34,7 +34,7 @@ import io.realm.RealmList;
 import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.Utils;
 import nl.sightguide.sightguide.helpers.GPSHelper;
-import nl.sightguide.sightguide.helpers.SwipeDetector;
+import nl.sightguide.sightguide.helpers.SwipeDetectorRoute;
 import nl.sightguide.sightguide.models.Marker;
 import nl.sightguide.sightguide.models.Route;
 
@@ -190,7 +190,7 @@ public class RouteInfo extends AppCompatActivity implements OnMapReadyCallback {
         });
 
         // set swipe detector
-        SwipeDetector s = new SwipeDetector(this);
+        SwipeDetectorRoute s = new SwipeDetectorRoute(this);
         panel = (RelativeLayout)this.findViewById(R.id.panel);
         panel.setOnTouchListener(s);
     }
@@ -238,13 +238,8 @@ public class RouteInfo extends AppCompatActivity implements OnMapReadyCallback {
         extraInfo.setVisibility(LinearLayout.GONE);
     }
     // navigate between markers
-    public void next(View v){
 
-        if(pageSet) {
-            navNext();
-        }
-    }
-    public void navNext(){
+    public void next(View v){
         Log.i("action","loading next marker");
         RealmList<Marker> markers = route.getMarkers();
         int current = markerIcon;
@@ -269,7 +264,29 @@ public class RouteInfo extends AppCompatActivity implements OnMapReadyCallback {
         startActivity(intent);
     }
     public void previous(View v){
+
         Log.i("action","loading previous marker");
+        RealmList<Marker> markers = route.getMarkers();
+        int current = markerIcon;
+        int next = (markerIcon - 1);
+        if( markerIcon == 0){
+            next = markers.size() - 1;
+        }
+
+        int nextId = markers.get(0).getId();
+        for(int i = 0; i < markers.size(); i++) {
+            Marker thisMarker = markers.get(i);
+            if(i == next){
+                nextId = thisMarker.getId();
+            }
+        }
+        Intent intent = new Intent(this, RouteInfo.class);
+        intent.putExtra("id", routeId);
+        intent.putExtra("marker", nextId);
+        intent.putExtra("markerIcon", next);
+        intent.putExtra("currentIcon", current);
+        intent.putExtra("first", false);
+        startActivity(intent);
     }
 
 
@@ -464,7 +481,6 @@ public class RouteInfo extends AppCompatActivity implements OnMapReadyCallback {
                 }
         );
 
-        pageSet = true;
 
 
 

@@ -54,9 +54,10 @@ public class TimelineAdapter extends RealmBaseAdapter<Marker> implements ListAda
                 TextView informationView = (TextView) rowView.findViewById(R.id.ItemInfo);
                 ImageView icon = (ImageView) rowView.findViewById(R.id.icon);
 
-                Bitmap bitmap = ImageHelper.getImage(marker.getImage_1(), "marker");
-
-                icon.setImageBitmap(bitmap);
+                if (marker.getImage_1() != null && !marker.getImage_1().isEmpty()) {
+                    Bitmap bitmap = ImageHelper.getImage(marker.getImage_1(), "marker");
+                    icon.setImageBitmap(bitmap);
+                }
 
                 nameView.setText(marker.getName());
                 informationView.setText(marker.getInformation());

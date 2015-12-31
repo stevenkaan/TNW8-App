@@ -46,12 +46,10 @@ public class FilterList extends AppCompatActivity {
                 Utils.realm.beginTransaction();
                 if(toggle.isChecked()){
                     toggle.setChecked(false);
-                    Log.e("toggle", "false");
                     selected.setDisplay(false);
                 }
                 else{
                     toggle.setChecked(true);
-                    Log.e("toggle", "true");
                     selected.setDisplay(true);
                 }
                 Utils.realm.commitTransaction();

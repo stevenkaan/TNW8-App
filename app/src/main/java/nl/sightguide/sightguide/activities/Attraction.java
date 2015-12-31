@@ -33,11 +33,8 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
 
     private String attractionName;
     private String audioFile = "";
-    private int cityID;
-    private int langID;
     private TextView progress;
     private TextView duration;
-    private DatabaseHelper mydb ;
     static MediaPlayer audio;
     private boolean playing = false;
     Thread updateSeekBar;

@@ -244,12 +244,8 @@ public class RouteLauncher extends AppCompatActivity implements OnMapReadyCallba
         gps = new GPSHelper(this);
         gps.getMyLocation();
         LatLng myLatLng = new LatLng(gps.getLatitude(), gps.getLongitude());
-        builder.include(myLatLng);
 
-        if(firstMarker) {
-            toStart.add(myLatLng);
-            toStart.add(startingPoint);
-        }else{
+        if(!firstMarker) {
             Marker lastMarker = markers.get((currentIcon));
             LatLng last = new LatLng(lastMarker.getLatitude(), lastMarker.getLongitude());
             Marker destMarker = markers.get(markerIcon);

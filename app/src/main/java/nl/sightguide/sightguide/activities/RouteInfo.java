@@ -1,25 +1,22 @@
 package nl.sightguide.sightguide.activities;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
-import android.location.Location;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -33,50 +30,47 @@ import java.util.concurrent.TimeUnit;
 import io.realm.RealmList;
 import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.Utils;
+import nl.sightguide.sightguide.helpers.AudioHelper;
 import nl.sightguide.sightguide.helpers.GPSHelper;
-import nl.sightguide.sightguide.helpers.SwipeDetectorRoute;
+import nl.sightguide.sightguide.helpers.ImageHelper;
+import nl.sightguide.sightguide.helpers.MapHelper;
 import nl.sightguide.sightguide.models.Marker;
 import nl.sightguide.sightguide.models.Route;
 
 
-public class RouteInfo extends AppCompatActivity implements OnMapReadyCallback {
+public class RouteInfo extends AppCompatActivity {
 
-    private String routeName;
     private int routeId;
     private int markerId;
     private int markerIcon;
     private int currentIcon;
 
     private GoogleMap mMap;
+    private ScrollView mScrollView;
     private LatLng cityLatLng;
     private GPSHelper gps;
 
-    static final String logTag = "SwipeDetector";
-    private Activity activity;
-    static final int MIN_DISTANCE = 100;
-    private float downX, downY, upX, upY;
-
     static MediaPlayer audio;
     private boolean playing = false;
-    private TextView routeInfo;
     private TextView progress;
     private TextView duration;
     Thread updateSeekBar;
     SeekBar seekBar;
     ImageView toggle;
-    RelativeLayout panel;
     private String audioFile = "";
     private Marker marker;
-    private Marker nav;
     private Route route;
     private LatLng startingPoint;
 
     private LatLng lastMarker;
     private boolean firstMarker = true;
-    private boolean pageSet = false;
     private LatLngBounds presetBounds;
     private LatLngBounds bounds;
     private CameraUpdate cu;
+    private boolean play = false;
+    private ImageView imageView;
+    private int img = 1;
+    int totalImages = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +83,6 @@ public class RouteInfo extends AppCompatActivity implements OnMapReadyCallback {
         seekBar.setMax(audio.getDuration());
         toggle = (ImageView) findViewById(R.id.toggle);
 
-//        toggle.setOnClickListener(this);
 
         Intent intent = getIntent();
         markerId = intent.getIntExtra("marker", 0);
@@ -101,9 +94,10 @@ public class RouteInfo extends AppCompatActivity implements OnMapReadyCallback {
         markerIcon = intent.getIntExtra("markerIcon", 0);
         currentIcon = intent.getIntExtra("currentIcon", 0);
         firstMarker = intent.getBooleanExtra("first", true);
+        play = intent.getBooleanExtra("play", false);
 
-
-        setTitle(marker.getName());
+        String number = Integer.toString(markerIcon + 1)+". ";
+        setTitle(number + marker.getName());
 
 
 
@@ -111,188 +105,75 @@ public class RouteInfo extends AppCompatActivity implements OnMapReadyCallback {
         informationView.setText(marker.getInformation());
 
         TextView markerName = (TextView)findViewById(R.id.markerName);
-        markerName.setText(marker.getName());
+        markerName.setText(number + marker.getName());
 
-//        ImageView imageView = (ImageView) findViewById(R.id.mainImage);
-//        imageView.setImageBitmap(ImageHelper.getImage(marker.getImage_1(), "marker"));
+        imageView = (ImageView) findViewById(R.id.mainImage);
 
-//        audioFile = marker.getAudio();
-//
-//        if(audioFile == null) {
-//            ImageView gradient = (ImageView) findViewById(R.id.gradient);
-//            gradient.setVisibility(View.GONE);
-//            RelativeLayout audioContent = (RelativeLayout) findViewById(R.id.audioContent);
-//            audioContent.setVisibility(View.GONE);
-//        }
-//
-//        audio = AudioHelper.getAudio(marker.getAudio());
-//
-//        //audio.setScreenOnWhilePlaying(true);
-//        audio.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
-//        seekBar.setMax(audio.getDuration());
-//
-//
-//        duration.setText(" / " + AudioHelper.getDuration());
-
-        MapFragment mapFrag = (MapFragment)getFragmentManager().findFragmentById(R.id.map);
-
-        if (savedInstanceState == null) {
-            mapFrag.getMapAsync(this);
-        }
-
-        updateSeekBar = new Thread() {
-            @Override
-            public void run(){
-                int totalDuration = audio.getDuration();
-                int currentPosition = 0;
-                while (currentPosition < totalDuration) {
-                    try {
-                        sleep(1000);
-                        currentPosition = audio.getCurrentPosition();
-                        seekBar.setProgress(currentPosition);
-
-                        final String time = String.format("%d:%02d",
-                                TimeUnit.MILLISECONDS.toMinutes(currentPosition),
-                                TimeUnit.MILLISECONDS.toSeconds(currentPosition),
-                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(currentPosition)));
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                progress.setText(time);
-
-                            }
-                        });
-
-                    }catch (InterruptedException e){
-                        e.printStackTrace();
+        // set first image and count nr of images
+        if (marker.getImage_1() != null && !marker.getImage_1().isEmpty()) {
+            imageView.setImageBitmap(ImageHelper.getImage(marker.getImage_1(), "marker"));
+            totalImages++;
+            if (marker.getImage_2() != null && !marker.getImage_2().isEmpty()) {
+                totalImages++;
+                if (marker.getImage_3() != null && !marker.getImage_3().isEmpty()) {
+                    totalImages++;
+                    if (marker.getImage_4() != null && !marker.getImage_4().isEmpty()) {
+                        totalImages++;
                     }
                 }
             }
+        }
+        // show nav btns if more than 1 img
+        if(totalImages >  1) {
+            ImageView left = (ImageView) findViewById(R.id.left);
+            ImageView right = (ImageView) findViewById(R.id.right);
+            right.setVisibility(View.VISIBLE);
+            left.setVisibility(View.VISIBLE);
+        }
 
-        };
+        // set audio
+        audioFile = marker.getAudio();
+        Log.e("audiofile", "path: " + audioFile);
 
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        if(audioFile == null) {
+            RelativeLayout audio = (RelativeLayout) findViewById(R.id.audio);
+            audio.setVisibility(View.GONE);
+            RelativeLayout noAudio = (RelativeLayout) findViewById(R.id.no_audio);
+            noAudio.setVisibility(View.VISIBLE);
+        }
+        audio = AudioHelper.getAudio(marker.getAudio());
+        audio.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
+            public void onCompletion(MediaPlayer mp) {
+                audio.seekTo(0);
+                toggle.setImageResource(R.drawable.play);
+                playing = false;
+                // if autoplay is set, go to next marker and play audio
+                if(Utils.preferences.getBoolean("autoPlay", true)) {
+                    play = true;
+                    nextMarker();
+                }
             }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                audio.seekTo(seekBar.getProgress());
-            }
         });
 
-        // set swipe detector
-        SwipeDetectorRoute s = new SwipeDetectorRoute(this);
-        panel = (RelativeLayout)this.findViewById(R.id.panel);
-        panel.setOnTouchListener(s);
-    }
-    @Override
-    protected void onPause(){
-        super.onPause();
-        audio.pause();
-    }
+        audio.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
+        seekBar.setMax(audio.getDuration());
 
-//    @Override
-//    public void onClick(View view){
-//        if(view == toggle) {
-//
-//            if (playing == false) {
-//                audio.start();
-//                toggle.setImageResource(R.drawable.pause);
-//                if (updateSeekBar.getState() == Thread.State.NEW) {
-//                    updateSeekBar.start();
-//                }
-//                playing = true;
-//            } else {
-//                audio.pause();
-//                toggle.setImageResource(R.drawable.play);
-//                playing = false;
-//            }
-//        }else{
-//            Log.e("click","true");
-//        }
-//    };
-
-    public static void swipeRight(View v) {
-    }
-    public static void swipeLeft(View v) {
-    }
-    public static void swipeUp(View v) {
-
-        RelativeLayout extraInfo =(RelativeLayout)v.findViewById(R.id.extraInfo);
-        extraInfo.setVisibility(LinearLayout.VISIBLE);
-
-    }
-
-    public static void swipeDown(View v) {
-
-        RelativeLayout extraInfo =(RelativeLayout)v.findViewById(R.id.extraInfo);
-        extraInfo.setVisibility(LinearLayout.GONE);
-    }
-    // navigate between markers
-
-    public void next(View v){
-        Log.i("action","loading next marker");
-        RealmList<Marker> markers = route.getMarkers();
-        int current = markerIcon;
-        int next = (markerIcon + 1);
-        if((markers.size() -2 ) < markerIcon){
-            next = 0;
-        }
-
-        int nextId = markers.get(0).getId();
-        for(int i = 0; i < markers.size(); i++) {
-            Marker thisMarker = markers.get(i);
-            if(i == next){
-                nextId = thisMarker.getId();
-            }
-        }
-        Intent intent = new Intent(this, RouteInfo.class);
-        intent.putExtra("id", routeId);
-        intent.putExtra("marker", nextId);
-        intent.putExtra("markerIcon", next);
-        intent.putExtra("currentIcon", current);
-        intent.putExtra("first", false);
-        startActivity(intent);
-    }
-    public void previous(View v){
-
-        Log.i("action","loading previous marker");
-        RealmList<Marker> markers = route.getMarkers();
-        int current = markerIcon;
-        int next = (markerIcon - 1);
-        if( markerIcon == 0){
-            next = markers.size() - 1;
-        }
-
-        int nextId = markers.get(0).getId();
-        for(int i = 0; i < markers.size(); i++) {
-            Marker thisMarker = markers.get(i);
-            if(i == next){
-                nextId = thisMarker.getId();
-            }
-        }
-        Intent intent = new Intent(this, RouteInfo.class);
-        intent.putExtra("id", routeId);
-        intent.putExtra("marker", nextId);
-        intent.putExtra("markerIcon", next);
-        intent.putExtra("currentIcon", current);
-        intent.putExtra("first", false);
-        startActivity(intent);
-    }
+        duration.setText(" / " + AudioHelper.getDuration());
 
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+        mMap = ((MapHelper) getSupportFragmentManager().findFragmentById(R.id.fragment_map)).getMap();
+        mScrollView = (ScrollView) findViewById(R.id.sv_container);
+
+        ((MapHelper) getSupportFragmentManager().findFragmentById(R.id.fragment_map)).setListener(new MapHelper.OnTouchListener() {
+            @Override
+            public void onTouch() {
+                mScrollView.requestDisallowInterceptTouchEvent(true);
+                }
+            });
+
 
         cityLatLng = new LatLng(3.14, 3.14);
         presetBounds  = new LatLngBounds(cityLatLng,cityLatLng);
@@ -417,7 +298,7 @@ public class RouteInfo extends AppCompatActivity implements OnMapReadyCallback {
             }
 
 
-            // add last marker to creat loop in route begin- is also end point
+            // add last marker to create loop in route begin- is also endpoint
             Marker firstMarker = markers.get(0);
             lastMarker = new LatLng(firstMarker.getLatitude(), firstMarker.getLongitude());
 
@@ -441,11 +322,12 @@ public class RouteInfo extends AppCompatActivity implements OnMapReadyCallback {
         gps = new GPSHelper(this);
         gps.getMyLocation();
         LatLng myLatLng = new LatLng(gps.getLatitude(), gps.getLongitude());
-        builder.include(myLatLng);
+
 
         if(firstMarker) {
             toStart.add(myLatLng);
             toStart.add(startingPoint);
+            builder.include(myLatLng);
         }else{
             Marker lastMarker = markers.get((currentIcon));
             LatLng last = new LatLng(lastMarker.getLatitude(), lastMarker.getLongitude());
@@ -481,12 +363,176 @@ public class RouteInfo extends AppCompatActivity implements OnMapReadyCallback {
                 }
         );
 
+        updateSeekBar = new Thread() {
+            @Override
+            public void run(){
+                int totalDuration = audio.getDuration();
+                int currentPosition = 0;
+                while (currentPosition < totalDuration) {
+                    try {
+                        sleep(1000);
+                        currentPosition = audio.getCurrentPosition();
+                        seekBar.setProgress(currentPosition);
 
+                        final String time = String.format("%d:%02d",
+                                TimeUnit.MILLISECONDS.toMinutes(currentPosition),
+                                TimeUnit.MILLISECONDS.toSeconds(currentPosition),
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(currentPosition)));
 
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                progress.setText(time);
 
+                            }
+                        });
 
+                    }catch (InterruptedException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+        };
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                audio.seekTo(seekBar.getProgress());
+            }
+        });
+        if(play){
+            audio.start();
+            toggle.setImageResource(R.drawable.pause);
+            if (updateSeekBar.getState() == Thread.State.NEW) {
+                updateSeekBar.start();
+            }
+            playing = true;
+        }
 
     }
+    @Override
+    protected void onPause(){
+        super.onPause();
+        audio.pause();
+    }
+
+    public void toggle(View view){
+        if(view == toggle) {
+
+            if (playing == false) {
+                audio.start();
+                toggle.setImageResource(R.drawable.pause);
+                if (updateSeekBar.getState() == Thread.State.NEW) {
+                    updateSeekBar.start();
+                }
+                playing = true;
+            } else {
+                audio.pause();
+                toggle.setImageResource(R.drawable.play);
+                playing = false;
+            }
+        }else{
+            Log.e("click","true");
+        }
+    };
 
 
+    // navigate between markers
+    public void next(View v){
+        nextMarker();
+    }
+    public void nextMarker(){
+        RealmList<Marker> markers = route.getMarkers();
+        int current = markerIcon;
+        int next = (markerIcon + 1);
+        if((markers.size() -2 ) < markerIcon){
+            next = 0;
+        }
+
+        int nextId = markers.get(0).getId();
+        for(int i = 0; i < markers.size(); i++) {
+            Marker thisMarker = markers.get(i);
+            if(i == next){
+                nextId = thisMarker.getId();
+            }
+        }
+        Intent intent = new Intent(this, RouteInfo.class);
+        intent.putExtra("id", routeId);
+        intent.putExtra("marker", nextId);
+        intent.putExtra("markerIcon", next);
+        intent.putExtra("currentIcon", current);
+        intent.putExtra("first", false);
+        intent.putExtra("play", play);
+        startActivity(intent);
+    }
+    public void previous(View v){
+        RealmList<Marker> markers = route.getMarkers();
+        int current = markerIcon;
+        int next = (markerIcon - 1);
+        if( markerIcon == 0){
+            next = markers.size() - 1;
+        }
+
+        int nextId = markers.get(0).getId();
+        for(int i = 0; i < markers.size(); i++) {
+            Marker thisMarker = markers.get(i);
+            if(i == next){
+                nextId = thisMarker.getId();
+            }
+        }
+        Intent intent = new Intent(this, RouteInfo.class);
+        intent.putExtra("id", routeId);
+        intent.putExtra("marker", nextId);
+        intent.putExtra("markerIcon", next);
+        intent.putExtra("currentIcon", current);
+        intent.putExtra("first", false);
+        intent.putExtra("play", false);
+        startActivity(intent);
+    }
+    // show next img
+    public void nextImg(View v){
+        img++;
+        if(img > totalImages){
+            img = 1;
+        }
+        setImage(img);
+    }
+    // show previous img
+    public void prevImg(View v){
+        img--;
+        if(img < 1){
+            img = totalImages;
+        }
+        setImage(img);
+    }
+    public void setImage (int img){
+        switch (img) {
+            case 1:
+                imageView.setImageBitmap(ImageHelper.getImage(marker.getImage_1(), "marker"));
+                break;
+            case 2:
+                imageView.setImageBitmap(ImageHelper.getImage(marker.getImage_2(), "marker"));
+                break;
+            case 3:
+                imageView.setImageBitmap(ImageHelper.getImage(marker.getImage_3(), "marker"));
+                break;
+            case 4:
+                imageView.setImageBitmap(ImageHelper.getImage(marker.getImage_4(), "marker"));
+                break;
+            default:
+                imageView.setImageBitmap(ImageHelper.getImage(marker.getImage_1(), "marker"));
+                break;
+        }
+    }
 }

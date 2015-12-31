@@ -89,13 +89,13 @@
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/checkBox"
+            android:id="@+id/sensor"
             android:layout_gravity="right"
             android:checked="false"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:onClick="toggleSensor" />
+            android:onClick="ToggleSensor" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -106,7 +106,9 @@
             android:layout_below="@+id/textView43"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="3dp" />
+            android:layout_marginTop="3dp"
+            android:layout_toLeftOf="@+id/sensor"
+            android:layout_toStartOf="@+id/sensor" />
     </RelativeLayout>
     <RelativeLayout
         android:orientation="vertical" android:layout_width="match_parent"
@@ -134,7 +136,7 @@
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/checkBox2"
+            android:id="@+id/autoPlay"
             android:layout_gravity="right"
             android:checked="false"
             android:layout_centerVertical="true"
@@ -147,10 +149,11 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="@string/autoplay_desc"
-            android:layout_below="@+id/ap"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="3dp" />
+            android:layout_below="@+id/ap"
+            android:layout_toLeftOf="@+id/autoPlay"
+            android:layout_toStartOf="@+id/autoPlay" />
     </RelativeLayout>
 
 </LinearLayout>

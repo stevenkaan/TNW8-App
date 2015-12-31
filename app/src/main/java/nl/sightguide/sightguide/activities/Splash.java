@@ -131,7 +131,7 @@ public class Splash extends Activity {
 
         this.newType(0, "Musea", "Museums", "Museos", "type_0", true);
         this.newType(1, "Monumenten", "Monuments", "Monumentos", "type_1", true);
-        this.newType(2, "Markten", "Markets", "Mercados", "type_2", false);
+        this.newType(2, "Markten", "Markets", "Mercados", "type_2", true);
         this.newType(3, "Parken", "Parks", "Parqués", "type_3", false);
         this.newType(4, "Dierentuinen", "Zoos", "Jardínes zoológico", "type_4", false);
         this.newType(5, "Uitzichtpunten", "Sightseeing points", "Miradores", "type_5", false);

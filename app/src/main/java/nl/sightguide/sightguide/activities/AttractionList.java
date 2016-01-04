@@ -21,7 +21,7 @@ public class AttractionList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attraction_list);
 
-        setTitle("Tourist attractions");
+        setTitle(R.string.title_activity_attractions);
 
         AttractionAdapter adapter = new AttractionAdapter(this, Utils.realm.where(Marker.class).equalTo("city.id", Utils.city_id).findAll(), true);
 
@@ -40,10 +40,5 @@ public class AttractionList extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_attractionslist, menu);
-        return true;
     }
 }

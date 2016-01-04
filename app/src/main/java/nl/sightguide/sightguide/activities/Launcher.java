@@ -63,17 +63,41 @@ public class Launcher extends AppCompatActivity {
     public JSONArray cityJSON;
     public JSONArray lang;
 
+    private EditText input;
+    private String query = "";
+
     int cityID;
     private SwipeRefreshLayout swipeView;
 
     private static SharedPreferences settings;
     private static SharedPreferences.Editor editor;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
         swipeView = (SwipeRefreshLayout) findViewById(R.id.swipe);
+        input = (EditText) findViewById(R.id.input);
+        input.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                Log.e("input","onchange");
+                query = input.getText().toString();
+                new DownloadCityTask().execute();
+
+            }
+        });
+
 
         settings = getSharedPreferences("SightGuide", 0);
         editor = settings.edit();
@@ -205,7 +229,7 @@ public class Launcher extends AppCompatActivity {
                 }
                 city.setImage_4(city_img4Name);
 
-                Utils.realm.copyToRealmOrUpdate(city);
+                City realmCity = Utils.realm.copyToRealmOrUpdate(city);
 
 
                 JSONArray markers = parent.getJSONArray("markers");
@@ -225,7 +249,7 @@ public class Launcher extends AppCompatActivity {
                         marker = new Marker();
                         marker.setId(id);
                     }
-                    marker.setCity(city);
+                    marker.setCity(realmCity);
                     marker.setType(type);
                     marker.setName(marker_name);
                     marker.setInformation(info);
@@ -300,24 +324,26 @@ public class Launcher extends AppCompatActivity {
                     String route_information = obj.getString("info");
                     double distance = obj.getDouble("distance");
                     JSONArray route_markers = obj.getJSONArray("markers");
-                    int start = obj.getInt("multiple_startingpoints");
+                    boolean start = obj.getBoolean("multiple_startingpoints");
+                    String path = obj.getString("path");
 
 
                     Route route = Utils.realm.where(Route.class).equalTo("id", id).findFirst();
                     if(route == null){
                         route = new Route();
-                        route.setId(city_id);
+                        route.setId(id);
                     }
 
                     route.setName(route_name);
                     route.setInfomation(route_information);
                     route.setDistance(distance);
-                    route.setCity(city);
+                    route.setCity(realmCity);
                     route.setStart(start);
+                    route.setPath(path);
 
 
                     RealmList<Marker> list = new RealmList<>();
-
+                    Log.e("status", "44 route length: " + route_markers.length());
                     for(int x = 0; x < route_markers.length(); x++) {
                         int marker_id = route_markers.getInt(x);
                         Marker marker = Utils.realm.where(Marker.class).equalTo("id", marker_id).findFirst();
@@ -325,11 +351,12 @@ public class Launcher extends AppCompatActivity {
                             list.add(marker);
                         }
                     }
-
                     route.setMarkers(list);
                     Utils.realm.copyToRealmOrUpdate(route);
-
                 }
+
+                Log.e("status","4 ok");
+
                 Utils.city_id = Integer.parseInt(this.city_id);
                 Log.v("Language: ", lang);
                 //Set locale //
@@ -364,6 +391,7 @@ public class Launcher extends AppCompatActivity {
 
                 editor.putInt("lastCity", Integer.parseInt(this.city_id));
                 editor.commit();
+
                 Utils.realm.commitTransaction();
 
                 Log.e("Realm", "commiting transaction");
@@ -383,6 +411,8 @@ public class Launcher extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... params) {
+
+
             try {
                 String result = Utils.run(Launcher.this, "getcities");
 
@@ -398,18 +428,28 @@ public class Launcher extends AppCompatActivity {
 
                         if(!obj.getString("languages").equals("none")) {
 
+                            // check if search field has value, if so match results
                             LauncherCity city = new LauncherCity();
+                            if(!query.isEmpty()){
 
-                            city.setId(obj.getInt("id"));
-                            city.setPosition(i);
-                            city.setCountry(obj.getString("country"));
-                            city.setName(obj.getString("name"));
-
-
-                            city.setLanguages(new JSONArray(obj.getString("languages")));
-
-                            items.add(city);
+                                if(obj.getString("name").toLowerCase().contains(query)){
+                                    city.setId(obj.getInt("id"));
+                                    city.setPosition(i);
+                                    city.setCountry(obj.getString("country"));
+                                    city.setName(obj.getString("name"));
+                                    city.setLanguages(new JSONArray(obj.getString("languages")));
+                                    items.add(city);
+                                }
+                            }else{
+                                city.setId(obj.getInt("id"));
+                                city.setPosition(i);
+                                city.setCountry(obj.getString("country"));
+                                city.setName(obj.getString("name"));
+                                city.setLanguages(new JSONArray(obj.getString("languages")));
+                                items.add(city);
+                            }
                         }
+
                     }
                     adapter = new LauncherAdapter(Launcher.this, 1, items);
                 } catch (JSONException e) {
@@ -436,7 +476,7 @@ public class Launcher extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-
+    // show availabe languages
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         if (v.getId() == R.id.view_cities) {
@@ -463,6 +503,7 @@ public class Launcher extends AppCompatActivity {
         }
     }
 
+    // onclick language download city
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         String lang = item.getTitle().toString();
@@ -479,8 +520,6 @@ public class Launcher extends AppCompatActivity {
         }
         Log.e("API", "DownloadMarkers");
         new DownloadMarkers().execute(String.format("%d", cityID), lang);
-//        Toast.makeText(this, "Downloading city...",
-//                Toast.LENGTH_LONG).show();
         ProgressDialog dialog = new ProgressDialog(Launcher.this);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.setMessage("Downloading city...");
@@ -489,4 +528,7 @@ public class Launcher extends AppCompatActivity {
         dialog.show();
         return true;
     }
+
+
+
 }

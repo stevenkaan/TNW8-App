@@ -72,10 +72,13 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
 
     private City city;
 
+    private String label;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        Utils.preferences = getSharedPreferences("SightGuide", 0);
 
         city = Utils.realm.where(City.class).equalTo("id", Utils.city_id).findFirst();
         Log.e("id", ""+Utils.city_id);
@@ -203,7 +206,7 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
 
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
-        Log.e("nr of markers",""+attractions.size());
+        Log.e("nr of markers", "" + attractions.size());
         for(int i = 0; i < attractions.size(); i++) {
 
             Marker attraction = attractions.get(i);
@@ -274,10 +277,30 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
                         break;
                 }
 
+                if(attraction.getInformation() == null){
+                    label = attraction.getName();
+                }else{
+                    int lang = Utils.preferences.getInt("language",0);
+                    switch (lang) {
+                        case 0:
+                            label = type.getName_nl();
+                            break;
+                        case 2:
+                            label = type.getName_en();
+                            break;
+                        case 3:
+                            label = type.getName_es();
+                            break;
+                        default:
+                            label = type.getName_en();
+                            break;
+                    }
+
+                }
                 mMap.addMarker(new MarkerOptions()
                         .position(markerLatLng)
                         .icon(BitmapDescriptorFactory.fromResource(SetIcon))
-                        .title(attraction.getName()));
+                        .title(label));
 
                 Log.e("included attraction", "" + attraction.getName());
 

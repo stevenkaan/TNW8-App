@@ -129,32 +129,32 @@ public class Splash extends Activity {
         /// Add marker types to db >> id,nl,en,es,img,display
         Utils.realm.beginTransaction();
 
-        this.newType(0, "Musea", "Museums", "Museos", "type_0", true);
-        this.newType(1, "Monumenten", "Monuments", "Monumentos", "type_1", true);
-        this.newType(2, "Markten", "Markets", "Mercados", "type_2", true);
-        this.newType(3, "Parken", "Parks", "Parqués", "type_3", false);
-        this.newType(4, "Dierentuinen", "Zoos", "Jardínes zoológico", "type_4", false);
-        this.newType(5, "Uitzichtpunten", "Sightseeing points", "Miradores", "type_5", false);
-        this.newType(6, "Winkelstraten", "Shopping districts", "Tiendas", "type_6", false);
-        this.newType(7, "Restaurants", "Restaurants", "Restaurantes", "type_7", false);
+        this.newType(0, "Museum", "Museum", "Museo", "type_0", true);
+        this.newType(1, "Monument", "Monument", "Monumento", "type_1", true);
+        this.newType(2, "Markt", "Market", "Mercado", "type_2", true);
+        this.newType(3, "Park", "Park", "Parqué", "type_3", false);
+        this.newType(4, "Dierentuin", "Zoo", "Jardín zoológico", "type_4", false);
+        this.newType(5, "Uitzichtpunt", "Sightseeing point", "Mirador", "type_5", false);
+        this.newType(6, "Winkelstraat", "Shopping district", "Distrito comercial", "type_6", false);
+        this.newType(7, "Restaurant", "Restaurant", "Restaurante", "type_7", false);
         this.newType(8, "Night life", "Night life", "Vida nocturna", "type_8", false);
-        this.newType(9, "Casino's", "Casinos", "Casinos", "type_9", false);
-        this.newType(10, "Rondvaarten", "Boat trips", "Vueltas en barco", "type_10", false);
-        this.newType(11, "Bus tours", "Bus tours", "Viajes en autobús", "type_11", false);
-        this.newType(12, "Ziekenhuizen", "Hospitals", "Hospitales", "type_12", false);
-        this.newType(13, "Apotheken", "Pharmacies", "Farmacias", "type_13", false);
-        this.newType(14, "Openbare toiletten", "Public restrooms", "Baños publicos", "type_14", false);
-        this.newType(15, "Pinautomaten", "ATM machines", "Cajeros automáticos", "type_15", false);
-        this.newType(16, "Parkeerplaatsen", "Parking lots", "Plazas de aparcamiento", "type_16", false);
+        this.newType(9, "Casino", "Casino", "Casino", "type_9", false);
+        this.newType(10, "Rondvaart", "Boat trip", "Vuelta en barco", "type_10", false);
+        this.newType(11, "Bus tour", "Bus tour", "Viaje en autobús", "type_11", false);
+        this.newType(12, "Ziekenhuiz", "Hospital", "Hospital", "type_12", false);
+        this.newType(13, "Apotheek", "Pharmacy", "Farmacia", "type_13", false);
+        this.newType(14, "Openbare toilet", "Public restroom", "Baño publico", "type_14", false);
+        this.newType(15, "Pinautomaat", "ATM machine", "Cajero automático", "type_15", false);
+        this.newType(16, "Parkeerplaats", "Parking lot", "Plaza de aparcamiento", "type_16", false);
         this.newType(17, "Toeristeninformatie", "Tourist information", "Información turística", "type_17", true);
-        this.newType(18, "Luchthavens", "Airports", "Aeropuertos", "type_18", false);
-        this.newType(19, "Havens", "Harbours", "Puertos", "type_19", false);
+        this.newType(18, "Luchthaven", "Airport", "Aeropuerto", "type_18", false);
+        this.newType(19, "Haven", "Harbour", "Puerto", "type_19", false);
         this.newType(20, "Openbaar vervoer", "Public transportation", "Transporte público", "type_20", false);
-        this.newType(21, "Trein stations", "Train stations", "Estaciones de trenes", "type_21", false);
-        this.newType(22, "Metro stations", "Metro stations", "Estaciones de metro", "type_22", false);
-        this.newType(23, "Tramhaltes", "Tram stops", "Paradas de tranvía", "type_23", false);
-        this.newType(24, "Bushaltes", "Bus stops", "Paradas de autobús", "type_24", false);
-        this.newType(25, "Veerboten", "Ferries", "Ferries", "type_25", false);
+        this.newType(21, "Trein station", "Train station", "Estacion de trenes", "type_21", false);
+        this.newType(22, "Metro station", "Metro station", "Parada de metro", "type_22", false);
+        this.newType(23, "Tramhalte", "Tram stop", "Parada de tranvía", "type_23", false);
+        this.newType(24, "Bushalte", "Bus stop", "Parada de autobús", "type_24", false);
+        this.newType(25, "Veerboot", "Ferry", "Ferry", "type_25", false);
 
         Utils.realm.commitTransaction();
     }

@@ -23,6 +23,7 @@ public class AttractionAdapter extends RealmBaseAdapter<Marker> implements ListA
 
     private final Activity activity;
     private Marker marker;
+    private View rowView;
 
     public AttractionAdapter(Activity activity, RealmResults<Marker> results, boolean automaticUpdate) {
         super(activity.getApplicationContext(), results, automaticUpdate);
@@ -32,23 +33,30 @@ public class AttractionAdapter extends RealmBaseAdapter<Marker> implements ListA
     @Override
     public View getView(int position, View view, ViewGroup parent) {
 
-        LayoutInflater inflater= activity.getLayoutInflater();
-        View rowView=inflater.inflate(R.layout.custom_attraction_list, null, true);
-
         marker = realmResults.get(position);
+        LayoutInflater inflater= activity.getLayoutInflater();
 
-        ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
-        TextView nameView = (TextView) rowView.findViewById(R.id.Itemname);
-        TextView informationView = (TextView) rowView.findViewById(R.id.ItemInfo);
 
-        if (marker.getImage_1() != null && !marker.getImage_1().isEmpty()) {
-            Bitmap bitmap = ImageHelper.getImage(marker.getImage_1(), "marker");
-            imageView.setImageBitmap(bitmap);
+        // check if attraction has a description, if so show in list
+        if(!marker.getInformation().isEmpty()){
+
+            rowView = inflater.inflate(R.layout.custom_attraction_list, null, true);
+
+            ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
+            TextView nameView = (TextView) rowView.findViewById(R.id.Itemname);
+            TextView informationView = (TextView) rowView.findViewById(R.id.ItemInfo);
+
+            nameView.setText(marker.getName());
+            informationView.setText(marker.getInformation());
+            if (marker.getImage_1() != null && !marker.getImage_1().isEmpty()) {
+                Bitmap bitmap = ImageHelper.getImage(marker.getImage_1(), "marker");
+                imageView.setImageBitmap(bitmap);
+            }
+
+        }else{
+            // else return empty view
+            rowView = inflater.inflate(R.layout.custom_empty_list, null, true);
         }
-
-        nameView.setText(marker.getName());
-        informationView.setText(marker.getInformation());
-
         return rowView;
     }
 

@@ -4,9 +4,10 @@
     android:layout_height="fill_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="#FFF"
-    android:paddingLeft="15dp"
+    android:paddingLeft="20dp"
     android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:paddingBottom="10dp"
+    android:paddingRight="20dp">
     <TextView
         android:id="@+id/CountryName"
         android:layout_width="match_parent"

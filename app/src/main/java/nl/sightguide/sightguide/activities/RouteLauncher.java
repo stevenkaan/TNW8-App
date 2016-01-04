@@ -52,6 +52,8 @@ public class RouteLauncher extends AppCompatActivity implements OnMapReadyCallba
     private LatLng lastMarker;
     private boolean firstMarker = true;
 
+//    private String[] split(String regex);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +95,7 @@ public class RouteLauncher extends AppCompatActivity implements OnMapReadyCallba
 
         // Check if route has starting point
         Log.e("start",""+route.getStart());
-        if(route.getStart() == 0){
+        if(!route.getStart()){
             for(int i = 0; i < markers.size(); i++) {
                 Marker thisMarker = markers.get(i);
 
@@ -156,11 +158,14 @@ public class RouteLauncher extends AppCompatActivity implements OnMapReadyCallba
                 }
         );
 
+
+
         RealmList<Marker> markers = route.getMarkers();
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
 
         ArrayList<LatLng> locList = new ArrayList<LatLng>();
+
         for(int i = 0; i < markers.size(); i++) {
             Marker marker = markers.get(i);
 
@@ -233,7 +238,24 @@ public class RouteLauncher extends AppCompatActivity implements OnMapReadyCallba
             builder.include(markerLatLng);
         }
         locList.add(lastMarker);
-        mMap.addPolyline((new PolylineOptions()).addAll(locList)
+
+        // get path
+        ArrayList<LatLng> pathList = new ArrayList<LatLng>();
+        String path = route.getPath();
+        String delimiters = "\\]\\,\\[|\\[|\\]";
+        String[] tokensVal = path.split(delimiters);
+
+        for(int i = 1; i < tokensVal.length; i++) {
+            String fullLatLong = tokensVal[i];
+            String delimiter = "\\,";
+            String[] coordinates = fullLatLong.split(delimiter);
+            Double thisLat = Double.valueOf(coordinates[0]);
+            Double thisLng = Double.valueOf(coordinates[coordinates.length - 1]);
+
+            LatLng pathPoint = new LatLng(thisLat,thisLng);
+            pathList.add(pathPoint);
+        }
+        mMap.addPolyline((new PolylineOptions()).addAll(pathList)
                 .width(7)
                 .color(0xFFe96745)
                 .geodesic(false));
@@ -245,23 +267,11 @@ public class RouteLauncher extends AppCompatActivity implements OnMapReadyCallba
         gps.getMyLocation();
         LatLng myLatLng = new LatLng(gps.getLatitude(), gps.getLongitude());
 
-        if(!firstMarker) {
-            Marker lastMarker = markers.get((currentIcon));
-            LatLng last = new LatLng(lastMarker.getLatitude(), lastMarker.getLongitude());
-            Marker destMarker = markers.get(markerIcon);
-            LatLng dest = new LatLng(destMarker.getLatitude(), destMarker.getLongitude());
-            toStart.add(last);
-            toStart.add(dest);
-        }
-        mMap.addPolyline((new PolylineOptions()).addAll(toStart)
-                .width(7)
-                .color(0xFF3abdbd)
-                .geodesic(false));
 
         mMap.addMarker(new MarkerOptions()
                 .position(myLatLng)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.me))
-                .title(getString (R.string.location)));
+                .title(getString(R.string.location)));
 
 
         bounds = builder.build();

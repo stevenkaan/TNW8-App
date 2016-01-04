@@ -154,7 +154,7 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
+                // hoooi
             }
 
             @Override

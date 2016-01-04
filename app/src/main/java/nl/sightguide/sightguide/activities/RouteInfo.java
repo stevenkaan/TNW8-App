@@ -107,6 +107,9 @@ public class RouteInfo extends AppCompatActivity {
         TextView markerName = (TextView)findViewById(R.id.markerName);
         markerName.setText(number + marker.getName());
 
+        TextView attractionName = (TextView)findViewById(R.id.attractionName);
+        attractionName.setText(number + marker.getName());
+
         imageView = (ImageView) findViewById(R.id.mainImage);
 
         // set first image and count nr of images
@@ -124,11 +127,12 @@ public class RouteInfo extends AppCompatActivity {
             }
         }
         // show nav btns if more than 1 img
-        if(totalImages >  1) {
-            ImageView left = (ImageView) findViewById(R.id.left);
-            ImageView right = (ImageView) findViewById(R.id.right);
-            right.setVisibility(View.VISIBLE);
-            left.setVisibility(View.VISIBLE);
+        if(totalImages >  0) {
+            imageView.setVisibility(View.VISIBLE);
+            if(totalImages >  1) {
+                RelativeLayout nav = (RelativeLayout) findViewById(R.id.navButtons);
+                nav.setVisibility(View.VISIBLE);
+            }
         }
 
         // set audio
@@ -311,7 +315,23 @@ public class RouteInfo extends AppCompatActivity {
             builder.include(markerLatLng);
         }
         locList.add(lastMarker);
-        mMap.addPolyline((new PolylineOptions()).addAll(locList)
+        // get path
+        ArrayList<LatLng> pathList = new ArrayList<LatLng>();
+        String path = route.getPath();
+        String delimiters = "\\]\\,\\[|\\[|\\]";
+        String[] tokensVal = path.split(delimiters);
+
+        for(int i = 1; i < tokensVal.length; i++) {
+            String fullLatLong = tokensVal[i];
+            String delimiter = "\\,";
+            String[] coordinates = fullLatLong.split(delimiter);
+            Double thisLat = Double.valueOf(coordinates[0]);
+            Double thisLng = Double.valueOf(coordinates[coordinates.length - 1]);
+
+            LatLng pathPoint = new LatLng(thisLat,thisLng);
+            pathList.add(pathPoint);
+        }
+        mMap.addPolyline((new PolylineOptions()).addAll(pathList)
                 .width(7)
                 .color(0xFFe96745)
                 .geodesic(false));
@@ -328,13 +348,6 @@ public class RouteInfo extends AppCompatActivity {
             toStart.add(myLatLng);
             toStart.add(startingPoint);
             builder.include(myLatLng);
-        }else{
-            Marker lastMarker = markers.get((currentIcon));
-            LatLng last = new LatLng(lastMarker.getLatitude(), lastMarker.getLongitude());
-            Marker destMarker = markers.get(markerIcon);
-            LatLng dest = new LatLng(destMarker.getLatitude(), destMarker.getLongitude());
-            toStart.add(last);
-            toStart.add(dest);
         }
         mMap.addPolyline((new PolylineOptions()).addAll(toStart)
                 .width(7)

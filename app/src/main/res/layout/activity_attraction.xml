@@ -76,7 +76,8 @@
                     android:paddingLeft="15dp"
                     android:paddingRight="15dp"
                     android:textColor="#FFF"
-                    android:gravity="center_vertical" />
+                    android:gravity="center_vertical"
+                    android:textSize="16sp" />
 
             </RelativeLayout>
 

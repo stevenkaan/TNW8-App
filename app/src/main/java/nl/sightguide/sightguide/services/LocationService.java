@@ -1,110 +1,79 @@
 package nl.sightguide.sightguide.services;
 
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import io.realm.RealmList;
+import io.realm.RealmResults;
+import nl.sightguide.sightguide.Utils;
+import nl.sightguide.sightguide.broadcast.Proximity;
+import nl.sightguide.sightguide.models.City;
+import nl.sightguide.sightguide.models.Marker;
+
 public class LocationService extends Service
 {
     private static final String TAG = "BOOMBOOMTESTGPS";
     private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 1000;
-    private static final float LOCATION_DISTANCE = 10f;
+    private Proximity proximity;
 
-    private class LocationListener implements android.location.LocationListener{
-        Location mLastLocation;
-        public LocationListener(String provider) {
-            Log.e(TAG, "LocationListener " + provider);
-            mLastLocation = new Location(provider);
-        }
-        @Override
-        public void onLocationChanged(Location location) {
-            Log.e(TAG, "onLocationChanged: " + location);
-
-
-
-            Location l = new Location("");
-            l.setLatitude(53.2119539);
-            l.setLongitude(5.7987931);
-
-            Log.e("Distance", String.format("%f", location.distanceTo(l)));
-
-            mLastLocation.set(location);
-        }
-        @Override
-        public void onProviderDisabled(String provider) {
-            Log.e(TAG, "onProviderDisabled: " + provider);
-        }
-        @Override
-        public void onProviderEnabled(String provider) {
-            Log.e(TAG, "onProviderEnabled: " + provider);
-        }
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-            Log.e(TAG, "onStatusChanged: " + provider);
-        }
-    }
-    LocationListener[] mLocationListeners = new LocationListener[] {
-            new LocationListener(LocationManager.GPS_PROVIDER),
-            new LocationListener(LocationManager.NETWORK_PROVIDER)
-    };
     @Override
-    public IBinder onBind(Intent arg0)
-    {
+    public IBinder onBind(Intent arg0) {
         return null;
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e(TAG, "onStartCommand");
+
+        int id = intent.getIntExtra("city_id", 0);
+
+        Log.e("CityID", String.format("%d", id));
+
+        RealmResults<Marker> markers = Utils.realm.where(Marker.class).equalTo("city.id", intent.getIntExtra("city_id", 0)).findAll();
+
+        try {
+            for(int i = 0; i < markers.size(); i++) {
+                Marker marker = markers.get(i);
+
+                Intent intent1 = new Intent();
+
+                Log.e("ID", String.format("%d", marker.getId()));
+
+                intent1.putExtra("marker_id", marker.getId());
+                intent1.putExtra("test", "test");
+                PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(), 0, intent1, 0);
+
+                mLocationManager.addProximityAlert(marker.getLatitude(), marker.getLongitude(), 100, -1, pi);
+            }
+        } catch (SecurityException e) {
+            Log.e("Error", e.toString());
+        }
+
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
     }
     @Override
     public void onCreate() {
-        Log.e(TAG, "onCreate");
+        proximity = new Proximity();
+
+        registerReceiver(proximity, new IntentFilter("nl.sightguide.sightguide"));
+
         initializeLocationManager();
-        try {
-            mLocationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
-                    mLocationListeners[1]);
-        } catch (java.lang.SecurityException ex) {
-            Log.i(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
-        }
-        try {
-            mLocationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
-                    mLocationListeners[0]);
-        } catch (java.lang.SecurityException ex) {
-            Log.i(TAG, "fail to request location update, ignore", ex);
-        } catch (IllegalArgumentException ex) {
-            Log.d(TAG, "gps provider does not exist " + ex.getMessage());
-        }
     }
     @Override
     public void onDestroy() {
         Log.e(TAG, "onDestroy");
         super.onDestroy();
-        if (mLocationManager != null) {
-            for (int i = 0; i < mLocationListeners.length; i++) {
-                try {
-                    mLocationManager.removeUpdates(mLocationListeners[i]);
-                } catch (SecurityException ex) {
-                    Log.i(TAG, "security warning", ex);
-                } catch (Exception ex) {
-                    Log.i(TAG, "fail to remove location listners, ignore", ex);
-                }
-            }
-        }
+
+        unregisterReceiver(proximity);
     }
     private void initializeLocationManager() {
-        Log.e(TAG, "initializeLocationManager");
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }

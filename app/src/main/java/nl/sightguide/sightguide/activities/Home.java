@@ -18,22 +18,27 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import nl.sightguide.sightguide.Utils;
 import nl.sightguide.sightguide.helpers.DatabaseHelper;
 import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.models.City;
+import nl.sightguide.sightguide.models.Marker;
+import nl.sightguide.sightguide.services.LocationService;
 
 
 public class Home extends AppCompatActivity implements OnMapReadyCallback {
@@ -51,6 +56,8 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
     private boolean itemSet = false;
 
     private City city;
+    private RealmResults<Marker> markers;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,12 +72,9 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
             setTitle(city.getName());
         }
 
-
-        MapFragment mapFrag = (MapFragment)getFragmentManager().findFragmentById(R.id.map);
-
-        if (savedInstanceState == null) {
-            mapFrag.getMapAsync(this);
-        }
+        intent = new Intent(this, LocationService.class);
+        intent.putExtra("city_id", Utils.city_id);
+        startService(intent);
 
         mMenuItems = getResources().getStringArray(R.array.menu_array);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -99,12 +103,24 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
         // Set the drawer toggle as the DrawerListener
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
+        MapFragment mapFrag = (MapFragment)getFragmentManager().findFragmentById(R.id.map);
+
+        if (savedInstanceState == null) {
+            mapFrag.getMapAsync(this);
+        }
 
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        Log.e("Action", "onDestroy");
+        stopService(intent);
     }
 
 
@@ -162,25 +178,33 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        //cityLatLng = new LatLng(city.getLatitude(), city.getLongitude());
-        cityLatLng = new LatLng(53.2119539, 5.7987931);
-
         mMap.setMyLocationEnabled(true);
-        mMap.setOnCameraChangeListener(
-                new GoogleMap.OnCameraChangeListener() {
-                    @Override
-                    public void onCameraChange(CameraPosition position) {
-                        if (position.zoom < Utils.maxZoom)
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cityLatLng, Utils.maxZoom));
-                    }
-                }
-        );
 
-        mMap.addMarker(new MarkerOptions()
-                .position(cityLatLng)
-                .title("Hello world"));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cityLatLng, 17f));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cityLatLng, Utils.startingZoom));
+        RealmResults<Marker> markers = Utils.realm.where(Marker.class).equalTo("city.id", Utils.city_id).findAll();
+        if(markers.size() == 0) {
+            Log.e("onMapReady", "0 markers found");
+            Log.e("CityID", String.format("%d", Utils.city_id));
+        }
+
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+        for(int i = 0; i < markers.size(); i++) {
+            Marker marker = markers.get(i);
+
+            LatLng markerLatLng = new LatLng(marker.getLatitude(), marker.getLongitude());
+
+            mMap.addMarker(new MarkerOptions()
+                    .position(markerLatLng)
+                    .title(marker.getName()));
+
+            builder.include(markerLatLng);
+        }
+
+        LatLngBounds bounds = builder.build();
+
+        int padding = 50; // offset from edges of the map in pixels
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 500, 500, padding);
+        mMap.animateCamera(cu);
     }
 
 }

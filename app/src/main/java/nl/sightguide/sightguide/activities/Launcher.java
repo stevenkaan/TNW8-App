@@ -141,21 +141,15 @@ public class Launcher extends AppCompatActivity {
                 String country = parent.getString("country");
                 int city_id = parent.getInt("id");
 
-                Log.e("Realm", "Transaction started");
-
                 City city = Utils.realm.where(City.class).equalTo("id", city_id).findFirst();
                 if(city == null){
-
-                    Log.e("Creating", "NEW");
                     city = new City();
                     city.setId(city_id);
                 }
 
-
                 city.setName(name);
                 city.setInformation(information);
                 city.setCountry(country);
-
 
                 String city_img1 = parent.getString("image_1");
                 String city_img1Name = "";
@@ -167,7 +161,6 @@ public class Launcher extends AppCompatActivity {
                     rq.add(city_ir1);
                 }
                 city.setImage_1(city_img1Name);
-
 
                 String city_img2 = parent.getString("image_2");
                 String city_img2Name = "";
@@ -204,11 +197,11 @@ public class Launcher extends AppCompatActivity {
 
                 Utils.realm.copyToRealmOrUpdate(city);
 
-
                 JSONArray markers = parent.getJSONArray("markers");
+
+                Log.e("Total", String.format("%d", markers.length()));
                 for(int i = 0; i < markers.length(); i++) {
                     JSONObject obj = markers.getJSONObject(i);
-
 
                     int id = obj.getInt("id");
                     int type = obj.getInt("type");
@@ -273,20 +266,22 @@ public class Launcher extends AppCompatActivity {
                         marker.setImage_4(img4Name);
                     }
 
-//                    String audioFullUrl = obj.getString("audio");
-//                    String audioName = audioFullUrl.substring(audioFullUrl.lastIndexOf('/') + 1);
-//                    String audioUrl = audioFullUrl.substring(0, audioFullUrl.lastIndexOf('/'));
-//
-//                    AudioRequest ar = new AudioDownloader(audioName, audioUrl).execute();
-//                    rq.add(ar);
+                    String audio = obj.getString("audio");
+                    if(!audio.equals("null")) {
+                        String audioName = audio.substring(audio.lastIndexOf('/') + 1);
+                        String audioUrl = audio.substring(0, audio.lastIndexOf('/'));
 
+                        AudioRequest ar = new AudioDownloader(audioName, audioUrl).execute();
+                        rq.add(ar);
 
-//                    marker.setAudio(audioName);
+                        marker.setAudio(audioName);
+                    }
 
+                    Log.e("Adding marker", marker.getName());
                     Utils.realm.copyToRealmOrUpdate(marker);
-                    Log.e("Realm", "Added or update marker (" + marker.getName() + ")");
-
                 }
+
+                Log.e("Realm", "Start Route");
 
                 JSONArray routes = parent.getJSONArray("routes");
                 for(int i = 0; i < routes.length(); i++) {
@@ -294,7 +289,7 @@ public class Launcher extends AppCompatActivity {
 
                     int id = obj.getInt("id");
                     String route_name = obj.getString("name");
-                    String route_information = obj.getString("information");
+                    String route_information = obj.getString("info");
                     double distance = obj.getDouble("distance");
                     JSONArray route_markers = obj.getJSONArray("markers");
 
@@ -309,13 +304,14 @@ public class Launcher extends AppCompatActivity {
                     route.setDistance(distance);
                     route.setCity(city);
 
-
                     RealmList<Marker> list = new RealmList<>();
 
                     for(int x = 0; x < route_markers.length(); x++) {
                         int marker_id = route_markers.getInt(x);
                         Marker marker = Utils.realm.where(Marker.class).equalTo("id", marker_id).findFirst();
-                        list.add(marker);
+                        if(marker != null) {
+                            list.add(marker);
+                        }
                     }
 
                     route.setMarkers(list);
@@ -324,12 +320,12 @@ public class Launcher extends AppCompatActivity {
                 }
                 Utils.city_id = Integer.parseInt(this.city_id);
 
-
                 editor.putInt("lastCity", Integer.parseInt(this.city_id));
                 editor.commit();
 
                 Log.e("Realm", "commiting transaction");
 
+                Log.e("commitTransaction", "done");
                 Utils.realm.commitTransaction();
                 Intent intent = new Intent(Launcher.this, Home.class);
                 startActivity(intent);
@@ -394,7 +390,6 @@ public class Launcher extends AppCompatActivity {
         }
     }
 
-
     public boolean onCreateOptionsMenu(Menu menu) {
         return super.onCreateOptionsMenu(menu);
     }
@@ -403,7 +398,6 @@ public class Launcher extends AppCompatActivity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         if (v.getId() == R.id.view_cities) {
-
             try {
                 for (int i = 0; i < this.lang.length(); i++) {
                     String language = this.lang.getString(i);

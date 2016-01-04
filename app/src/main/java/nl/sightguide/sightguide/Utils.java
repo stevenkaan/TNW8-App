@@ -28,8 +28,6 @@ public class Utils {
     public static String apiURL = "http://sightguide.eu:3000/";
     //public static String apiURL = "http://stevenkaan.com/api/";
 
-
-
     public static final OkHttpClient client = new OkHttpClient();
 
     public static void toast(Context context, String text){
@@ -44,7 +42,7 @@ public class Utils {
         return ( netInfo != null && netInfo.isConnected() );
     }
     public static String run(Context c, String url) throws IOException {
-        if(checkNetwork(c) == true) {
+        if(checkNetwork(c)) {
 
             Log.e("URL", Utils.apiURL +"api/"+ url);
             Request request = new Request.Builder()

@@ -79,19 +79,6 @@ public class RouteLauncher extends AppCompatActivity implements OnMapReadyCallba
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        cityLatLng = new LatLng(3.14, 3.14);
-
-        mMap.setMyLocationEnabled(true);
-        mMap.setOnCameraChangeListener(
-                new GoogleMap.OnCameraChangeListener() {
-                    @Override
-                    public void onCameraChange(CameraPosition position) {
-                        if (position.zoom < Utils.maxZoom)
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cityLatLng, Utils.maxZoom));
-                    }
-                }
-        );
-
         RealmList<Marker> markers = route.getMarkers();
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 

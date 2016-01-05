@@ -341,9 +341,7 @@ public class Launcher extends AppCompatActivity {
                     route.setStart(start);
                     route.setPath(path);
 
-
                     RealmList<Marker> list = new RealmList<>();
-                    Log.e("status", "44 route length: " + route_markers.length());
                     for(int x = 0; x < route_markers.length(); x++) {
                         int marker_id = route_markers.getInt(x);
                         Marker marker = Utils.realm.where(Marker.class).equalTo("id", marker_id).findFirst();
@@ -355,24 +353,19 @@ public class Launcher extends AppCompatActivity {
                     Utils.realm.copyToRealmOrUpdate(route);
                 }
 
-                Log.e("status","4 ok");
-
                 Utils.city_id = Integer.parseInt(this.city_id);
-                Log.v("Language: ", lang);
+
                 //Set locale //
                 String setLocale ;
                 if(lang.equals("nld")) {
                     setLocale = "nl";
                     editor.putInt("language", 0);
-                    Log.v("Language", "Language set to dutch");
                 }else if ( lang.equals("eng")){
                     setLocale = "en";
                     editor.putInt("language", 1);
-                    Log.v("Language", "Language set to english");
                 }else{
                     setLocale = "es";
                     editor.putInt("language", 2);
-                    Log.v("Language", "Language set to spanish");
                 }
 
                 locale = new Locale(setLocale);
@@ -387,14 +380,10 @@ public class Launcher extends AppCompatActivity {
                 getBaseContext().getResources().updateConfiguration(config,
                         getBaseContext().getResources().getDisplayMetrics());
 
-                Log.e("locale", "set: " + current);
-
                 editor.putInt("lastCity", Integer.parseInt(this.city_id));
                 editor.commit();
 
                 Utils.realm.commitTransaction();
-
-                Log.e("Realm", "commiting transaction");
 
                 Intent intent = new Intent(Launcher.this, Home.class);
                 startActivity(intent);
@@ -425,8 +414,7 @@ public class Launcher extends AppCompatActivity {
 
                     for(int i = 0; i < parent.length(); i++) {
                         JSONObject obj = parent.getJSONObject(i);
-
-                        if(!obj.getString("languages").equals("none")) {
+                        if(!obj.getString("languages").equals("[]")) {
 
                             // check if search field has value, if so match results
                             LauncherCity city = new LauncherCity();

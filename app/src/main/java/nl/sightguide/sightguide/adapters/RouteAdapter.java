@@ -15,6 +15,7 @@ import nl.sightguide.sightguide.models.Route;
 public class RouteAdapter extends RealmBaseAdapter<Route> implements ListAdapter {
 
     private final Activity activity;
+    private View rowView;
 
     public RouteAdapter(Activity activity, RealmResults<Route> results, boolean automaticUpdate) {
         super(activity.getApplicationContext(), results, automaticUpdate);
@@ -24,21 +25,28 @@ public class RouteAdapter extends RealmBaseAdapter<Route> implements ListAdapter
     @Override
     public View getView(int position, View view, ViewGroup parent) {
 
-        LayoutInflater inflater= activity.getLayoutInflater();
-        View rowView=inflater.inflate(R.layout.custom_route_list, null, true);
-
         Route route = realmResults.get(position);
 
-        TextView nameView = (TextView) rowView.findViewById(R.id.Itemname);
-        TextView informationView = (TextView) rowView.findViewById(R.id.ItemInfo);
-        TextView distanceView = (TextView) rowView.findViewById(R.id.distance);
-        TextView routeId = (TextView) rowView.findViewById(R.id.RouteId);
+        if(!route.getName().isEmpty()) {
 
-        nameView.setText(route.getName());
-        informationView.setText(route.getInfomation());
-        routeId.setText(""+route.getId());
-        distanceView.setText(Double.toString(route.getDistance()));
+            LayoutInflater inflater = activity.getLayoutInflater();
+            rowView = inflater.inflate(R.layout.custom_route_list, null, true);
 
+            TextView nameView = (TextView) rowView.findViewById(R.id.Itemname);
+            TextView informationView = (TextView) rowView.findViewById(R.id.ItemInfo);
+            TextView distanceView = (TextView) rowView.findViewById(R.id.distance);
+            TextView routeId = (TextView) rowView.findViewById(R.id.RouteId);
+
+            nameView.setText(route.getName());
+            informationView.setText(route.getInfomation());
+            routeId.setText("" + route.getId());
+            distanceView.setText(Double.toString(route.getDistance()));
+
+
+        }else{
+            // else return empty view
+            rowView = inflater.inflate(R.layout.custom_empty_list, null, true);
+        }
         return rowView;
     }
 

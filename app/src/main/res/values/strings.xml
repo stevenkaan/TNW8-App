@@ -7,6 +7,12 @@
     <string name="search_city">Search city...</string>
     <string name="download_city">Select city to download</string>
 
+    <!-- Tourist attraction list -->
+    <string name="all">All</string>
+    <string name="museums">Museums</string>
+    <string name="monuments">Monuments</string>
+    <string name="noresult">No results</string>
+
     <!-- Tourist attractions -->
     <string name="listen_audio">Listen to audio</string>
     <string name="title_activity_attractions">Tourist attractions</string>

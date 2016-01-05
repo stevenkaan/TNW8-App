@@ -320,17 +320,20 @@ public class RouteInfo extends AppCompatActivity {
         String path = route.getPath();
         String delimiters = "\\]\\,\\[|\\[|\\]";
         String[] tokensVal = path.split(delimiters);
-
+        LatLng startingPoint = new LatLng(0.0,0.0);
         for(int i = 1; i < tokensVal.length; i++) {
             String fullLatLong = tokensVal[i];
             String delimiter = "\\,";
             String[] coordinates = fullLatLong.split(delimiter);
             Double thisLat = Double.valueOf(coordinates[0]);
             Double thisLng = Double.valueOf(coordinates[coordinates.length - 1]);
-
+            if(i == 1){
+                startingPoint = new LatLng(thisLat,thisLng);
+            }
             LatLng pathPoint = new LatLng(thisLat,thisLng);
             pathList.add(pathPoint);
         }
+        pathList.add(startingPoint);
         mMap.addPolyline((new PolylineOptions()).addAll(pathList)
                 .width(7)
                 .color(0xFFe96745)

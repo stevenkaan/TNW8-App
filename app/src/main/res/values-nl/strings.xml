@@ -3,9 +3,15 @@
 
     <string name="app_name">Sight Guide</string>
 
-    <!-- Torist attractions -->
+    <!-- Tourist attractions -->
     <string name="listen_audio">Beluister audio</string>
     <string name="title_activity_attractions">Bezienswaardigheden</string>
+
+    <!-- Tourist attraction list -->
+    <string name="all">Alles</string>
+    <string name="museums">Musea</string>
+    <string name="monuments">Monumenten</string>
+    <string name="noresult">Geen resultaten</string>
 
     <!-- Walking routes -->
     <string name="routes">Wandelroutes</string>

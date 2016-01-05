@@ -5,6 +5,79 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#fff">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="9dp"
+        android:background="#E96745">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <TextView
+                style="@style/tab"
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.33333333333"
+                android:id="@+id/tab1"
+                android:text="@string/all"
+                android:onClick="showAll" />
+            <TextView
+                style="@style/tab"
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.33333333333"
+                android:id="@+id/tab2"
+                android:text="@string/museums"
+                android:onClick="showMuseum" />
+            <TextView
+                style="@style/tab"
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.33333333333"
+                android:id="@+id/tab3"
+                android:text="@string/monuments"
+                android:onClick="showMonument" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:layout_marginTop="45dp">
+
+            <ImageView
+                style="@style/underline"
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.33333333333"
+                android:id="@+id/ul1" />
+            <ImageView
+                style="@style/underline"
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.33333333333"
+                android:id="@+id/ul2"
+                android:visibility="invisible" />
+            <ImageView
+                style="@style/underline"
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:layout_weight="0.33333333333"
+                android:id="@+id/ul3"
+                android:visibility="invisible" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <TextView
+        style="@style/noresult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/noResult"
+        android:text="@string/noresult"
+        android:visibility="gone" />
 
     <ListView
         android:id="@id/android:list"

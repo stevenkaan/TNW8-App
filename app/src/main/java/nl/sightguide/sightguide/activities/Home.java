@@ -1,16 +1,10 @@
 package nl.sightguide.sightguide.activities;
 
-
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -19,8 +13,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
-
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -31,19 +23,12 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.util.ArrayList;
-
-import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 import nl.sightguide.sightguide.Utils;
-import nl.sightguide.sightguide.helpers.DatabaseHelper;
 import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.helpers.GPSHelper;
 import nl.sightguide.sightguide.models.City;
 import nl.sightguide.sightguide.models.Marker;
-import nl.sightguide.sightguide.models.Route;
 import nl.sightguide.sightguide.models.Type;
 
 
@@ -81,14 +66,7 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
         Utils.preferences = getSharedPreferences("SightGuide", 0);
 
         city = Utils.realm.where(City.class).equalTo("id", Utils.city_id).findFirst();
-        Log.e("id", ""+Utils.city_id);
-        if(city == null){
-            Log.e("ERROR", "Doesn't exists");
-            setTitle("Error");
-        } else {
-            setTitle(city.getName());
-        }
-
+        setTitle(city.getName());
 
         MapFragment mapFrag = (MapFragment)getFragmentManager().findFragmentById(R.id.map);
 
@@ -138,6 +116,8 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
             SwitchView(position);
         }
     }
+
+    // open/close drawer
     public void ToggleDrawer(MenuItem item){
         this.item = item;
         itemSet = true;
@@ -151,6 +131,8 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
             menuOpen = true;
         }
     }
+
+    // Select menu item from drawer
     public void SwitchView(int item){
 
         Intent intent;
@@ -180,6 +162,8 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
                 break;
         }
     }
+
+    // Open filter activity
     public void setFilter (View v) {
         Intent intent = new Intent(this, FilterList.class);
         startActivity(intent);
@@ -206,7 +190,6 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
 
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
-        Log.e("nr of markers", "" + attractions.size());
         for(int i = 0; i < attractions.size(); i++) {
 
             Marker attraction = attractions.get(i);
@@ -277,7 +260,7 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
                         break;
                 }
 
-                if(attraction.getInformation() == null){
+                if(attraction.getInformation() != null){
                     label = attraction.getName();
                 }else{
                     int lang = Utils.preferences.getInt("language",0);
@@ -301,9 +284,6 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
                         .position(markerLatLng)
                         .icon(BitmapDescriptorFactory.fromResource(SetIcon))
                         .title(label));
-
-                Log.e("included attraction", "" + attraction.getName());
-
 
             }
 

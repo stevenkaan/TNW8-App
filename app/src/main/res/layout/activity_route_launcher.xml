@@ -26,23 +26,7 @@
                     android:name="com.google.android.gms.maps.MapFragment"
                     android:id="@+id/map" />
 
-                <android.support.design.widget.FloatingActionButton
-                    android:id="@+id/fab"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:src="@drawable/ic_directions_run_white_24dp"
-                    app:layout_anchor="@+id/mapHolder"
-                    app:layout_anchorGravity="bottom|right|end"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginRight="15dp"
-                    android:layout_marginBottom="15dp"
-                    android:onClick="startTour"
-                    app:backgroundTint="@color/ColorPrimary">
 
-                </android.support.design.widget.FloatingActionButton>
 
             </RelativeLayout>
 
@@ -107,7 +91,6 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/infoText"
-                android:textSize="15sp"
                 android:textIsSelectable="true"
                 android:layout_below="@+id/relativeLayout2"
                 android:layout_alignParentLeft="true"
@@ -115,31 +98,41 @@
                 android:layout_marginTop="15dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginLeft="20dp"
-                android:layout_marginBottom="30dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:singleLine="true"
-                android:text="no description" />
+                android:singleLine="false"
+                android:text="No description" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignBottom="@id/mapHolder"
+                android:layout_marginBottom="-26dp"
+                android:layout_marginRight="16dp"
+                android:src="@drawable/ic_directions_run_white_24dp"
+                android:onClick="startTour"
+                app:backgroundTint="@color/ColorPrimary">
+
+            </android.support.design.widget.FloatingActionButton>
 
             <Button
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/view_route"
                 android:id="@+id/button2"
                 android:background="@color/ColorPrimary"
                 android:textColor="#FFF"
                 android:textSize="18sp"
-                android:layout_below="@+id/infoText"
-                android:layout_alignLeft="@+id/infoText"
-                android:layout_alignStart="@+id/infoText"
-                android:layout_alignRight="@+id/infoText"
-                android:layout_alignEnd="@+id/infoText"
-                android:layout_marginBottom="30dp"
                 android:onClick="viewRoute"
-                android:layout_marginTop="20dp" />
-
+                android:layout_below="@+id/infoText"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_margin="20dp" />
 
         </RelativeLayout>
+
 
 
     </ScrollView>

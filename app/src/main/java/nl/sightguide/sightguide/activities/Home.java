@@ -180,11 +180,7 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
 
         gps = new GPSHelper(this);
         gps.getMyLocation();
-        LatLng myLatLng = new LatLng(gps.getLatitude(), gps.getLongitude());
-        mMap.addMarker(new MarkerOptions()
-                .position(myLatLng)
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.me))
-                .title(getString (R.string.location)));
+
 
         RealmResults<Marker> attractions = Utils.realm.where(Marker.class).equalTo("city.id", Utils.city_id).findAll();
 
@@ -280,6 +276,7 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
                     }
 
                 }
+
                 mMap.addMarker(new MarkerOptions()
                         .position(markerLatLng)
                         .icon(BitmapDescriptorFactory.fromResource(SetIcon))
@@ -301,6 +298,11 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
                 new GoogleMap.OnCameraChangeListener() {
                     @Override
                     public void onCameraChange(CameraPosition position) {
+                        LatLng myLatLng = new LatLng(gps.getLatitude(), gps.getLongitude());
+                        mMap.addMarker(new MarkerOptions()
+                                .position(myLatLng)
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.me))
+                                .title(getString (R.string.location)));
                         if (position.zoom < Utils.maxZoom)
                             mMap.moveCamera(cu);
                     }

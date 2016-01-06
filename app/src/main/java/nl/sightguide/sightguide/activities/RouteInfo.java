@@ -100,7 +100,6 @@ public class RouteInfo extends AppCompatActivity {
         setTitle(number + marker.getName());
 
 
-
         TextView informationView = (TextView)findViewById(R.id.routeInfo);
         informationView.setText(marker.getInformation());
 
@@ -137,14 +136,7 @@ public class RouteInfo extends AppCompatActivity {
 
         // set audio
         audioFile = marker.getAudio();
-        Log.e("audiofile", "path: " + audioFile);
 
-        if(audioFile == null) {
-            RelativeLayout audio = (RelativeLayout) findViewById(R.id.audio);
-            audio.setVisibility(View.GONE);
-            RelativeLayout noAudio = (RelativeLayout) findViewById(R.id.no_audio);
-            noAudio.setVisibility(View.VISIBLE);
-        }
         audio = AudioHelper.getAudio(marker.getAudio());
         audio.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
@@ -153,14 +145,24 @@ public class RouteInfo extends AppCompatActivity {
                 audio.seekTo(0);
                 toggle.setImageResource(R.drawable.play);
                 playing = false;
+
                 // if autoplay is set, go to next marker and play audio
                 if(Utils.preferences.getBoolean("autoPlay", true)) {
                     play = true;
-                    nextMarker();
+                    if(audioFile != null) {
+                        nextMarker();
+                    }
                 }
             }
 
         });
+
+        if(audioFile == null) {
+            RelativeLayout audio = (RelativeLayout) findViewById(R.id.audio);
+            audio.setVisibility(View.GONE);
+            RelativeLayout noAudio = (RelativeLayout) findViewById(R.id.no_audio);
+            noAudio.setVisibility(View.VISIBLE);
+        }
 
         audio.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
         seekBar.setMax(audio.getDuration());
@@ -348,14 +350,8 @@ public class RouteInfo extends AppCompatActivity {
 
 
         if(firstMarker) {
-            toStart.add(myLatLng);
-            toStart.add(startingPoint);
             builder.include(myLatLng);
         }
-        mMap.addPolyline((new PolylineOptions()).addAll(toStart)
-                .width(7)
-                .color(0xFF3abdbd)
-                .geodesic(false));
 
         mMap.addMarker(new MarkerOptions()
                 .position(myLatLng)

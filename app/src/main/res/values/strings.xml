@@ -16,6 +16,7 @@
     <!-- Tourist attractions -->
     <string name="listen_audio">Listen to audio</string>
     <string name="title_activity_attractions">Tourist attractions</string>
+    <string name="view_map">View on map</string>
 
     <!-- Walking routes -->
     <string name="routes">Walking Routes</string>

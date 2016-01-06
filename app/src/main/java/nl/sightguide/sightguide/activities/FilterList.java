@@ -27,7 +27,7 @@ public class FilterList extends AppCompatActivity {
         Utils.preferences = getSharedPreferences("SightGuide", 0);
         Utils.editor = Utils.preferences.edit();
 
-        FilterListAdapter adapter = new FilterListAdapter(this, Utils.realm.where(Type.class).findAll(), true);
+        FilterListAdapter adapter = new FilterListAdapter(this, Utils.realm.where(Type.class).findAll(), false);
 
         ListView listView = (ListView) findViewById(R.id.filter_list);
         listView.setAdapter(adapter);
@@ -59,5 +59,9 @@ public class FilterList extends AppCompatActivity {
 
 
 
+    }
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(this, Home.class));
     }
 }

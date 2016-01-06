@@ -104,6 +104,10 @@
             android:parentActivityName=".activities.Home"
             android:screenOrientation="portrait" >
         </activity>
+        <activity
+            android:name=".activities.Map"
+            android:screenOrientation="portrait" >
+        </activity>
 
         <service android:name=".services.LocationService" />
 

@@ -6,12 +6,14 @@
     <!-- Tourist attractions -->
     <string name="listen_audio">Escuche el audio</string>
     <string name="title_activity_attractions">Atracciones turísticas</string>
+    <string name="view_map">Ver en el mapa</string>
 
     <!-- Tourist attraction list -->
     <string name="all">Todos</string>
     <string name="museums">Museos</string>
     <string name="monuments">Monumentos</string>
     <string name="noresult">No hay resultados</string>
+
 
     <!-- Walking routes -->
     <string name="routes">Caminatas</string>

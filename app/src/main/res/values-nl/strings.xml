@@ -6,6 +6,7 @@
     <!-- Tourist attractions -->
     <string name="listen_audio">Beluister audio</string>
     <string name="title_activity_attractions">Bezienswaardigheden</string>
+    <string name="view_map">Bekijk op kaart</string>
 
     <!-- Tourist attraction list -->
     <string name="all">Alles</string>

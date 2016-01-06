@@ -2,31 +2,23 @@ package nl.sightguide.sightguide.activities;
 
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 import nl.sightguide.sightguide.Utils;
 import nl.sightguide.sightguide.helpers.AudioHelper;
-import nl.sightguide.sightguide.helpers.DatabaseHelper;
 import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.helpers.ImageHelper;
 import nl.sightguide.sightguide.models.Marker;
-import nl.sightguide.sightguide.services.AudioServices;
 
 public class Attraction extends AppCompatActivity implements View.OnClickListener {
 
@@ -232,6 +224,12 @@ public class Attraction extends AppCompatActivity implements View.OnClickListene
                 imageView.setImageBitmap(ImageHelper.getImage(marker.getImage_1(), "marker"));
                 break;
         }
+    }
+    // view attraction on map
+    public void viewMap(View v){
+        Intent intent = new Intent(this, Map.class);
+        intent.putExtra("marker_id", marker.getId());
+        startActivity(intent);
     }
 
 }

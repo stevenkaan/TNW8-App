@@ -1,8 +1,12 @@
 package nl.sightguide.sightguide.activities;
 
 
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -34,6 +38,7 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import nl.sightguide.sightguide.Utils;
+import nl.sightguide.sightguide.broadcast.Proximity;
 import nl.sightguide.sightguide.helpers.DatabaseHelper;
 import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.models.City;
@@ -72,9 +77,9 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
             setTitle(city.getName());
         }
 
-        intent = new Intent(this, LocationService.class);
-        intent.putExtra("city_id", Utils.city_id);
-        startService(intent);
+//        intent = new Intent(this, LocationService.class);
+//        intent.putExtra("city_id", Utils.city_id);
+//        startService(intent);
 
         mMenuItems = getResources().getStringArray(R.array.menu_array);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -107,6 +112,41 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
 
         if (savedInstanceState == null) {
             mapFrag.getMapAsync(this);
+        }
+
+
+
+        LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+
+        registerReceiver(new Proximity(), new IntentFilter("test"));
+
+
+
+        try {
+            Bundle extras1 = new Bundle();
+            extras1.putInt("id", 1);
+
+            Intent intent1 = new Intent("test");
+            intent1.putExtra("extra", extras1);
+
+            PendingIntent pi1 = PendingIntent.getBroadcast(getApplicationContext(), 0, intent1, 0);
+
+            lm.addProximityAlert(53.21040838064042, 5.795411467552185, 150, -1, pi1);
+
+
+            Bundle extras2 = new Bundle();
+            extras2.putInt("id", 2);
+
+            Intent intent2 = new Intent("test");
+            intent2.putExtra("extra", extras2);
+
+            PendingIntent pi2 = PendingIntent.getBroadcast(getApplicationContext(), 1, intent2, 0);
+
+            //lm.addProximityAlert(53.21240659153594, 5.79753041267395, 100, -1, pi2);
+            lm.addProximityAlert(52.80078955591138, 6.054990291595459, 100, -1, pi2);
+
+        } catch (SecurityException e) {
+            Log.e("Error", e.toString());
         }
 
     }

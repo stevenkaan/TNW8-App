@@ -195,11 +195,10 @@ public class Launcher extends AppCompatActivity {
                 }
                 city.setImage_4(city_img4Name);
 
-                Utils.realm.copyToRealmOrUpdate(city);
+                City test = Utils.realm.copyToRealmOrUpdate(city);
 
                 JSONArray markers = parent.getJSONArray("markers");
 
-                Log.e("Total", String.format("%d", markers.length()));
                 for(int i = 0; i < markers.length(); i++) {
                     JSONObject obj = markers.getJSONObject(i);
 
@@ -215,7 +214,7 @@ public class Launcher extends AppCompatActivity {
                         marker = new Marker();
                         marker.setId(id);
                     }
-                    marker.setCity(city);
+                    marker.setCity(test);
                     marker.setType(type);
                     marker.setName(marker_name);
                     marker.setInformation(info);
@@ -290,6 +289,7 @@ public class Launcher extends AppCompatActivity {
                     int id = obj.getInt("id");
                     String route_name = obj.getString("name");
                     String route_information = obj.getString("info");
+
                     double distance = obj.getDouble("distance");
                     JSONArray route_markers = obj.getJSONArray("markers");
 
@@ -302,7 +302,7 @@ public class Launcher extends AppCompatActivity {
                     route.setName(route_name);
                     route.setInfomation(route_information);
                     route.setDistance(distance);
-                    route.setCity(city);
+                    route.setCity(test);
 
                     RealmList<Marker> list = new RealmList<>();
 

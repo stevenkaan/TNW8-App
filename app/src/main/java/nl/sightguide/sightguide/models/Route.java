@@ -17,6 +17,9 @@ public class Route extends RealmObject {
 
     private RealmList<Marker> markers;
     private City city;
+    private boolean start;
+
+    private String path;
 
     public void setId(int id) { this.id = id; }
     public void setName(String name) { this.name = name; }
@@ -24,6 +27,8 @@ public class Route extends RealmObject {
     public void setDistance(double distance) { this.distance = distance; }
     public void setMarkers(RealmList<Marker> markers) { this.markers = markers; }
     public void setCity(City city) { this.city = city; }
+    public void setStart(boolean start) { this.start = start; }
+    public void setPath(String path) { this.path = path; }
 
     public int getId() { return id; }
     public String getName() { return name; }
@@ -31,4 +36,6 @@ public class Route extends RealmObject {
     public double getDistance(){ return distance; }
     public RealmList<Marker> getMarkers() { return markers; }
     public City getCity() { return city; }
+    public boolean getStart() { return start; }
+    public String getPath() { return path; }
 }

@@ -7,9 +7,12 @@
     <LinearLayout
         android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp"
         android:background="@drawable/border_bottom"
-        android:onClick="SelectCity">
+        android:onClick="SelectCity"
+        android:paddingLeft="15dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp">
 
 
         <TextView
@@ -18,22 +21,28 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/set_city"
             android:id="@+id/textView4"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:textColor="#333"
+            android:textSize="18sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="..."
-            android:id="@+id/city_name" />
+            android:id="@+id/city_name"
+            android:layout_marginTop="3dp" />
     </LinearLayout>
     <LinearLayout
         android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp"
         android:id="@+id/setFilter"
         android:background="@drawable/border_bottom"
-        android:onClick="SetFilter">
+        android:onClick="SetFilter"
+        android:paddingLeft="15dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp">
 
 
         <TextView
@@ -42,20 +51,26 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/set_filters"
             android:id="@+id/textView3"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:textColor="#333"
+            android:textSize="18sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="@string/set_filters_desc"
-            android:id="@+id/textView7" />
+            android:id="@+id/textView7"
+            android:layout_marginTop="3dp" />
     </LinearLayout>
     <RelativeLayout
         android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:background="@drawable/border_bottom">
+        android:background="@drawable/border_bottom"
+        android:paddingLeft="15dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp">
 
 
         <TextView
@@ -67,18 +82,20 @@
             android:singleLine="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:textColor="#333"
+            android:textSize="18sp" />
 
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/checkBox"
+            android:id="@+id/sensor"
             android:layout_gravity="right"
             android:checked="false"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:onClick="toggleSensor" />
+            android:onClick="ToggleSensor" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -88,13 +105,19 @@
             android:id="@+id/textView8"
             android:layout_below="@+id/textView43"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="3dp"
+            android:layout_toLeftOf="@+id/sensor"
+            android:layout_toStartOf="@+id/sensor" />
     </RelativeLayout>
     <RelativeLayout
         android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:background="@drawable/border_bottom">
+        android:background="@drawable/border_bottom"
+        android:paddingLeft="15dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp">
 
 
         <TextView
@@ -106,12 +129,14 @@
             android:singleLine="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:textColor="#333"
+            android:textSize="18sp" />
 
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/checkBox2"
+            android:id="@+id/autoPlay"
             android:layout_gravity="right"
             android:checked="false"
             android:layout_centerVertical="true"
@@ -124,9 +149,11 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="@string/autoplay_desc"
-            android:layout_below="@+id/ap"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/ap"
+            android:layout_toLeftOf="@+id/autoPlay"
+            android:layout_toStartOf="@+id/autoPlay" />
     </RelativeLayout>
 
 </LinearLayout>

@@ -4,7 +4,9 @@ package nl.sightguide.sightguide.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -20,6 +22,10 @@ public class CityList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_city_list);
+        setTitle(R.string.title_activity_city_list);
+
+        Utils.preferences = getSharedPreferences("SightGuide", 0);
+        Utils.editor = Utils.preferences.edit();
 
         CityListAdapter adapter = new CityListAdapter(this, Utils.realm.where(City.class).findAll(), true);
 
@@ -30,14 +36,26 @@ public class CityList extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                TextView val = (TextView) view.findViewById(R.id.Itemname);
-                String title = val.getText().toString();
+                TextView cityId = (TextView) view.findViewById(R.id.CityId);
+                int newId  = Integer.parseInt(cityId.getText().toString());
 
-                Intent intent = new Intent(CityList.this, Attraction.class);
-                intent.putExtra("name", title);
+                Log.e("set city: ", " set id: " + newId);
+
+                Utils.editor.putInt("lastCity", newId);
+                Utils.editor.commit();
+
+                Utils.city_id = newId;
+
+                Intent intent = new Intent(CityList.this, Home.class);
                 startActivity(intent);
+
             }
         });
+
+    }
+    public void addNew (View v){
+        Intent intent = new Intent(CityList.this, Launcher.class);
+        startActivity(intent);
     }
 
 }

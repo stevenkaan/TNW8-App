@@ -22,8 +22,6 @@ public class RouteList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_routes_list);
 
-        setTitle("Route overzicht");
-
         RealmResults<Route> results = Utils.realm.where(Route.class).equalTo("city.id", Utils.city_id).findAll();
 
         RouteAdapter adapter = new RouteAdapter(this, results, true);
@@ -38,9 +36,15 @@ public class RouteList extends AppCompatActivity {
                 TextView val = (TextView) view.findViewById(R.id.Itemname);
                 String title = val.getText().toString();
 
+                TextView routeId = (TextView) view.findViewById(R.id.RouteId);
+                int route = Integer.parseInt(routeId.getText().toString());
+
                 Intent intent = new Intent(RouteList.this, RouteLauncher.class);
                 intent.putExtra("name", title);
+                intent.putExtra("id", route);
                 startActivity(intent);
+
+
             }
         });
     }

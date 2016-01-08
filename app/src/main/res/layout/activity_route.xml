@@ -1,156 +1,211 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    xmlns:map="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#FFF">
 
-    <RelativeLayout
-        android:id="@+id/mapHolder"
+
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_above="@+id/panel">
-
-        <fragment
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:name="com.google.android.gms.maps.MapFragment"
-            android:id="@+id/map"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/panel"
         android:layout_height="wrap_content"
-        android:background="#FFF">
+        android:id="@+id/sv_container">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_alignParentBottom="false"
-            android:layout_height="145dp"
-            android:animateLayoutChanges="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="false"
-            android:id="@+id/relativeLayout">
-
-            <ImageView
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+            <fragment
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/dashboard"
-                android:layout_alignParentTop="true"
+                android:layout_height="350dp"
+                map:cameraTargetLat="40.72"
+                map:cameraTargetLng="-74.00"
+                android:id="@+id/fragment_map"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:src="@drawable/gradient"
-                android:scaleType="centerCrop" />
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="match_parent"
-                android:id="@+id/imageView2"
-                android:src="@drawable/ic_keyboard_arrow_right_white_24dp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true" />
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="match_parent"
-                android:id="@+id/imageView3"
-                android:layout_centerVertical="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:src="@drawable/ic_keyboard_arrow_left_white_24dp"
-                android:adjustViewBounds="true" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Martinitoren"
-                android:id="@+id/textView2"
                 android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/imageView3"
-                android:layout_toLeftOf="@+id/imageView2"
-                android:layout_toStartOf="@+id/imageView2"
-                android:textStyle="bold"
-                android:textColor="#FFF"
-                android:textSize="18sp"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginBottom="5dp"
-                android:gravity="center" />
+                class="nl.sightguide.sightguide.helpers.MapHelper"/>
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/toggle"
-                android:layout_centerVertical="true"
-                android:layout_alignLeft="@+id/textView2"
-                android:layout_alignStart="@+id/textView2"
-                android:src="@drawable/play" />
-
-            <SeekBar style="seekbar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/seekBar"
-                android:layout_alignTop="@+id/toggle"
-                android:layout_alignBottom="@+id/toggle"
-                android:layout_alignRight="@+id/textView2"
-                android:layout_alignEnd="@+id/textView2"
-                android:layout_toRightOf="@+id/toggle"
-                android:layout_toEndOf="@+id/toggle"
-                android:layout_marginLeft="10dp" />
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/toggle"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true">
+                android:id="@+id/no_audio"
+                android:visibility="gone">
+                <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="120dp"
+                    android:id="@+id/imageView"
+                    android:src="@drawable/gradient"
+                    android:scaleType="fitXY" />
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="0:00"
-                    android:id="@+id/progress"
-                    android:textSize="15sp"
+                    android:layout_width="match_parent"
+                    android:minHeight="50dp"
+                    android:layout_height="120dp"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="..."
+                    android:id="@+id/attractionName"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
                     android:textColor="#FFF"
-                    android:layout_alignParentTop="true"
+                    android:gravity="center|center_vertical"
+                    android:layout_toRightOf="@+id/leftArrow"
+                    android:layout_toLeftOf="@+id/rightArrow"
+                    android:layout_toStartOf="@+id/rightArrow"
+                    android:textSize="16sp" />
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/rightArrow"
+                    android:src="@drawable/ic_keyboard_arrow_right_white_24dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:onClick="next" />
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/leftArrow"
+                    android:layout_centerVertical="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:layout_marginLeft="154dp"
-                    android:layout_marginStart="154dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text=" / 0:00"
-                    android:id="@+id/duration"
-                    android:layout_alignBottom="@+id/progress"
-                    android:layout_toRightOf="@+id/progress"
-                    android:layout_toEndOf="@+id/progress"
-                    android:textSize="15sp"
-                    android:textColor="#FFF" />
+                    android:src="@drawable/ic_keyboard_arrow_left_white_24dp"
+                    android:adjustViewBounds="true"
+                    android:onClick="previous" />
 
             </RelativeLayout>
 
 
-        </RelativeLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:id="@+id/extraInfo"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="155dp"
-            android:visibility="gone">
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:id="@+id/imageView8"
-                android:background="#369"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="5dp" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/audio"
+                android:visibility="visible">
+                <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="120dp"
+                    android:id="@+id/gradient"
+                    android:src="@drawable/gradient"
+                    android:layout_below="@+id/mainImage"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:scaleType="fitXY"
+                    android:elevation="-1dp" />
+
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/audioContent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="20dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/listen_audio"
+                        android:id="@+id/markerName"
+                        android:layout_centerHorizontal="true"
+                        android:textColor="#FFF"
+                        android:singleLine="true"
+                        android:gravity="center"
+                        android:textSize="16sp"
+                        android:textAlignment="center"
+                        android:layout_marginBottom="10dp" />
+
+                </RelativeLayout>
+
+                <ImageView
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:text="Play"
+                    android:src="@drawable/play"
+                    android:id="@+id/toggle"
+                    android:layout_weight="0.75"
+                    android:onClick="toggle"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/imageView3"
+                    android:layout_toEndOf="@+id/imageView3" />
+
+                <SeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/seekBar"
+                    android:layout_weight="0.75"
+                    android:gravity="center"
+                    android:indeterminate="false"
+                    android:layout_alignWithParentIfMissing="false"
+                    android:thumbTint="#3abdbd"
+                    android:secondaryProgressTint="#3abdbd"
+                    android:progressBackgroundTint="#f1a397"
+                    android:progressBackgroundTintMode="multiply"
+                    android:mirrorForRtl="false"
+                    android:progressTint="#3abdbd"
+                    android:progressTintMode="multiply"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginLeft="105dp"
+                    android:layout_marginRight="40dp" />
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="120dp"
+                    android:id="@+id/imageView2"
+                    android:src="@drawable/ic_keyboard_arrow_right_white_24dp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:onClick="next" />
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="120dp"
+                    android:id="@+id/imageView3"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:src="@drawable/ic_keyboard_arrow_left_white_24dp"
+                    android:adjustViewBounds="true"
+                    android:onClick="previous" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="30dp"
+                    android:layout_below="@+id/audioContent"
+                    android:layout_centerHorizontal="true"
+                    android:id="@+id/relativeLayout">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="0:00"
+                        android:id="@+id/progress"
+                        android:textSize="15sp"
+                        android:textColor="#FFF"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text=" / 0:00"
+                        android:id="@+id/duration"
+                        android:layout_alignBottom="@+id/progress"
+                        android:layout_toRightOf="@+id/progress"
+                        android:layout_toEndOf="@+id/progress"
+                        android:textSize="15sp"
+                        android:textColor="#FFF" />
+
+                </RelativeLayout>
+
+            </RelativeLayout>
 
             <TextView
                 android:layout_width="match_parent"
@@ -158,26 +213,59 @@
                 android:id="@+id/routeInfo"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:textSize="16sp"
-                android:text="helehelehf ds sd sd fgds fdgsd fgsfgd helehe lehf ds sd sd fgds fdgsdfg sfgd hele helehf helehelehf ds sd sd fgds fdgsd fgsfgd helehe lehf ds sd sd fgds fdgsdfg sfgd hele helehfhelehelehf ds sd sd fgds fdgsd fgsfgd helehe lehf ds sd sd fgds fdgsdfg sfgd hele helehf helehe helehelehf ds sd sd fgds fdgsd fgsfgd helehe lehf ds sd sd fgds fdgsdfg sfgd hele helehf lehf ds sd sd fgds fdgsd fgsfgd helehe lehf ds sd sd fgds fdgsdfg sfgd hele helehf"
-                android:textColor="#000"
+                android:textSize="15sp"
+                android:text="lorem ipsum"
                 android:layout_below="@+id/imageView8"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="30dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:id="@+id/mainImage"
+                    android:src="@drawable/no_image"
+                    android:layout_alignParentTop="true"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="Main image"
+                    android:visibility="gone" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:id="@+id/navButtons"
+                    android:visibility="gone">
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="250dp"
+                        android:id="@+id/right"
+                        android:src="@drawable/ic_keyboard_arrow_right_white_24dp"
+                        android:elevation="2dp"
+                        android:layout_gravity="right|center_vertical"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:onClick="nextImg" />
 
-            <ImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:id="@+id/imageView9"
-                android:layout_alignTop="@+id/imageView8"
-                android:layout_alignLeft="@+id/imageView8"
-                android:layout_alignStart="@+id/imageView8"
-                android:src="@drawable/circular_cover" />
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="250dp"
+                        android:id="@+id/left"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/ic_keyboard_arrow_left_white_24dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:onClick="prevImg" />
 
-        </RelativeLayout>
+                </RelativeLayout>
+            </RelativeLayout>
 
-    </RelativeLayout>
+        </LinearLayout>
+
+    </ScrollView>
 
 </RelativeLayout>

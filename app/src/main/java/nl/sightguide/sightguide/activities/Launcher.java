@@ -1,9 +1,11 @@
 package nl.sightguide.sightguide.activities;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -24,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -38,6 +41,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Locale;
 
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -59,19 +63,41 @@ public class Launcher extends AppCompatActivity {
     public JSONArray cityJSON;
     public JSONArray lang;
 
+    private EditText input;
+    private String query = "";
+
     int cityID;
     private SwipeRefreshLayout swipeView;
 
     private static SharedPreferences settings;
     private static SharedPreferences.Editor editor;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
         swipeView = (SwipeRefreshLayout) findViewById(R.id.swipe);
+        input = (EditText) findViewById(R.id.input);
+        input.addTextChangedListener(new TextWatcher() {
 
-        setTitle("Select a city");
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                Log.e("input","onchange");
+                query = input.getText().toString();
+                new DownloadCityTask().execute();
+
+            }
+        });
+
 
         settings = getSharedPreferences("SightGuide", 0);
         editor = settings.edit();
@@ -111,6 +137,7 @@ public class Launcher extends AppCompatActivity {
     private class DownloadMarkers extends AsyncTask<String, Void, String> {
         private String city_id;
         private String lang;
+        private Locale locale;
 
         @Override
         protected String doInBackground(String... params) {
@@ -195,7 +222,7 @@ public class Launcher extends AppCompatActivity {
                 }
                 city.setImage_4(city_img4Name);
 
-                City test = Utils.realm.copyToRealmOrUpdate(city);
+                City realmCity = Utils.realm.copyToRealmOrUpdate(city);
 
                 JSONArray markers = parent.getJSONArray("markers");
 
@@ -214,7 +241,7 @@ public class Launcher extends AppCompatActivity {
                         marker = new Marker();
                         marker.setId(id);
                     }
-                    marker.setCity(test);
+                    marker.setCity(realmCity);
                     marker.setType(type);
                     marker.setName(marker_name);
                     marker.setInformation(info);
@@ -265,15 +292,13 @@ public class Launcher extends AppCompatActivity {
                         marker.setImage_4(img4Name);
                     }
 
-                    String audio = obj.getString("audio");
-                    if(!audio.equals("null")) {
-                        String audioName = audio.substring(audio.lastIndexOf('/') + 1);
-                        String audioUrl = audio.substring(0, audio.lastIndexOf('/'));
-
+                    String audioFullUrl = obj.getString("audio");
+                    if(!audioFullUrl.equals("null")){
+                        String audioName = audioFullUrl.substring(audioFullUrl.lastIndexOf('/') + 1);
+                        String audioUrl = audioFullUrl.substring(0, audioFullUrl.lastIndexOf('/'));
+                        marker.setAudio(audioName);
                         AudioRequest ar = new AudioDownloader(audioName, audioUrl).execute();
                         rq.add(ar);
-
-                        marker.setAudio(audioName);
                     }
 
                     Log.e("Adding marker", marker.getName());
@@ -292,20 +317,25 @@ public class Launcher extends AppCompatActivity {
 
                     double distance = obj.getDouble("distance");
                     JSONArray route_markers = obj.getJSONArray("markers");
+                    boolean start = obj.getBoolean("multiple_startingpoints");
+                    String path = obj.getString("path");
+
 
                     Route route = Utils.realm.where(Route.class).equalTo("id", id).findFirst();
                     if(route == null){
                         route = new Route();
-                        route.setId(city_id);
+                        route.setId(id);
                     }
 
                     route.setName(route_name);
                     route.setInfomation(route_information);
                     route.setDistance(distance);
-                    route.setCity(test);
+
+                    route.setCity(realmCity);
+                    route.setStart(start);
+                    route.setPath(path);
 
                     RealmList<Marker> list = new RealmList<>();
-
                     for(int x = 0; x < route_markers.length(); x++) {
                         int marker_id = route_markers.getInt(x);
                         Marker marker = Utils.realm.where(Marker.class).equalTo("id", marker_id).findFirst();
@@ -313,20 +343,40 @@ public class Launcher extends AppCompatActivity {
                             list.add(marker);
                         }
                     }
-
                     route.setMarkers(list);
                     Utils.realm.copyToRealmOrUpdate(route);
-
                 }
+
                 Utils.city_id = Integer.parseInt(this.city_id);
+
+                //Set locale //
+                String setLocale ;
+                if(lang.equals("nld")) {
+                    setLocale = "nl";
+                    editor.putInt("language", 0);
+                }else if ( lang.equals("eng")){
+                    setLocale = "en";
+                    editor.putInt("language", 1);
+                }else{
+                    setLocale = "es";
+                    editor.putInt("language", 2);
+                }
+
+                locale = new Locale(setLocale);
+
+                Locale current = getResources().getConfiguration().locale;
+
+                Locale.setDefault(locale);
+                Configuration config = new Configuration();
+                config.locale = locale;
+                getBaseContext().getResources().updateConfiguration(config,
+                        getBaseContext().getResources().getDisplayMetrics());
 
                 editor.putInt("lastCity", Integer.parseInt(this.city_id));
                 editor.commit();
 
-                Log.e("Realm", "commiting transaction");
-
-                Log.e("commitTransaction", "done");
                 Utils.realm.commitTransaction();
+
                 Intent intent = new Intent(Launcher.this, Home.class);
                 startActivity(intent);
 
@@ -342,6 +392,8 @@ public class Launcher extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... params) {
+
+
             try {
                 String result = Utils.run(Launcher.this, "getcities");
 
@@ -354,21 +406,30 @@ public class Launcher extends AppCompatActivity {
 
                     for(int i = 0; i < parent.length(); i++) {
                         JSONObject obj = parent.getJSONObject(i);
+                        if(!obj.getString("languages").equals("[]")) {
 
-                        if(!obj.getString("languages").equals("none")) {
-
+                            // check if search field has value, if so match results
                             LauncherCity city = new LauncherCity();
+                            if(!query.isEmpty()){
 
-                            city.setId(obj.getInt("id"));
-                            city.setPosition(i);
-                            city.setCountry(obj.getString("country"));
-                            city.setName(obj.getString("name"));
-
-
-                            city.setLanguages(new JSONArray(obj.getString("languages")));
-
-                            items.add(city);
+                                if(obj.getString("name").toLowerCase().contains(query)){
+                                    city.setId(obj.getInt("id"));
+                                    city.setPosition(i);
+                                    city.setCountry(obj.getString("country"));
+                                    city.setName(obj.getString("name"));
+                                    city.setLanguages(new JSONArray(obj.getString("languages")));
+                                    items.add(city);
+                                }
+                            }else{
+                                city.setId(obj.getInt("id"));
+                                city.setPosition(i);
+                                city.setCountry(obj.getString("country"));
+                                city.setName(obj.getString("name"));
+                                city.setLanguages(new JSONArray(obj.getString("languages")));
+                                items.add(city);
+                            }
                         }
+
                     }
                     adapter = new LauncherAdapter(Launcher.this, 1, items);
                 } catch (JSONException e) {
@@ -394,13 +455,25 @@ public class Launcher extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
-
+    // show availabe languages
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         if (v.getId() == R.id.view_cities) {
+            menu.setHeaderTitle("Select language");
             try {
                 for (int i = 0; i < this.lang.length(); i++) {
                     String language = this.lang.getString(i);
+                    switch (language) {
+                        case "nld":
+                            language = "Dutch";
+                            break;
+                        case "eng":
+                            language = "English";
+                            break;
+                        case "esp":
+                            language = "Spanish";
+                            break;
+                    }
                     menu.add(language);
                 }
             } catch (JSONException e) {
@@ -409,11 +482,32 @@ public class Launcher extends AppCompatActivity {
         }
     }
 
+    // onclick language download city
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         String lang = item.getTitle().toString();
+        switch (lang) {
+            case "Dutch":
+                lang = "nld";
+                break;
+            case "English":
+                lang = "eng";
+                break;
+            case "Spanish":
+                lang = "esp";
+                break;
+        }
         Log.e("API", "DownloadMarkers");
         new DownloadMarkers().execute(String.format("%d", cityID), lang);
+        ProgressDialog dialog = new ProgressDialog(Launcher.this);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.setMessage("Downloading city...");
+        dialog.setIndeterminate(true);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
         return true;
     }
+
+
+
 }

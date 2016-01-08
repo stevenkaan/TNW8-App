@@ -34,31 +34,31 @@
 
     <ImageView
         android:id="@+id/icon"
+        android:src="@drawable/distance_bg"
         android:layout_width="60dp"
         android:layout_height="60dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="15dp"
         android:scaleType="centerCrop"
-        android:background="#369"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="20dp" />
-    <View android:layout_width="6dip"
-        android:layout_height="30dp"
-        android:background="#CCC"
-        android:layout_marginRight="27dp"
-        android:layout_marginEnd="25dp"
-        android:layout_below="@+id/ItemInfo"
-        android:layout_alignRight="@+id/icon"
-        android:layout_alignEnd="@+id/icon"
-        android:id="@+id/view" />
+        android:layout_marginBottom="15dp" />
 
-    <ImageView
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:id="@+id/imageView4"
-        android:src="@drawable/circular_cover"
-        android:layout_alignParentTop="true"
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="2.4"
+        android:id="@+id/distance"
+        android:layout_alignTop="@+id/icon"
         android:layout_alignLeft="@+id/icon"
-        android:layout_alignStart="@+id/icon" />
+        android:layout_alignStart="@+id/icon"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:textColor="#FFF" />
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:id="@+id/RouteId" />
 
 </RelativeLayout>

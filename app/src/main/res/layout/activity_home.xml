@@ -15,7 +15,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="#fff">
 
             <fragment
                 android:layout_width="fill_parent"
@@ -32,15 +33,20 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:choiceMode="singleChoice"
-            android:divider="#FFF"
-            android:dividerHeight="0dp"
-            android:background="#e96745"/>
+            android:divider="#EAEAEA"
+            android:dividerHeight="1dp"
+            android:background="#fff"/>
     </android.support.v4.widget.DrawerLayout>
 
-    <android.support.design.widget.FloatingActionButton android:id="@+id/fab"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end" android:layout_margin="@dimen/fab_margin"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginRight="11dp"
+        android:layout_marginBottom="16dp"
+        android:onClick="setFilter"
         app:fabSize="mini"
-        android:src="@drawable/icon_types" />
+        android:src="@drawable/ic_list_white_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

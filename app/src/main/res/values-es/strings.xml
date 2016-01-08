@@ -1,0 +1,62 @@
+<resources>
+    <string name="package_name">nl.sightguide.sightguide</string>
+
+    <string name="app_name">Sight Guide</string>
+
+    <!-- Tourist attractions -->
+    <string name="listen_audio">Escuche el audio</string>
+    <string name="title_activity_attractions">Atracciones turísticas</string>
+    <string name="view_map">Ver en el mapa</string>
+
+    <!-- Tourist attraction list -->
+    <string name="all">Todos</string>
+    <string name="museums">Museos</string>
+    <string name="monuments">Monumentos</string>
+    <string name="noresult">No hay resultados</string>
+
+
+    <!-- Walking routes -->
+    <string name="routes">Caminatas</string>
+    <string name="route">Caminata</string>
+    <string name="start_tour">Empezar</string>
+    <string name="distance">Distancia</string>
+    <string name="kilometer">Km</string>
+    <string name="view_route">Vea la ruta</string>
+
+    <!-- Menu drawer -->
+    <string-array name="menu_array">
+
+        <item id="1">Atracciones turísticas</item>
+        <item id="2">Caminatas</item>
+        <item id="3">Información de la ciudad</item>
+        <item id="4">Mis ciudades</item>
+        <item id="5">Ajustes</item>
+    </string-array>
+
+    <string name="drawer_open">0</string>
+    <string name="drawer_close">1</string>
+
+    <!-- City information -->
+    <string name="title_activity_city_info">Información de la ciudad</string>
+
+    <!-- Settings -->
+    <string name="title_activity_setting_list">Ajustes</string>
+    <string name="set_filters">Filtro ajuste</string>
+    <string name="set_filters_desc">Seleccionar marcadores que aparecen en el mapa</string>
+    <string name="set_city">Seleccione una ciudad</string>
+    <string name="proximity_sensor">Sensor de proximidad</string>
+    <string name="proximity_desc">reproducir el audio de lugares de interés cercanos</string>
+    <string name="autoplay">Autoplay</string>
+    <string name="autoplay_desc">Caminatas de reproducción automática</string>
+
+    <!-- My cities -->
+    <string name="title_activity_city_list">Mis ciudades</string>
+
+    <!-- Marker filter -->
+    <string name="title_activity_filter_list">Filtro ajuste</string>
+
+    <!-- map -->
+    <string name="location">Mi ubicacion</string>
+
+
+</resources>

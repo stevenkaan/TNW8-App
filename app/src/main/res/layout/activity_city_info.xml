@@ -2,7 +2,9 @@
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#FFFFFF">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -11,85 +13,100 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:weightSum="1">
-            <HorizontalScrollView
-                android:id="@+id/horizontalView"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <LinearLayout
+
+                <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="250dp"
+                    android:id="@+id/mainImage"
+                    android:src="@drawable/no_image"
+                    android:layout_above="@+id/attrInfo"
+                    android:layout_alignParentTop="true"
+                    android:scaleType="centerCrop" />
+
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="fill_parent"
-                    android:orientation="horizontal"
-                    xmlns:android="http://schemas.android.com/apk/res/android">
+                    android:layout_height="250dp">
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="250dp"
+                        android:id="@+id/right"
+                        android:src="@drawable/ic_keyboard_arrow_right_white_24dp"
+                        android:elevation="2dp"
+                        android:layout_gravity="right|center_vertical"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        android:onClick="nextImg"
+                        android:visibility="gone" />
 
                     <ImageView
-                        android:layout_width="350dp"
+                        android:layout_width="50dp"
                         android:layout_height="250dp"
-                        android:id="@+id/mainImage1"
-                        android:src="@drawable/icon"
-                        android:layout_weight="0.75"
-                        android:layout_above="@+id/attrInfo"
+                        android:id="@+id/left"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/ic_keyboard_arrow_left_white_24dp"
                         android:layout_alignParentTop="true"
-                        android:weightSum="100"
-                        android:scaleType="centerCrop"
-                        android:visibility="invisible" />
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:onClick="prevImg"
+                        android:visibility="gone" />
 
-                    <ImageView
-                        android:layout_width="350dp"
-                        android:layout_height="250dp"
-                        android:id="@+id/mainImage2"
-                        android:src="@drawable/icon"
-                        android:layout_weight="0.75"
-                        android:layout_above="@+id/attrInfo"
-                        android:layout_alignParentTop="true"
-                        android:weightSum="100"
-                        android:scaleType="centerCrop"
-                        android:visibility="invisible" />
-
-                    <ImageView
-                        android:layout_width="350dp"
-                        android:layout_height="250dp"
-                        android:id="@+id/mainImage3"
-                        android:src="@drawable/icon"
-                        android:layout_weight="0.75"
-                        android:layout_above="@+id/attrInfo"
-                        android:layout_alignParentTop="true"
-                        android:weightSum="100"
-                        android:scaleType="centerCrop"
-                        android:visibility="invisible" />
-
-                    <ImageView
-                        android:layout_width="350dp"
-                        android:layout_height="250dp"
-                        android:id="@+id/mainImage4"
-                        android:src="@drawable/icon"
-                        android:layout_weight="0.75"
-                        android:layout_above="@+id/attrInfo"
-                        android:layout_alignParentTop="true"
-                        android:weightSum="100"
-                        android:scaleType="centerCrop"
-                        android:visibility="invisible" />
-                </LinearLayout>
-
-            </HorizontalScrollView>
+                </RelativeLayout>
 
 
-            <TextView
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:id="@+id/imageView"
+                    android:src="@drawable/gradient"
+                    android:scaleType="fitXY" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Large Text"
+                    android:id="@+id/cityName"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:textColor="#FFF"
+                    android:gravity="center_vertical" />
+
+            </RelativeLayout>
+
+
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="City info"
-                android:id="@+id/city_info"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:elevation="1dp"
-                android:focusable="true"
-                android:textColor="#333"
-                android:textSize="17sp"
-                android:textIsSelectable="false"
-                android:layout_margin="20dp" />
+                android:weightSum="1">
+
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="City info"
+                    android:id="@+id/cityInfo"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:elevation="1dp"
+                    android:focusable="true"
+                    android:textSize="15sp"
+                    android:textIsSelectable="false"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginTop="10dp" />
+                </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

@@ -9,21 +9,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.toolbox.ImageRequest;
-import com.android.volley.toolbox.Volley;
-
-import java.io.File;
-import java.io.FileOutputStream;
-
 import nl.sightguide.sightguide.R;
-import nl.sightguide.sightguide.activities.AttractionList;
 
 public class TimelineHelper extends BaseAdapter {
     private final Activity context;
@@ -53,7 +43,7 @@ public class TimelineHelper extends BaseAdapter {
     @Override
     public View getView(int position,View view,ViewGroup parent) {
         LayoutInflater inflater=context.getLayoutInflater();
-        View rowView=inflater.inflate(R.layout.timeline_list, null, true);
+        View rowView=inflater.inflate(R.layout.custom_timeline_list, null, true);
 
         imageView = (ImageView) rowView.findViewById(R.id.icon);
         TextView txtTitle = (TextView) rowView.findViewById(R.id.Itemname);

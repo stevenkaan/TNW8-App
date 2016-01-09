@@ -3,6 +3,7 @@ package nl.sightguide.sightguide;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
@@ -25,6 +26,7 @@ public class Utils {
     public static int language;
     public static Float maxZoom = 8f;
     public static Float startingZoom = 11f;
+    public static MediaPlayer currentAudio;
 
 
     public static String apiURL = "http://sightguide.eu:3000";

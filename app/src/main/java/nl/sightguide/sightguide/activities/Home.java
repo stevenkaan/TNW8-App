@@ -170,14 +170,6 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
         return true;
     }
 
-    @Override
-    public void onDestroy(){
-        super.onDestroy();
-        Log.e("Action", "onDestroy");
-        stopService(intent);
-    }
-
-
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView parent, View view, int position, long id) {

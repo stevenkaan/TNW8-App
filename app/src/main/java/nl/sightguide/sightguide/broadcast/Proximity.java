@@ -25,29 +25,26 @@ public class Proximity extends BroadcastReceiver {
         String key = LocationManager.KEY_PROXIMITY_ENTERING;
 
         boolean state = intent.getBooleanExtra(key, false);
-        int marker_id = intent.getBundleExtra("extra").getInt("id", 0);
-
-        Bundle extras = intent.getExtras();
-
-        Log.e("Extras", "Test: " + intent.getBundleExtra("extra").getInt("id"));
-        Log.e("State", Boolean.toString(state));
-
-        Log.e("Intent", intent.getExtras().toString());
+        int marker_id = intent.getBundleExtra("extra").getInt("marker_id", 0);
 
         Marker marker = Utils.realm.where(Marker.class).equalTo("id", marker_id).findFirst();
         if(marker != null) {
+            if(marker.getAudio() == null){
+                return;
+            }
             if (state) {
-                Log.e("MyTag", "Welcome to my " + marker.getName());
-                Toast.makeText(context, "Welcome to my " + marker.getName(), Toast.LENGTH_SHORT).show();
+                Log.e("Test", "Audio: " + marker.getAudio());
+                if(Utils.currentAudio != null){
+                    Utils.currentAudio.stop();
+                }
+                Utils.currentAudio = AudioHelper.getAudio(marker.getAudio());
 
-                MediaPlayer mp = AudioHelper.getAudio("Immortals-Centuries.mp3");
 
-                mp.start();
+                Utils.currentAudio.start();
 
             } else {
-                //Other custom Notification
-                Log.e("MyTag", "Thank you for visiting my " + marker.getName() + ", come back again !!");
-                Toast.makeText(context, "Thank you for visiting my " + marker.getName() + ", come back again !!", Toast.LENGTH_SHORT).show();
+                Utils.currentAudio.stop();
+                Utils.currentAudio = null;
             }
         }
     }

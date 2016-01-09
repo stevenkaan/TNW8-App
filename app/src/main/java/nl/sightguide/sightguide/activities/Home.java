@@ -129,35 +129,26 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
         }
 
 
+        RealmResults<Marker> markers = Utils.realm.where(Marker.class).equalTo("city.id", Utils.city_id).findAll();
 
         LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-
-        registerReceiver(new Proximity(), new IntentFilter("test"));
-
-
+        registerReceiver(new Proximity(), new IntentFilter("nl.sightguide"));
 
         try {
-            Bundle extras1 = new Bundle();
-            extras1.putInt("id", 1);
 
-            Intent intent1 = new Intent("test");
-            intent1.putExtra("extra", extras1);
+            for(int i = 0; i < markers.size(); i++) {
+                Marker marker = markers.get(i);
 
-            PendingIntent pi1 = PendingIntent.getBroadcast(getApplicationContext(), 0, intent1, 0);
+                Bundle bundle = new Bundle();
+                bundle.putInt("marker_id", marker.getId());
 
-            lm.addProximityAlert(53.21040838064042, 5.795411467552185, 150, -1, pi1);
+                Intent intent = new Intent("nl.sightguide");
+                intent.putExtra("extra", bundle);
 
+                PendingIntent pi1 = PendingIntent.getBroadcast(getApplicationContext(), i, intent, 0);
 
-            Bundle extras2 = new Bundle();
-            extras2.putInt("id", 2);
-
-            Intent intent2 = new Intent("test");
-            intent2.putExtra("extra", extras2);
-
-            PendingIntent pi2 = PendingIntent.getBroadcast(getApplicationContext(), 1, intent2, 0);
-
-            //lm.addProximityAlert(53.21240659153594, 5.79753041267395, 100, -1, pi2);
-            lm.addProximityAlert(52.80078955591138, 6.054990291595459, 100, -1, pi2);
+                lm.addProximityAlert(marker.getLatitude(), marker.getLongitude(), 100, -1, pi1);
+            }
 
         } catch (SecurityException e) {
             Log.e("Error", e.toString());
@@ -170,12 +161,12 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
         return true;
     }
 
-    @Override
-    public void onDestroy(){
-        super.onDestroy();
-        Log.e("Action", "onDestroy");
-        stopService(intent);
-    }
+//    @Override
+//    public void onDestroy(){
+//        super.onDestroy();
+//        Log.e("Action", "onDestroy");
+//        stopService(intent);
+//    }
 
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
@@ -255,12 +246,6 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
         mMap.setMyLocationEnabled(true);
-
-        RealmResults<Marker> markers = Utils.realm.where(Marker.class).equalTo("city.id", Utils.city_id).findAll();
-        if(markers.size() == 0) {
-            Log.e("onMapReady", "0 markers found");
-            Log.e("CityID", String.format("%d", Utils.city_id));
-        }
 
         for(int i = 0; i < attractions.size(); i++) {
 

@@ -43,8 +43,10 @@ public class Proximity extends BroadcastReceiver {
                 Utils.currentAudio.start();
 
             } else {
-                Utils.currentAudio.stop();
-                Utils.currentAudio = null;
+                if(Utils.currentAudio != null) {
+                    Utils.currentAudio.stop();
+                    Utils.currentAudio = null;
+                }
             }
         }
     }

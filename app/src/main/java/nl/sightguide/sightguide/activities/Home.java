@@ -147,7 +147,8 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
 
                 PendingIntent pi1 = PendingIntent.getBroadcast(getApplicationContext(), i, intent, 0);
 
-                lm.addProximityAlert(marker.getLatitude(), marker.getLongitude(), 10, -1, pi1);
+
+                lm.addProximityAlert(marker.getLatitude(), marker.getLongitude(), 50, -1, pi1);
             }
 
         } catch (SecurityException e) {

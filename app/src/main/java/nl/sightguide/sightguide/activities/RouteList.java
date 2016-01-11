@@ -14,6 +14,7 @@ import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.Utils;
 import nl.sightguide.sightguide.adapters.RouteAdapter;
 import nl.sightguide.sightguide.models.Route;
+import nl.sightguide.sightguide.services.ProximitySensor;
 
 public class RouteList extends AppCompatActivity {
 
@@ -21,6 +22,10 @@ public class RouteList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_routes_list);
+
+        if(getSharedPreferences("SightGuide", 0).getBoolean("proximitySensorActive", true)){
+            stopService(new Intent(this, ProximitySensor.class));
+        }
 
         RealmResults<Route> results = Utils.realm.where(Route.class).equalTo("city.id", Utils.city_id).findAll();
 

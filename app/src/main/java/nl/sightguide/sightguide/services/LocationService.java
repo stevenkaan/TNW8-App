@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -25,9 +26,12 @@ public class LocationService extends Service implements LocationListener {
     private static final String TAG = "BOOMBOOMTESTGPS";
     private LocationManager mLocationManager = null;
     private Proximity proximity;
+    private static SharedPreferences settings;
+    private static SharedPreferences.Editor editor;
 
     //Intent Action
     String ACTION_FILTER = "nl.sightguide.sightguide";
+
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -46,11 +50,8 @@ public class LocationService extends Service implements LocationListener {
             for(int i = 0; i < markers.size(); i++) {
                 Marker marker = markers.get(i);
 
-
                 Bundle extras = new Bundle();
-
                 extras.putInt("marker_id", marker.getId());
-                //extras.putString("test", "test");
 
                 Intent intent1 = new Intent(ACTION_FILTER);
                 intent1.putExtra(ACTION_FILTER, extras);
@@ -69,9 +70,7 @@ public class LocationService extends Service implements LocationListener {
     @Override
     public void onCreate() {
         proximity = new Proximity();
-
         registerReceiver(proximity, new IntentFilter(ACTION_FILTER));
-
         initializeLocationManager();
     }
     @Override

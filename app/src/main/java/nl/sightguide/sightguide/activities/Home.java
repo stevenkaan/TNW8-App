@@ -49,6 +49,7 @@ import nl.sightguide.sightguide.models.City;
 import nl.sightguide.sightguide.models.Marker;
 import nl.sightguide.sightguide.services.LocationService;
 import nl.sightguide.sightguide.models.Type;
+import nl.sightguide.sightguide.services.ProximitySensor;
 
 
 public class Home extends AppCompatActivity implements OnMapReadyCallback {
@@ -79,12 +80,16 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
     private Intent intent;
 
     private String label;
+    private static SharedPreferences settings;
+    private static SharedPreferences.Editor editor;
+    private String status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        Utils.preferences = getSharedPreferences("SightGuide", 0);
+        settings = getSharedPreferences("SightGuide", 0);
+        editor = settings.edit();
 
         city = Utils.realm.where(City.class).equalTo("id", Utils.city_id).findFirst();
 
@@ -127,33 +132,42 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
         if (savedInstanceState == null) {
             mapFrag.getMapAsync(this);
         }
-
-
-        RealmResults<Marker> markers = Utils.realm.where(Marker.class).equalTo("city.id", Utils.city_id).findAll();
-
-        LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        registerReceiver(new Proximity(), new IntentFilter("nl.sightguide"));
-
-        try {
-
-            for(int i = 0; i < markers.size(); i++) {
-                Marker marker = markers.get(i);
-
-                Bundle bundle = new Bundle();
-                bundle.putInt("marker_id", marker.getId());
-
-                Intent intent = new Intent("nl.sightguide");
-                intent.putExtra("extra", bundle);
-
-                PendingIntent pi1 = PendingIntent.getBroadcast(getApplicationContext(), i, intent, 0);
-
-
-                lm.addProximityAlert(marker.getLatitude(), marker.getLongitude(), 50, -1, pi1);
-            }
-
-        } catch (SecurityException e) {
-            Log.e("Error", e.toString());
+        // start service for proximity sensor if settings allow
+        Boolean proximityOn = settings.getBoolean("proximitySensor", true);
+        Boolean proximityActive = settings.getBoolean("proximitySensorActive", true);
+        status = "Sensor off";
+        if(proximityOn && !proximityActive) {
+            startService(new Intent(this, ProximitySensor.class));
         }
+
+
+
+
+
+        // check location for proximity sensor
+//        RealmResults<Marker> markers = Utils.realm.where(Marker.class).equalTo("city.id", Utils.city_id).findAll();
+//
+//        LocationManager lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+//        registerReceiver(new Proximity(), new IntentFilter("nl.sightguide"));
+//
+//        try {
+//
+//            for(int i = 0; i < markers.size(); i++) {
+//                Marker marker = markers.get(i);
+//
+//                Bundle bundle = new Bundle();
+//                bundle.putInt("marker_id", marker.getId());
+//
+//                Intent intent = new Intent("nl.sightguide");
+//                intent.putExtra("extra", bundle);
+//
+//                PendingIntent pi1 = PendingIntent.getBroadcast(getApplicationContext(), i, intent, 0);
+//                lm.addProximityAlert(marker.getLatitude(), marker.getLongitude(), 50, -1, pi1);
+//            }
+//
+//        } catch (SecurityException e) {
+//            Log.e("Error", e.toString());
+//        }
 
     }
     @Override
@@ -186,7 +200,6 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
 
     // Select menu item from drawer
     public void SwitchView(int item){
-
         Intent intent;
         switch (item) {
             case 0:
@@ -313,7 +326,7 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
                 if(attraction.getInformation() != null){
                     label = attraction.getName();
                 }else{
-                    int lang = Utils.preferences.getInt("language",0);
+                    int lang = settings.getInt("language",0);
                     switch (lang) {
                         case 0:
                             label = type.getName_nl();
@@ -343,7 +356,6 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
         }
 
         bounds = builder.build();
-        Log.e("build", "" + bounds);
         int padding = 50;
         cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
 
@@ -352,11 +364,6 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
                 new GoogleMap.OnCameraChangeListener() {
                     @Override
                     public void onCameraChange(CameraPosition position) {
-                        LatLng myLatLng = new LatLng(gps.getLatitude(), gps.getLongitude());
-                        mMap.addMarker(new MarkerOptions()
-                                .position(myLatLng)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.me))
-                                .title(getString (R.string.location)));
                         if (position.zoom < Utils.maxZoom)
                             mMap.moveCamera(cu);
                     }

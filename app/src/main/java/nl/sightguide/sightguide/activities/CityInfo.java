@@ -1,5 +1,6 @@
 package nl.sightguide.sightguide.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -10,6 +11,7 @@ import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.Utils;
 import nl.sightguide.sightguide.helpers.ImageHelper;
 import nl.sightguide.sightguide.models.City;
+import nl.sightguide.sightguide.services.ProximitySensor;
 
 public class CityInfo extends AppCompatActivity {
     private City city;
@@ -21,6 +23,10 @@ public class CityInfo extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_city_info);
+
+        if(getSharedPreferences("SightGuide", 0).getBoolean("proximitySensorActive", true)){
+            stopService(new Intent(this, ProximitySensor.class));
+        }
 
         city = Utils.realm.where(City.class).equalTo("id", Utils.city_id).findFirst();
 

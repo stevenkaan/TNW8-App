@@ -41,6 +41,7 @@ public class Splash extends Activity {
             Utils.editor.putInt("language", 0);
             Utils.editor.putBoolean("autoPlay", false);
             Utils.editor.putBoolean("proximitySensor", false);
+            Utils.editor.putBoolean("proximitySensorActive", false);
             Utils.editor.commit();
 
             Realm.deleteRealm(realmConfiguration);

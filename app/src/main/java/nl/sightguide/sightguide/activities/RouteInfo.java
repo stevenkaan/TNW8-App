@@ -487,6 +487,7 @@ public class RouteInfo extends AppCompatActivity {
         intent.putExtra("first", false);
         intent.putExtra("play", play);
         startActivity(intent);
+        finish();
     }
     public void previous(View v){
         RealmList<Marker> markers = route.getMarkers();
@@ -511,6 +512,7 @@ public class RouteInfo extends AppCompatActivity {
         intent.putExtra("first", false);
         intent.putExtra("play", false);
         startActivity(intent);
+        finish();
     }
     // show next img
     public void nextImg(View v){

@@ -11,6 +11,7 @@ import android.widget.TextView;
 import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.Utils;
 import nl.sightguide.sightguide.models.City;
+import nl.sightguide.sightguide.services.ProximitySensor;
 
 
 public class SettingList extends AppCompatActivity {
@@ -25,6 +26,11 @@ public class SettingList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_list);
+
+        if(getSharedPreferences("SightGuide", 0).getBoolean("proximitySensorActive", true)){
+            stopService(new Intent(this, ProximitySensor.class));
+        }
+
         setCity =  (TextView) findViewById(R.id.city_name);
 
         int cityID = Utils.preferences.getInt("lastCity", 0);
@@ -56,6 +62,7 @@ public class SettingList extends AppCompatActivity {
     public void ToggleSensor (View v) {
         if(Utils.preferences.getBoolean("proximitySensor", true)){
             editor.putBoolean("proximitySensor", false);
+            stopService(new Intent(this, ProximitySensor.class));
         }else{
             editor.putBoolean("proximitySensor", true);
         }

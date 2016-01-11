@@ -15,6 +15,7 @@ import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.Utils;
 import nl.sightguide.sightguide.adapters.CityListAdapter;
 import nl.sightguide.sightguide.models.City;
+import nl.sightguide.sightguide.services.ProximitySensor;
 
 public class CityList extends AppCompatActivity {
 
@@ -22,6 +23,11 @@ public class CityList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_city_list);
+
+        if(getSharedPreferences("SightGuide", 0).getBoolean("proximitySensorActive", true)){
+            stopService(new Intent(this, ProximitySensor.class));
+        }
+
         setTitle(R.string.title_activity_city_list);
 
         Utils.preferences = getSharedPreferences("SightGuide", 0);

@@ -19,6 +19,7 @@ import nl.sightguide.sightguide.Utils;
 import nl.sightguide.sightguide.adapters.AttractionAdapter;
 import nl.sightguide.sightguide.R;
 import nl.sightguide.sightguide.models.Marker;
+import nl.sightguide.sightguide.services.ProximitySensor;
 
 public class AttractionList extends AppCompatActivity {
 
@@ -36,6 +37,8 @@ public class AttractionList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attraction_list);
+
+        stopService(new Intent(this, ProximitySensor.class));
 
         setTitle(R.string.title_activity_attractions);
 

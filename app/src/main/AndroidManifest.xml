@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
 
     <application
         android:allowBackup="true"
@@ -108,8 +109,10 @@
             android:name=".activities.Map"
             android:screenOrientation="portrait" >
         </activity>
+        <service android:name=".services.ProximitySensor" />
 
         <service android:name=".services.LocationService" />
+        <receiver android:name=".broadcast.ExecuteProximitySensor" />
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

@@ -25,8 +25,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -299,6 +297,8 @@ public class Launcher extends AppCompatActivity {
                         marker.setAudio(audioName);
                         AudioRequest ar = new AudioDownloader(audioName, audioUrl).execute();
                         rq.add(ar);
+                        Log.e("audio url", audioUrl);
+                        Log.e("audio name", audioName);
                     }
 
                     Log.e("Adding marker", marker.getName());

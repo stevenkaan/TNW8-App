@@ -29,8 +29,7 @@ public class Utils {
     public static MediaPlayer currentAudio;
 
 
-    public static String apiURL = "http://sightguide.eu:3000";
-//    public static String apiURL = "http://stevenkaan.com/api/";
+    public static String apiURL = "http://sightguide.eu";
 
     public static final OkHttpClient client = new OkHttpClient();
 

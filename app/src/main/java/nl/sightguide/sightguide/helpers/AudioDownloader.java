@@ -36,7 +36,7 @@ public class AudioDownloader implements Response.Listener<byte[]> {
         try {
             String fileName = URLEncoder.encode(name, "UTF-8");
 
-            String mUrl = Utils.apiURL + url + "/" + fileName.replace("+", "%20")+"/";
+            String mUrl = Utils.apiURL + url + "/" + fileName.replace("+", "%20");
 
             ar = new AudioRequest(Request.Method.GET, mUrl, AudioDownloader.this, null, null);
 
@@ -63,8 +63,11 @@ public class AudioDownloader implements Response.Listener<byte[]> {
 
                     InputStream input = new ByteArrayInputStream(response);
 
-                    File path = Environment.getExternalStorageDirectory();
-                    File file = new File(path+ "/SightGuide/"+baseDir, filename);
+                    String root = Environment.getExternalStorageDirectory().toString();
+                    File audioFolder = new File(root+ "/SightGuide/"+baseDir);
+                    audioFolder.mkdirs();
+                    File file = new File(root+ "/SightGuide/"+baseDir, filename);
+
                     map.put("resume_path", file.toString());
                     BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(file));
                     byte data[] = new byte[1024];
